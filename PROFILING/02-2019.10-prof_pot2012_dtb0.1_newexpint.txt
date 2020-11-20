@@ -1,0 +1,666 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls   s/call   s/call  name    
+ 42.09     12.11    12.11 570123342     0.00     0.00  expint_
+ 11.04     15.29     3.18 189905892     0.00     0.00  coulan2_
+ 10.67     18.36     3.07   245000     0.00     0.00  thav99_
+  9.35     21.05     2.69 94467946     0.00     0.00  coul01_
+  5.21     22.55     1.50  1009800     0.00     0.00  lubksb_
+  5.14     24.03     1.48    19800     0.00     0.00  getugam_
+  2.40     24.72     0.69     1001     0.00     0.00  bevol_
+  2.36     25.40     0.68     1001     0.00     0.00  surface_transition_
+  2.33     26.07     0.67    19800     0.00     0.00  ludcmp_
+  1.60     26.53     0.46     5006     0.00     0.00  curl_phi_
+  1.53     26.97     0.44 94952946     0.00     0.00  coul99i_
+  1.29     27.34     0.37      100     0.00     0.04  solvtb_
+  0.45     27.47     0.13     3003     0.00     0.00  curl_pol_
+  0.28     27.55     0.08      100     0.00     0.00  mdmgen_
+  0.24     27.62     0.07  1980000     0.00     0.00  qsynchro_
+  0.24     27.69     0.07      100     0.00     0.22  difdrv_
+  0.21     27.75     0.06  4210200     0.00     0.00  eff_mass_
+  0.21     27.81     0.06  1980000     0.00     0.00  qmurca_
+  0.21     27.87     0.06  2555100     0.00     0.00  bzinterp_
+  0.17     27.92     0.05  1990000     0.00     0.00  tensor_
+  0.17     27.97     0.05  1980000     0.00     0.00  qplasma_
+  0.14     28.01     0.04   730000     0.00     0.00  hlfit8_
+  0.14     28.05     0.04   485000     0.00     0.00  condin_
+  0.14     28.09     0.04   485000     0.00     0.00  coulin_
+  0.14     28.13     0.04   357700     0.00     0.00  chemfit7_
+  0.14     28.17     0.04   357700     0.00     0.00  excorm_
+  0.14     28.21     0.04   319274     0.00     0.00  hlmag_
+  0.14     28.25     0.04     1002     0.00     0.00  bmodulus_
+  0.10     28.28     0.03  1980000     0.00     0.00  qbnp_
+  0.10     28.31     0.03   730000     0.00     0.00  potekhin2012_
+  0.10     28.34     0.03   357700     0.00     0.00  elect11b_
+  0.10     28.37     0.03   357700     0.00     0.00  ferinv7_
+  0.10     28.40     0.03   245000     0.00     0.00  condi_
+  0.10     28.43     0.03      100     0.00     0.04  triblock_
+  0.09     28.45     0.03    36500     0.00     0.00  taueesy_
+  0.07     28.47     0.02  1980000     0.00     0.00  q3_
+  0.07     28.49     0.02  1980000     0.00     0.00  qeabrems_
+  0.07     28.51     0.02  1260000     0.00     0.00  en_cond_
+  0.07     28.53     0.02   485000     0.00     0.00  condegin_
+  0.07     28.55     0.02   357700     0.00     0.00  chemag8_
+  0.07     28.57     0.02   245000     0.00     0.00  conduct_
+  0.07     28.59     0.02       21     0.00     0.00  bmonitors_
+  0.07     28.61     0.02        1     0.02    28.77  MAIN__
+  0.03     28.62     0.01  4450000     0.00     0.00  kfermi_
+  0.03     28.63     0.01  1980000     0.00     0.00  qbnn_
+  0.03     28.64     0.01  1980000     0.00     0.00  qbpp_
+  0.03     28.65     0.01  1980000     0.00     0.00  qcpbf_cr_
+  0.03     28.66     0.01   970200     0.00     0.00  cvf_
+  0.03     28.67     0.01   357700     0.00     0.00  eosmag_
+  0.03     28.68     0.01   357700     0.00     0.00  sommerf_
+  0.03     28.69     0.01   357700     0.00     0.00  spinion_
+  0.03     28.70     0.01   319274     0.00     0.00  fscrsol8_
+  0.03     28.71     0.01   319274     0.00     0.00  hlfit12_
+  0.03     28.72     0.01   245000     0.00     0.00  chemfit_
+  0.03     28.73     0.01   245000     0.00     0.00  chempot_
+  0.03     28.74     0.01   245000     0.00     0.00  ferinv_
+  0.03     28.75     0.01    38426     0.00     0.00  fition9_
+  0.03     28.76     0.01     1002     0.00     0.00  vacuumbc_
+  0.03     28.77     0.01      100     0.00     0.00  emiss_
+  0.00     28.77     0.00  1980000     0.00     0.00  qcpbf_co_
+  0.00     28.77     0.00  1980000     0.00     0.00  qdurca_
+  0.00     28.77     0.00  1980000     0.00     0.00  qepbrems_
+  0.00     28.77     0.00  1980000     0.00     0.00  qpair_
+  0.00     28.77     0.00   970200     0.00     0.00  ccvfn_
+  0.00     28.77     0.00   612500     0.00     0.00  ccvfe_
+  0.00     28.77     0.00   612500     0.00     0.00  ccvfp_
+  0.00     28.77     0.00   357700     0.00     0.00  elect11_
+  0.00     28.77     0.00   357700     0.00     0.00  eosfim12_
+  0.00     28.77     0.00   357700     0.00     0.00  subfermj_
+  0.00     28.77     0.00   319274     0.00     0.00  anharm8_
+  0.00     28.77     0.00   319274     0.00     0.00  fharmag_
+  0.00     28.77     0.00   245000     0.00     0.00  condconv_
+  0.00     28.77     0.00    50231     0.00     0.00  darcth_
+  0.00     28.77     0.00    38426     0.00     0.00  fscrliq8_
+  0.00     28.77     0.00    38426     0.00     0.00  magnion_
+  0.00     28.77     0.00    38426     0.00     0.00  qdmag_
+  0.00     28.77     0.00    14746     0.00     0.00  funa_
+  0.00     28.77     0.00     1003     0.00     0.00  gauleg_
+  0.00     28.77     0.00     1002     0.00     0.00  boundary_
+  0.00     28.77     0.00     1002     0.00     0.00  getbl_
+  0.00     28.77     0.00      100     0.00     0.00  cvtot_
+  0.00     28.77     0.00      100     0.00     0.00  fluxesb_
+  0.00     28.77     0.00       11     0.00     0.00  bwrite_
+  0.00     28.77     0.00       10     0.00     0.00  output_
+  0.00     28.77     0.00        1     0.00     0.00  bgrid_
+  0.00     28.77     0.00        1     0.00     0.00  binit_
+  0.00     28.77     0.00        1     0.00     0.00  binit_options_
+  0.00     28.77     0.00        1     0.00     0.00  getbl_init_
+  0.00     28.77     0.00        1     0.00     0.00  getmu_
+  0.00     28.77     0.00        1     0.00     0.00  input_
+  0.00     28.77     0.00        1     0.00     0.00  legpol_
+  0.00     28.77     0.00        1     0.00     0.00  mdgeom_
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.03% of 28.77 seconds
+
+index % time    self  children    called     name
+                0.02   28.75       1/1           main [2]
+[1]    100.0    0.02   28.75       1         MAIN__ [1]
+                0.07   21.85     100/100         difdrv_ [3]
+                0.03    4.02     100/100         triblock_ [13]
+                0.69    1.40    1001/1001        bevol_ [16]
+                0.01    0.32     100/100         emiss_ [21]
+                0.00    0.28     100/100         cvtot_ [24]
+                0.08    0.00     100/100         mdmgen_ [31]
+                0.00    0.00       1/1           binit_ [71]
+                0.00    0.00     100/100         fluxesb_ [86]
+                0.00    0.00      10/10          output_ [87]
+                0.00    0.00       1/1           input_ [91]
+                0.00    0.00       1/1           mdgeom_ [93]
+                0.00    0.00       1/1           legpol_ [92]
+                0.00    0.00       1/1           bgrid_ [88]
+-----------------------------------------------
+                                                 <spontaneous>
+[2]    100.0    0.00   28.77                 main [2]
+                0.02   28.75       1/1           MAIN__ [1]
+-----------------------------------------------
+                0.07   21.85     100/100         MAIN__ [1]
+[3]     76.2    0.07   21.85     100         difdrv_ [3]
+                0.05   21.80 1990000/1990000     tensor_ [4]
+-----------------------------------------------
+                0.05   21.80 1990000/1990000     difdrv_ [3]
+[4]     75.9    0.05   21.80 1990000         tensor_ [4]
+                0.03   21.73  730000/730000      potekhin2012_ [5]
+                0.02    0.02 1260000/1260000     en_cond_ [50]
+-----------------------------------------------
+                0.03   21.73  730000/730000      tensor_ [4]
+[5]     75.6    0.03   21.73  730000         potekhin2012_ [5]
+                0.00   21.49  245000/245000      condconv_ [6]
+                0.02    0.14  485000/485000      condegin_ [26]
+                0.04    0.05  485000/485000      condin_ [30]
+-----------------------------------------------
+                0.00   21.49  245000/245000      potekhin2012_ [5]
+[6]     74.7    0.00   21.49  245000         condconv_ [6]
+                0.02   21.41  245000/245000      conduct_ [7]
+                0.03    0.02  245000/245000      condi_ [42]
+-----------------------------------------------
+                0.02   21.41  245000/245000      condconv_ [6]
+[7]     74.5    0.02   21.41  245000         conduct_ [7]
+                3.07   18.30  245000/245000      thav99_ [8]
+                0.01    0.02  245000/245000      chempot_ [53]
+                0.01    0.00   12200/36500       taueesy_ [54]
+-----------------------------------------------
+                3.07   18.30  245000/245000      conduct_ [7]
+[8]     74.3    3.07   18.30  245000         thav99_ [8]
+                2.69    7.59 94467946/94467946     coul01_ [11]
+                0.44    7.59 94467946/94952946     coul99i_ [12]
+-----------------------------------------------
+                0.01    0.03  485000/189905892     coulin_ [32]
+                1.58    6.01 94467946/189905892     coul01_ [11]
+                1.59    6.04 94952946/189905892     coul99i_ [12]
+[9]     53.0    3.18   12.08 189905892         coulan2_ [9]
+               12.08    0.00 568663342/570123342     expint_ [10]
+-----------------------------------------------
+                0.01    0.00  490000/570123342     condi_ [42]
+                0.02    0.00  970000/570123342     condin_ [30]
+               12.08    0.00 568663342/570123342     coulan2_ [9]
+[10]    42.1   12.11    0.00 570123342         expint_ [10]
+-----------------------------------------------
+                2.69    7.59 94467946/94467946     thav99_ [8]
+[11]    35.7    2.69    7.59 94467946         coul01_ [11]
+                1.58    6.01 94467946/189905892     coulan2_ [9]
+-----------------------------------------------
+                0.00    0.04  485000/94952946     condegin_ [26]
+                0.44    7.59 94467946/94952946     thav99_ [8]
+[12]    28.0    0.44    7.63 94952946         coul99i_ [12]
+                1.59    6.04 94952946/189905892     coulan2_ [9]
+-----------------------------------------------
+                0.03    4.02     100/100         MAIN__ [1]
+[13]    14.1    0.03    4.02     100         triblock_ [13]
+                0.37    3.65     100/100         solvtb_ [14]
+-----------------------------------------------
+                0.37    3.65     100/100         triblock_ [13]
+[14]    14.0    0.37    3.65     100         solvtb_ [14]
+                1.48    2.17   19800/19800       getugam_ [15]
+-----------------------------------------------
+                1.48    2.17   19800/19800       solvtb_ [14]
+[15]    12.7    1.48    2.17   19800         getugam_ [15]
+                1.50    0.00 1009800/1009800     lubksb_ [17]
+                0.67    0.00   19800/19800       ludcmp_ [19]
+-----------------------------------------------
+                0.69    1.40    1001/1001        MAIN__ [1]
+[16]     7.3    0.69    1.40    1001         bevol_ [16]
+                0.68    0.00    1001/1001        surface_transition_ [18]
+                0.46    0.00    5005/5006        curl_phi_ [20]
+                0.13    0.00    3003/3003        curl_pol_ [27]
+                0.00    0.07    1001/1002        boundary_ [35]
+                0.04    0.00    1001/1002        bmodulus_ [49]
+                0.00    0.01      11/11          bwrite_ [59]
+                0.01    0.00      10/21          bmonitors_ [57]
+-----------------------------------------------
+                1.50    0.00 1009800/1009800     getugam_ [15]
+[17]     5.2    1.50    0.00 1009800         lubksb_ [17]
+-----------------------------------------------
+                0.68    0.00    1001/1001        bevol_ [16]
+[18]     2.4    0.68    0.00    1001         surface_transition_ [18]
+-----------------------------------------------
+                0.67    0.00   19800/19800       getugam_ [15]
+[19]     2.3    0.67    0.00   19800         ludcmp_ [19]
+-----------------------------------------------
+                0.00    0.00       1/5006        binit_ [71]
+                0.46    0.00    5005/5006        bevol_ [16]
+[20]     1.6    0.46    0.00    5006         curl_phi_ [20]
+-----------------------------------------------
+                0.01    0.32     100/100         MAIN__ [1]
+[21]     1.1    0.01    0.32     100         emiss_ [21]
+                0.02    0.30 1980000/1980000     q3_ [22]
+-----------------------------------------------
+                0.02    0.30 1980000/1980000     emiss_ [21]
+[22]     1.1    0.02    0.30 1980000         q3_ [22]
+                0.07    0.00 1980000/1980000     qsynchro_ [33]
+                0.06    0.00 1980000/1980000     qmurca_ [36]
+                0.05    0.00 1980000/1980000     qplasma_ [41]
+                0.03    0.00 1980000/1980000     qbnp_ [51]
+                0.03    0.00 1980000/4210200     eff_mass_ [37]
+                0.02    0.00 1980000/1980000     qeabrems_ [55]
+                0.01    0.00 1980000/1980000     qbnn_ [58]
+                0.01    0.00 1980000/1980000     qbpp_ [61]
+                0.01    0.00 1980000/1980000     qcpbf_cr_ [62]
+                0.00    0.00 1980000/1980000     qepbrems_ [75]
+                0.00    0.00 1980000/1980000     qcpbf_co_ [73]
+                0.00    0.00 1980000/1980000     qdurca_ [74]
+                0.00    0.00 1980000/1980000     qpair_ [76]
+-----------------------------------------------
+                0.01    0.27  970200/970200      cvtot_ [24]
+[23]     1.0    0.01    0.27  970200         cvf_ [23]
+                0.01    0.25  357700/357700      eosmag_ [25]
+                0.01    0.00  970200/4210200     eff_mass_ [37]
+                0.00    0.00  970200/970200      ccvfn_ [77]
+                0.00    0.00  612500/612500      ccvfp_ [79]
+                0.00    0.00  612500/612500      ccvfe_ [78]
+-----------------------------------------------
+                0.00    0.28     100/100         MAIN__ [1]
+[24]     1.0    0.00    0.28     100         cvtot_ [24]
+                0.01    0.27  970200/970200      cvf_ [23]
+-----------------------------------------------
+                0.01    0.25  357700/357700      cvf_ [23]
+[25]     0.9    0.01    0.25  357700         eosmag_ [25]
+                0.02    0.11  357700/357700      chemag8_ [28]
+                0.00    0.11  357700/357700      eosfim12_ [29]
+                0.01    0.00  319274/357700      spinion_ [64]
+                0.00    0.00   38426/38426       magnion_ [70]
+-----------------------------------------------
+                0.02    0.14  485000/485000      potekhin2012_ [5]
+[26]     0.5    0.02    0.14  485000         condegin_ [26]
+                0.04    0.04  485000/485000      coulin_ [32]
+                0.00    0.04  485000/94952946     coul99i_ [12]
+                0.02    0.00   24300/36500       taueesy_ [54]
+-----------------------------------------------
+                0.13    0.00    3003/3003        bevol_ [16]
+[27]     0.5    0.13    0.00    3003         curl_pol_ [27]
+-----------------------------------------------
+                0.02    0.11  357700/357700      eosmag_ [25]
+[28]     0.5    0.02    0.11  357700         chemag8_ [28]
+                0.04    0.03  357700/357700      chemfit7_ [34]
+                0.00    0.04  357700/357700      elect11_ [46]
+-----------------------------------------------
+                0.00    0.11  357700/357700      eosmag_ [25]
+[29]     0.4    0.00    0.11  357700         eosfim12_ [29]
+                0.00    0.05  319274/319274      fharmag_ [43]
+                0.04    0.00  357700/357700      excorm_ [48]
+                0.01    0.00  319274/319274      fscrsol8_ [65]
+                0.01    0.00   38426/38426       fition9_ [68]
+                0.00    0.00  319274/319274      anharm8_ [81]
+                0.00    0.00   38426/38426       qdmag_ [84]
+                0.00    0.00   38426/38426       fscrliq8_ [83]
+-----------------------------------------------
+                0.04    0.05  485000/485000      potekhin2012_ [5]
+[30]     0.3    0.04    0.05  485000         condin_ [30]
+                0.03    0.00  485000/730000      hlfit8_ [45]
+                0.02    0.00  970000/570123342     expint_ [10]
+-----------------------------------------------
+                0.08    0.00     100/100         MAIN__ [1]
+[31]     0.3    0.08    0.00     100         mdmgen_ [31]
+-----------------------------------------------
+                0.04    0.04  485000/485000      condegin_ [26]
+[32]     0.3    0.04    0.04  485000         coulin_ [32]
+                0.01    0.03  485000/189905892     coulan2_ [9]
+-----------------------------------------------
+                0.07    0.00 1980000/1980000     q3_ [22]
+[33]     0.3    0.07    0.00 1980000         qsynchro_ [33]
+                0.00    0.00 1980000/4450000     kfermi_ [60]
+-----------------------------------------------
+                0.04    0.03  357700/357700      chemag8_ [28]
+[34]     0.2    0.04    0.03  357700         chemfit7_ [34]
+                0.03    0.00  357700/357700      ferinv7_ [52]
+-----------------------------------------------
+                0.00    0.00       1/1002        binit_ [71]
+                0.00    0.07    1001/1002        bevol_ [16]
+[35]     0.2    0.00    0.07    1002         boundary_ [35]
+                0.00    0.06    1002/1002        getbl_ [40]
+                0.01    0.00    1002/1002        vacuumbc_ [69]
+-----------------------------------------------
+                0.06    0.00 1980000/1980000     q3_ [22]
+[36]     0.2    0.06    0.00 1980000         qmurca_ [36]
+-----------------------------------------------
+                0.01    0.00  970200/4210200     cvf_ [23]
+                0.02    0.00 1260000/4210200     en_cond_ [50]
+                0.03    0.00 1980000/4210200     q3_ [22]
+[37]     0.2    0.06    0.00 4210200         eff_mass_ [37]
+-----------------------------------------------
+                0.06    0.00 2555100/2555100     gauleg_ [39]
+[38]     0.2    0.06    0.00 2555100         bzinterp_ [38]
+-----------------------------------------------
+                                   1             gauleg_ [39]
+                0.00    0.00       1/1003        getbl_init_ [72]
+                0.00    0.06    1002/1003        getbl_ [40]
+[39]     0.2    0.00    0.06    1003+1       gauleg_ [39]
+                0.06    0.00 2555100/2555100     bzinterp_ [38]
+                                   1             gauleg_ [39]
+-----------------------------------------------
+                0.00    0.06    1002/1002        boundary_ [35]
+[40]     0.2    0.00    0.06    1002         getbl_ [40]
+                0.00    0.06    1002/1003        gauleg_ [39]
+-----------------------------------------------
+                0.05    0.00 1980000/1980000     q3_ [22]
+[41]     0.2    0.05    0.00 1980000         qplasma_ [41]
+                0.00    0.00 1980000/4450000     kfermi_ [60]
+-----------------------------------------------
+                0.03    0.02  245000/245000      condconv_ [6]
+[42]     0.2    0.03    0.02  245000         condi_ [42]
+                0.01    0.00  245000/730000      hlfit8_ [45]
+                0.01    0.00  490000/570123342     expint_ [10]
+-----------------------------------------------
+                0.00    0.05  319274/319274      eosfim12_ [29]
+[43]     0.2    0.00    0.05  319274         fharmag_ [43]
+                0.04    0.01  319274/319274      hlmag_ [44]
+-----------------------------------------------
+                0.04    0.01  319274/319274      fharmag_ [43]
+[44]     0.2    0.04    0.01  319274         hlmag_ [44]
+                0.01    0.00  319274/319274      hlfit12_ [66]
+-----------------------------------------------
+                0.01    0.00  245000/730000      condi_ [42]
+                0.03    0.00  485000/730000      condin_ [30]
+[45]     0.1    0.04    0.00  730000         hlfit8_ [45]
+-----------------------------------------------
+                0.00    0.04  357700/357700      chemag8_ [28]
+[46]     0.1    0.00    0.04  357700         elect11_ [46]
+                0.03    0.01  357700/357700      elect11b_ [47]
+-----------------------------------------------
+                0.03    0.01  357700/357700      elect11_ [46]
+[47]     0.1    0.03    0.01  357700         elect11b_ [47]
+                0.01    0.00  357700/357700      sommerf_ [63]
+-----------------------------------------------
+                0.04    0.00  357700/357700      eosfim12_ [29]
+[48]     0.1    0.04    0.00  357700         excorm_ [48]
+                0.00    0.00   50231/50231       darcth_ [82]
+-----------------------------------------------
+                0.00    0.00       1/1002        binit_ [71]
+                0.04    0.00    1001/1002        bevol_ [16]
+[49]     0.1    0.04    0.00    1002         bmodulus_ [49]
+-----------------------------------------------
+                0.02    0.02 1260000/1260000     tensor_ [4]
+[50]     0.1    0.02    0.02 1260000         en_cond_ [50]
+                0.02    0.00 1260000/4210200     eff_mass_ [37]
+-----------------------------------------------
+                0.03    0.00 1980000/1980000     q3_ [22]
+[51]     0.1    0.03    0.00 1980000         qbnp_ [51]
+-----------------------------------------------
+                0.03    0.00  357700/357700      chemfit7_ [34]
+[52]     0.1    0.03    0.00  357700         ferinv7_ [52]
+-----------------------------------------------
+                0.01    0.02  245000/245000      conduct_ [7]
+[53]     0.1    0.01    0.02  245000         chempot_ [53]
+                0.01    0.01  245000/245000      chemfit_ [56]
+-----------------------------------------------
+                0.01    0.00   12200/36500       conduct_ [7]
+                0.02    0.00   24300/36500       condegin_ [26]
+[54]     0.1    0.03    0.00   36500         taueesy_ [54]
+-----------------------------------------------
+                0.02    0.00 1980000/1980000     q3_ [22]
+[55]     0.1    0.02    0.00 1980000         qeabrems_ [55]
+-----------------------------------------------
+                0.01    0.01  245000/245000      chempot_ [53]
+[56]     0.1    0.01    0.01  245000         chemfit_ [56]
+                0.01    0.00  245000/245000      ferinv_ [67]
+-----------------------------------------------
+                0.01    0.00      10/21          bevol_ [16]
+                0.01    0.00      11/21          bwrite_ [59]
+[57]     0.1    0.02    0.00      21         bmonitors_ [57]
+-----------------------------------------------
+                0.01    0.00 1980000/1980000     q3_ [22]
+[58]     0.0    0.01    0.00 1980000         qbnn_ [58]
+                0.00    0.00  490000/4450000     kfermi_ [60]
+-----------------------------------------------
+                0.00    0.01      11/11          bevol_ [16]
+[59]     0.0    0.00    0.01      11         bwrite_ [59]
+                0.01    0.00      11/21          bmonitors_ [57]
+-----------------------------------------------
+                0.00    0.00  490000/4450000     qbnn_ [58]
+                0.00    0.00 1980000/4450000     qsynchro_ [33]
+                0.00    0.00 1980000/4450000     qplasma_ [41]
+[60]     0.0    0.01    0.00 4450000         kfermi_ [60]
+-----------------------------------------------
+                0.01    0.00 1980000/1980000     q3_ [22]
+[61]     0.0    0.01    0.00 1980000         qbpp_ [61]
+-----------------------------------------------
+                0.01    0.00 1980000/1980000     q3_ [22]
+[62]     0.0    0.01    0.00 1980000         qcpbf_cr_ [62]
+-----------------------------------------------
+                0.01    0.00  357700/357700      elect11b_ [47]
+[63]     0.0    0.01    0.00  357700         sommerf_ [63]
+                0.00    0.00  357700/357700      subfermj_ [80]
+-----------------------------------------------
+                0.00    0.00   38426/357700      magnion_ [70]
+                0.01    0.00  319274/357700      eosmag_ [25]
+[64]     0.0    0.01    0.00  357700         spinion_ [64]
+-----------------------------------------------
+                0.01    0.00  319274/319274      eosfim12_ [29]
+[65]     0.0    0.01    0.00  319274         fscrsol8_ [65]
+-----------------------------------------------
+                0.01    0.00  319274/319274      hlmag_ [44]
+[66]     0.0    0.01    0.00  319274         hlfit12_ [66]
+-----------------------------------------------
+                0.01    0.00  245000/245000      chemfit_ [56]
+[67]     0.0    0.01    0.00  245000         ferinv_ [67]
+-----------------------------------------------
+                0.01    0.00   38426/38426       eosfim12_ [29]
+[68]     0.0    0.01    0.00   38426         fition9_ [68]
+-----------------------------------------------
+                0.01    0.00    1002/1002        boundary_ [35]
+[69]     0.0    0.01    0.00    1002         vacuumbc_ [69]
+-----------------------------------------------
+                0.00    0.00   38426/38426       eosmag_ [25]
+[70]     0.0    0.00    0.00   38426         magnion_ [70]
+                0.00    0.00   38426/357700      spinion_ [64]
+-----------------------------------------------
+                0.00    0.00       1/1           MAIN__ [1]
+[71]     0.0    0.00    0.00       1         binit_ [71]
+                0.00    0.00       1/5006        curl_phi_ [20]
+                0.00    0.00       1/1002        boundary_ [35]
+                0.00    0.00       1/1           getbl_init_ [72]
+                0.00    0.00       1/1002        bmodulus_ [49]
+                0.00    0.00       1/1           binit_options_ [89]
+-----------------------------------------------
+                0.00    0.00       1/1           binit_ [71]
+[72]     0.0    0.00    0.00       1         getbl_init_ [72]
+                0.00    0.00       1/1003        gauleg_ [39]
+-----------------------------------------------
+                0.00    0.00 1980000/1980000     q3_ [22]
+[73]     0.0    0.00    0.00 1980000         qcpbf_co_ [73]
+-----------------------------------------------
+                0.00    0.00 1980000/1980000     q3_ [22]
+[74]     0.0    0.00    0.00 1980000         qdurca_ [74]
+-----------------------------------------------
+                0.00    0.00 1980000/1980000     q3_ [22]
+[75]     0.0    0.00    0.00 1980000         qepbrems_ [75]
+-----------------------------------------------
+                0.00    0.00 1980000/1980000     q3_ [22]
+[76]     0.0    0.00    0.00 1980000         qpair_ [76]
+-----------------------------------------------
+                0.00    0.00  970200/970200      cvf_ [23]
+[77]     0.0    0.00    0.00  970200         ccvfn_ [77]
+-----------------------------------------------
+                0.00    0.00  612500/612500      cvf_ [23]
+[78]     0.0    0.00    0.00  612500         ccvfe_ [78]
+-----------------------------------------------
+                0.00    0.00  612500/612500      cvf_ [23]
+[79]     0.0    0.00    0.00  612500         ccvfp_ [79]
+-----------------------------------------------
+                0.00    0.00  357700/357700      sommerf_ [63]
+[80]     0.0    0.00    0.00  357700         subfermj_ [80]
+-----------------------------------------------
+                0.00    0.00  319274/319274      eosfim12_ [29]
+[81]     0.0    0.00    0.00  319274         anharm8_ [81]
+-----------------------------------------------
+                0.00    0.00   50231/50231       excorm_ [48]
+[82]     0.0    0.00    0.00   50231         darcth_ [82]
+-----------------------------------------------
+                0.00    0.00   38426/38426       eosfim12_ [29]
+[83]     0.0    0.00    0.00   38426         fscrliq8_ [83]
+-----------------------------------------------
+                0.00    0.00   38426/38426       eosfim12_ [29]
+[84]     0.0    0.00    0.00   38426         qdmag_ [84]
+-----------------------------------------------
+                0.00    0.00   14746/14746       binit_options_ [89]
+[85]     0.0    0.00    0.00   14746         funa_ [85]
+-----------------------------------------------
+                0.00    0.00     100/100         MAIN__ [1]
+[86]     0.0    0.00    0.00     100         fluxesb_ [86]
+-----------------------------------------------
+                0.00    0.00      10/10          MAIN__ [1]
+[87]     0.0    0.00    0.00      10         output_ [87]
+-----------------------------------------------
+                0.00    0.00       1/1           MAIN__ [1]
+[88]     0.0    0.00    0.00       1         bgrid_ [88]
+-----------------------------------------------
+                0.00    0.00       1/1           binit_ [71]
+[89]     0.0    0.00    0.00       1         binit_options_ [89]
+                0.00    0.00   14746/14746       funa_ [85]
+                0.00    0.00       1/1           getmu_ [90]
+-----------------------------------------------
+                0.00    0.00       1/1           binit_options_ [89]
+[90]     0.0    0.00    0.00       1         getmu_ [90]
+-----------------------------------------------
+                0.00    0.00       1/1           MAIN__ [1]
+[91]     0.0    0.00    0.00       1         input_ [91]
+-----------------------------------------------
+                0.00    0.00       1/1           MAIN__ [1]
+[92]     0.0    0.00    0.00       1         legpol_ [92]
+-----------------------------------------------
+                0.00    0.00       1/1           MAIN__ [1]
+[93]     0.0    0.00    0.00       1         mdgeom_ [93]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+   [1] MAIN__                 [82] darcth_                [19] ludcmp_
+  [81] anharm8_                [3] difdrv_                [70] magnion_
+  [16] bevol_                 [37] eff_mass_              [93] mdgeom_
+  [88] bgrid_                 [46] elect11_               [31] mdmgen_
+  [71] binit_                 [47] elect11b_              [87] output_
+  [89] binit_options_         [21] emiss_                  [5] potekhin2012_
+  [49] bmodulus_              [50] en_cond_               [22] q3_
+  [57] bmonitors_             [29] eosfim12_              [58] qbnn_
+  [35] boundary_              [25] eosmag_                [51] qbnp_
+  [59] bwrite_                [48] excorm_                [61] qbpp_
+  [38] bzinterp_              [10] expint_                [73] qcpbf_co_
+  [78] ccvfe_                 [52] ferinv7_               [62] qcpbf_cr_
+  [77] ccvfn_                 [67] ferinv_                [84] qdmag_
+  [79] ccvfp_                 [43] fharmag_               [74] qdurca_
+  [28] chemag8_               [68] fition9_               [55] qeabrems_
+  [34] chemfit7_              [86] fluxesb_               [75] qepbrems_
+  [56] chemfit_               [83] fscrliq8_              [36] qmurca_
+  [53] chempot_               [65] fscrsol8_              [76] qpair_
+   [6] condconv_              [85] funa_                  [41] qplasma_
+  [26] condegin_              [39] gauleg_                [33] qsynchro_
+  [42] condi_                 [40] getbl_                 [14] solvtb_
+  [30] condin_                [72] getbl_init_            [63] sommerf_
+   [7] conduct_               [90] getmu_                 [64] spinion_
+  [11] coul01_                [15] getugam_               [80] subfermj_
+  [12] coul99i_               [66] hlfit12_               [18] surface_transition_
+   [9] coulan2_               [45] hlfit8_                [54] taueesy_
+  [32] coulin_                [44] hlmag_                  [4] tensor_
+  [20] curl_phi_              [91] input_                  [8] thav99_
+  [27] curl_pol_              [60] kfermi_                [13] triblock_
+  [23] cvf_                   [92] legpol_                [69] vacuumbc_
+  [24] cvtot_                 [17] lubksb_

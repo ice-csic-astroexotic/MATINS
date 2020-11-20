@@ -1,0 +1,164 @@
+{
+  "test_failure": {
+    "folder": "test_failure",
+    "input_files": [
+      "input.dat",
+      "EOS_DH.tab"
+    ],
+    "input_urls": [
+      "https://www.dropbox.com/s/44158s897icfkgp/input.dat?dl=1",
+      "https://www.dropbox.com/s/kj9efvwctqgug8i/EOS_DH.tab?dl=1"
+    ],
+    "temperature_map": "Tmap.dat",
+    "temperature_map_url": "https://www.dropbox.com/s/xgpfzv61jsojt8c/Tmap.dat?dl=1",
+    "magnetic_field": "bfield.dat",
+    "magnetic_field_url": "https://www.dropbox.com/s/8njky357btidze3/bfield.dat?dl=1",
+    "test_snapshot": 8,
+    "magnetic_radial_profiles": [
+      "b_phi_radial.yg",
+      "b_r_radial.yg",
+      "b_th_radial.yg"
+    ],
+    "magnetic_radial_profiles_urls": [
+      "https://www.dropbox.com/s/m0261h33obyvwch/b_phi_radial.yg?dl=1",
+      "https://www.dropbox.com/s/c3uypnv7n6w6ff5/b_r_radial.yg?dl=1",
+      "https://www.dropbox.com/s/ck8fp0gchsnuxg3/b_th_radial.yg?dl=1"
+    ],
+    "magnetic_meridional_profiles": [
+      "b_phi_meridional.yg",
+      "b_r_meridional.yg",
+      "b_th_meridional.yg"
+    ],
+    "magnetic_meridional_profiles_urls": [
+      "https://www.dropbox.com/s/gg8u3z8cb9883w3/b_phi_meridional.yg?dl=1",
+      "https://www.dropbox.com/s/mqtegavjr2h2t5e/b_r_meridional.yg?dl=1",
+      "https://www.dropbox.com/s/0trocxtnerwa2t8/b_th_meridional.yg?dl=1"
+    ],
+    "temperature_radial_profiles": [
+      "Tp_radial.yg",
+      "Te_radial.yg"
+    ],
+    "temperature_radial_profiles_urls": [
+      "https://www.dropbox.com/s/buvctueddj1ycvj/Tp_radial.yg?dl=1",
+      "https://www.dropbox.com/s/2hws2g3jz111ged/Te_radial.yg?dl=1"
+    ],
+    "temperature_meridional_profiles": [
+      "Tb_meridional.yg",
+      "Ts_meridional.yg"
+    ],
+    "temperature_meridional_profiles_urls": [
+      "https://www.dropbox.com/s/gufcozzwwy3ayc2/Tb_meridional.yg?dl=1",
+      "https://www.dropbox.com/s/6uvjv6tu994vre3/Ts_meridional.yg?dl=1"
+
+    ],
+    "comments": "This test should show failures, it's a control."
+  },
+  "test_bpolin10,btorin100": {
+    "folder": "test_bpolin10_btorin100",
+    "input_files": [
+      "input.dat",
+      "EOS_DH.tab"
+    ],
+    "input_urls": [
+      "https://www.dropbox.com/s/q1fl2jfnlcirmjj/input.dat?dl=1",
+      "https://www.dropbox.com/s/kj9efvwctqgug8i/EOS_DH.tab?dl=1"
+    ],
+    "temperature_map": "Tmap.dat",
+    "temperature_map_url": "https://www.dropbox.com/s/xgpfzv61jsojt8c/Tmap.dat?dl=1",
+    "magnetic_field": "bfield.dat",
+    "magnetic_field_url": "https://www.dropbox.com/s/8njky357btidze3/bfield.dat?dl=1",
+    "test_snapshot": 8,
+    "magnetic_radial_profiles": [
+      "b_phi_radial.yg",
+      "b_r_radial.yg",
+      "b_th_radial.yg"
+    ],
+    "magnetic_radial_profiles_urls": [
+      "https://www.dropbox.com/s/m0261h33obyvwch/b_phi_radial.yg?dl=1",
+      "https://www.dropbox.com/s/c3uypnv7n6w6ff5/b_r_radial.yg?dl=1",
+      "https://www.dropbox.com/s/ck8fp0gchsnuxg3/b_th_radial.yg?dl=1"
+    ],
+    "magnetic_meridional_profiles": [
+      "b_phi_meridional.yg",
+      "b_r_meridional.yg",
+      "b_th_meridional.yg"
+    ],
+    "magnetic_meridional_profiles_urls": [
+      "https://www.dropbox.com/s/gg8u3z8cb9883w3/b_phi_meridional.yg?dl=1",
+      "https://www.dropbox.com/s/mqtegavjr2h2t5e/b_r_meridional.yg?dl=1",
+      "https://www.dropbox.com/s/0trocxtnerwa2t8/b_th_meridional.yg?dl=1"
+    ],
+    "temperature_radial_profiles": [
+      "Tp_radial.yg",
+      "Te_radial.yg"
+    ],
+    "temperature_radial_profiles_urls": [
+      "https://www.dropbox.com/s/buvctueddj1ycvj/Tp_radial.yg?dl=1",
+      "https://www.dropbox.com/s/2hws2g3jz111ged/Te_radial.yg?dl=1"
+    ],
+    "temperature_meridional_profiles": [
+      "Tb_meridional.yg",
+      "Ts_meridional.yg"
+    ],
+    "temperature_meridional_profiles_urls": [
+      "https://www.dropbox.com/s/gufcozzwwy3ayc2/Tb_meridional.yg?dl=1",
+      "https://www.dropbox.com/s/6uvjv6tu994vre3/Ts_meridional.yg?dl=1"
+
+    ],
+    "comments": "Test with poloidal and toroidal magnetic field initial amplitudes 1e1 and 1e2"
+  },
+  "test_bpolin100,btorin1000": {
+    "folder": "test_bpolin100_btorin1000",
+    "input_files": [
+      "input.dat",
+      "EOS_DH.tab"
+    ],
+    "input_urls": [
+      "https://www.dropbox.com/s/44158s897icfkgp/input.dat?dl=1",
+      "https://www.dropbox.com/s/05p8cyt4ft92xa5/EOS_DH.tab?dl=1"
+    ],
+    "temperature_map": "Tmap.dat",
+    "temperature_map_url": "https://www.dropbox.com/s/mjahm4740yi7p43/Tmap.dat?dl=1",
+    "magnetic_field": "bfield.dat",
+    "magnetic_field_url": "https://www.dropbox.com/s/vrbx8bycz2t6g4p/bfield.dat?dl=1",
+    "test_snapshot": 8,
+    "magnetic_radial_profiles": [
+      "b_phi_radial.yg",
+      "b_r_radial.yg",
+      "b_th_radial.yg"
+    ],
+    "magnetic_radial_profiles_urls": [
+      "https://www.dropbox.com/s/17k47yf33e07eky/b_phi_radial.yg?dl=1",
+      "https://www.dropbox.com/s/1c45oi7pi5ojxcn/b_r_radial.yg?dl=1",
+      "https://www.dropbox.com/s/a9t5pkv623p5k5i/b_th_radial.yg?dl=1"
+    ],
+    "magnetic_meridional_profiles": [
+      "b_phi_meridional.yg",
+      "b_r_meridional.yg",
+      "b_th_meridional.yg"
+    ],
+    "magnetic_meridional_profiles_urls": [
+      "https://www.dropbox.com/s/x51uf1znkwpt14c/b_phi_meridional.yg?dl=1",
+      "https://www.dropbox.com/s/ircckmmqprw1ffe/b_r_meridional.yg?dl=1",
+      "https://www.dropbox.com/s/bicrz5pdnybd5tv/b_th_meridional.yg?dl=1"
+    ],
+    "temperature_radial_profiles": [
+      "Tp_radial.yg",
+      "Te_radial.yg"
+    ],
+    "temperature_radial_profiles_urls": [
+      "https://www.dropbox.com/s/nht590idznc9emj/Tp_radial.yg?dl=1",
+      "https://www.dropbox.com/s/bv1sap1ixfnpfy4/Te_radial.yg?dl=1"
+    ],
+    "temperature_meridional_profiles": [
+      "Tb_meridional.yg",
+      "Ts_meridional.yg"
+    ],
+    "temperature_meridional_profiles_urls": [
+      "https://www.dropbox.com/s/ikne2wijanropa0/Tb_meridional.yg?dl=1",
+      "https://www.dropbox.com/s/pwmes5eapkapwhh/Ts_meridional.yg?dl=1"
+
+    ],
+    "comments": "Test with poloidal and toroidal magnetic field initial amplitudes 1e2 and 1e3"
+  }
+}

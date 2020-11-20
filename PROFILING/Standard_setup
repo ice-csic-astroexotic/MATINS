@@ -1,0 +1,36 @@
+Evolution up to t=100
+dt=1, dtb=0.1, fixed
+Only toroidal field
+kmax=50, lmax=199, nleg=50, nrad=100
+
+!-----------------------------------------------------------------------
+! Input parameters. (See INPUT.)
+!-----------------------------------------------------------------------
+1.d2 1.d1 1d1	Total time (ttot); T and B snapshots (tsnap, tbsnap).
+0		Resume from a previous run. (1=yes)
+PL_M1.CR.DAT	NS structure file. (Adjust lmax in src/decl/dim2.h.)
+!-----------------------------------------------------------------------
+! Cooling parameters.
+!-----------------------------------------------------------------------
+1d2     	Initial temperature in units of 10^8 K. (1d1-1d2)
+0 7		SF n in the crust: isfcru (0,1), imodcru (1-7)
+0 12		SF n in the core: isfn (0,1), imodn (11-16)
+0 8		SF p in the core: isfp (0,1), imodp (8-10)
+1 0		itevol (0,1), iquant (0=no, 1=outer crust, 2=everywhere)
+0		Envelope (ienv). (0=Fe, 1=accreted, 2=Gudmundsson)
+0.1d0 0.1d0	Qimp, Qpasta
+!-----------------------------------------------------------------------
+! Magnetic field evolution parameters.
+!-----------------------------------------------------------------------
+0.d0  1.d3	Poloidal and toroidal field amplitudes (b12, b12tor).
+1		Initial magnetic field geometry (bgeom). (See BINIT.)
+1		Magnetic field in the core (bcint). (0=yes, 1=superconductor)
+0		Surface boundary condition (bcout). (See note A below.)
+1		Magnetic field evolution (ibevol). (1=yes)
+1 1 0		Hall, Ohm, and ambipolar terms (ihall, ires, icore).
+!-----------------------------------------------------------------------
+! Structure parameters (replace them by calculating the structure).
+!-----------------------------------------------------------------------
+1d0		Surface gravitational acceleration (g14).
+1d45		Moment of inertia (inertia).
+
