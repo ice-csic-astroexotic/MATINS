@@ -333,7 +333,7 @@ module grid
       allocate(jth(0:np+2, 0:nxi+1, 0:neta+1, 1:6))
       allocate(jphi(0:np+2, 0:nxi+1, 0:neta+1, 1:6))
       allocate(eth(0:np+2, 0:nxi+1, 0:neta+1, 1:6))
-      allocate(ephi(0:np+2, 0:nxi+1, 0:neta+1, 1:6)
+      allocate(ephi(0:np+2, 0:nxi+1, 0:neta+1, 1:6))
     !---------------------------------------------------------------------------
       allocate(freq(kmax,jcore/2:lmax))
       allocate(ftheq(kmax,jcore/2:lmax))
