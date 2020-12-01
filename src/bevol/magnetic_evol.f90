@@ -10,7 +10,7 @@
 
 
 ! TBD: put compute_dB and compute_E instead of the pol and tor ones
-
+! All the currents calculated has to be used with curl_cont
 
 
 
@@ -138,18 +138,10 @@ module magnetic_evolution
 
         case ("EUL")
           call euler(dtb_myr,dbr,dbth,dbphi)
-        case ("EULA")
-          call euler_alternate(dtb_myr,dbr,dbth,dbphi)
         case ("AB4")
           call AB4(dtb_myr,iterb)
-        case ("AB4A")
-          call AB4_alternate(dtb_myr,iterb)
         case ("RK4")
           call RK4(dtb_myr)
-        case ("RK4V")
-          call RK4_vecpot(dtb_myr)
-        case ("SPEC")
-          call magnetic_evol_spectral(dtb_myr)
         case default
           write(*,*) "<error>", &
                    & "[BEVOL]", &
