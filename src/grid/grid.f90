@@ -79,6 +79,9 @@ module grid
   real*8, dimension(:), allocatable, save :: ceta ! cos(eta).
   real*8, dimension(:), allocatable, save :: cxi ! cos(xi).
   !-----------------------------------------------------------------------------  
+  ! Ghost cells in xi and eta directions (used for interpolation)
+  real*8, dimension(:), allocatable, save :: xi_ghost  
+  real*8, dimension(:), allocatable, save :: eta_ghost 
   ! Length, area, and volume elements. 
   real*8, dimension(:), allocatable, save :: lr ! radial length element of the cell.
   real*8, dimension(:, :, :), allocatable, save :: lxi ! length element of the cell in xi physical direction.
@@ -174,7 +177,6 @@ module grid
   integer, save :: jmin
 
 
-
   ! Radial profile of Courant magnetic timestep estimation
   real*8, dimension(:), allocatable, save :: dtb_courant_profile  ! [years]
 
@@ -266,6 +268,9 @@ module grid
       allocate(C(0:nxi+1))
       allocate(D(0:neta+1))
 
+      allocate(xi_ghost(0:nxi+1))
+      allocate(eta_ghost(0:neta+1))
+
       allocate(g(0:np+2, 0:nxi+1, 0:neta+1, 1:3, 1:3))
 
       allocate(lr(0:np+2))
@@ -283,8 +288,6 @@ module grid
       allocate(area_xi(0:np+2, 0:nxi+1, 0:neta+1))
       allocate(area_r(0:np+2, 0:nxi+1, 0:neta+1))
       allocate(area_eta(0:np+2, 0:nxi+1, 0:neta+1))
-
-
 
       allocate(belam(0:np+2))
       allocate(benu(0:np+2))
@@ -830,6 +833,46 @@ module grid
     end do 
 
     end subroutine crossprod_cov
+
+    ! --------------------------------------------------------------------------
+    !> The subroutine xighost_position return the value of j1 and j2 
+    !> such as xi(j1) and xi(j2) are surrounding xi_ghost value.
+    !> xi_ghost are the ghost cells along the xi direction and for a given
+    !> eta and r value 
+    !> Clara Dehman 
+    !---------------------------------------------------------------------------
+    subroutine xighost_position(j1,j2)
+      
+    integer j 
+    integer, intent(out) :: j1,j2
+
+    do j = 0, nxi
+    if(xi_ghost > xi(j) .and. xi_ghost < xi(j+1))
+    j = j1
+    j+1 = j2
+    end if
+    end do
+    end subroutine xighost_position
+
+    ! --------------------------------------------------------------------------
+    !> The subroutine etaghost_position return the value of k1 and k2 
+    !> such as eta(k1) and eta(k2) are surrounding eta_ghost value.
+    !> eta_ghost are the ghost cells along the eta direction and for a given 
+    !> xi and r value 
+    !> Clara Dehman 
+    !---------------------------------------------------------------------------
+    subroutine etaghost_position(k1,k2)
+
+    integer k 
+    integer, intent(out) :: k1,k2
+
+    do k = 0, neta
+    if(eta_ghost > eta(k) .and. eta_ghost < eta(k+1))
+    k = k1
+    k+1 = k2
+    end if
+    end do
+    end subroutine etaghost_position
 
 
     ! --------------------------------------------------------------------------
