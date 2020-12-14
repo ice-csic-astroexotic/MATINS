@@ -1,5 +1,5 @@
 !-------------------------------------------------------------------------------
-! Magneto Thermal 2D
+! Magneto Thermal 3D
 !-------------------------------------------------------------------------------
 ! Module: Magnetic Evolution
 !
@@ -18,9 +18,7 @@
 !>        It contains:
 !>        subroutine magnetic_evol (called in main)
 !>          It calls one of the following subroutines:
-!>              euler_alternate
 !>              euler
-!>              AB4_alternate
 !>              AB4
 !>              RK4 (which calls subroutine RK4_substep)
 !>              RK4_vecpot (which calls subroutine RK4_vecpot_substep)
@@ -95,6 +93,7 @@ module magnetic_evolution
       use grid, only: kmax, lmax
       use grid, only: br, bth, bphi, bm, bmed, benu
       use grid, only: jr, jth, jphi, er, eth, ephi
+
 
       implicit none
 
@@ -722,7 +721,58 @@ module magnetic_evolution
   
     end subroutine curl_cont
   
-  
+!!------------------------------------------------------------------------------
+    !> @brief This subroutines provide the value of the ghost cells in xi 
+    !> physical directions. 
+    !> The value at the ghost cell is determined by using a standard interpolation
+    !!
+    !! @param[in]   f1                      contravariant fxi component at j1
+    !! @param[in]   f2                      contravariant fxi component at j2  
+    !! @param[out]  fghost                  contravariant interpolated value (that could
+    !!                                      be a component of the B field for instance)
+    !! Code owners:
+    !!   Clara Dehman
+    !!------------------------------------------------------------------------------
+    subroutine ghost_xi(f1,f2,fghost)
+
+      ! Module imports -------------------------------------------------------------
+      use grid, only: xi, xighost
+      use grid, only: j1, j2
+
+      real*8, dimension (0:np+2,0:nxi+1,0:neta+1), intent(in) :: f1,f2
+      real*8, dimension (0:np+2,0:nxi+1,0:neta+1), intent(out) :: fghost
+      
+      fghost = f1 + (xighost-xi(j1))*(f2-f1)/(xi(j2)-xi(j1))
+
+    end subroutine ghost_xi 
+    
+
+!!------------------------------------------------------------------------------
+    !> @brief This subroutines provide the value of the ghost cells in eta
+    !> physical directions. 
+    !> The value at the ghost cell is determined by using a standard interpolation
+    !!
+    !! @param[in]   f1                      contravariant feta component at k1
+    !! @param[in]   f2                      contravariant feta component at k2  
+    !! @param[out]  fghost                  contravariant interpolated value (that could
+    !!                                      be a component of the B field for instance)
+    !! Code owners:
+    !!   Clara Dehman
+    !!------------------------------------------------------------------------------
+    subroutine ghost_eta(f1,f2,fghost)
+
+      ! Module imports -------------------------------------------------------------
+      use grid, only: eta, etaghost
+      use grid, only: k1, k2
+
+      real*8, dimension (0:np+2,0:nxi+1,0:neta+1), intent(in) :: f1,f2
+      real*8, dimension (0:np+2,0:nxi+1,0:neta+1), intent(out) :: fghost
+      
+      fghost = f1 + (etaghost-eta(k1))*(f2-f1)/(eta(k2)-eta(k1))
+      
+    end subroutine ghost_eta 
+
+
     !!-----------------------------------------------------------------------
     !> @brief Subroutine for the Boundary Conditions
     !!
