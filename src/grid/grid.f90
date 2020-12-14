@@ -80,8 +80,8 @@ module grid
   real*8, dimension(:), allocatable, save :: cxi ! cos(xi).
   !-----------------------------------------------------------------------------  
   ! Ghost cells in xi and eta directions (used for interpolation)
-  real*8, dimension(:), allocatable, save :: xi_ghost  
-  real*8, dimension(:), allocatable, save :: eta_ghost 
+  real*8, dimension(:), allocatable, save :: xighost  
+  real*8, dimension(:), allocatable, save :: etaghost 
   ! Length, area, and volume elements. 
   real*8, dimension(:), allocatable, save :: lr ! radial length element of the cell.
   real*8, dimension(:, :, :), allocatable, save :: lxi ! length element of the cell in xi physical direction.
@@ -268,8 +268,8 @@ module grid
       allocate(C(0:nxi+1))
       allocate(D(0:neta+1))
 
-      allocate(xi_ghost(0:nxi+1))
-      allocate(eta_ghost(0:neta+1))
+      allocate(xighost(0:nxi+1))
+      allocate(etaghost(0:neta+1))
 
       allocate(g(0:np+2, 0:nxi+1, 0:neta+1, 1:3, 1:3))
 
@@ -836,8 +836,8 @@ module grid
 
     ! --------------------------------------------------------------------------
     !> The subroutine xighost_position return the value of j1 and j2 
-    !> such as xi(j1) and xi(j2) are surrounding xi_ghost value.
-    !> xi_ghost are the ghost cells along the xi direction and for a given
+    !> such as xi(j1) and xi(j2) are surrounding xighost value.
+    !> xighost are the ghost cells along the xi direction and for a given
     !> eta and r value 
     !> Clara Dehman 
     !---------------------------------------------------------------------------
@@ -847,7 +847,7 @@ module grid
     integer, intent(out) :: j1,j2
 
     do j = 0, nxi
-    if(xi_ghost > xi(j) .and. xi_ghost < xi(j+1))
+    if(xighost > xi(j) .and. xighost < xi(j+1))
     j = j1
     j+1 = j2
     end if
@@ -856,8 +856,8 @@ module grid
 
     ! --------------------------------------------------------------------------
     !> The subroutine etaghost_position return the value of k1 and k2 
-    !> such as eta(k1) and eta(k2) are surrounding eta_ghost value.
-    !> eta_ghost are the ghost cells along the eta direction and for a given 
+    !> such as eta(k1) and eta(k2) are surrounding etaghost value.
+    !> etaghost are the ghost cells along the eta direction and for a given 
     !> xi and r value 
     !> Clara Dehman 
     !---------------------------------------------------------------------------
@@ -867,7 +867,7 @@ module grid
     integer, intent(out) :: k1,k2
 
     do k = 0, neta
-    if(eta_ghost > eta(k) .and. eta_ghost < eta(k+1))
+    if(etaghost > eta(k) .and. etaghost < eta(k+1))
     k = k1
     k+1 = k2
     end if
