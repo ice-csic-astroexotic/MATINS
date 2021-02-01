@@ -76,8 +76,8 @@ module grid
   real*8, dimension(:),  allocatable, save :: C !C=(1+x^2)^{1/2}
   real*8, dimension(:),  allocatable, save :: D !D=(1+y^2)^{1/2}
 
-  real*8, dimension(:), allocatable, save :: ceta ! cos(eta).
-  real*8, dimension(:), allocatable, save :: cxi ! cos(xi).
+  real*8, dimension(:), allocatable, save :: ceta ! cos(eta)
+  real*8, dimension(:), allocatable, save :: cxi ! cos(xi)
   !-----------------------------------------------------------------------------  
   ! Ghost cells in xi and eta directions (used for interpolation)
   real*8, dimension(:), allocatable, save :: xighost  
@@ -267,6 +267,9 @@ module grid
       allocate(delta(0:nxi+1, 0:neta+1))  
       allocate(C(0:nxi+1))
       allocate(D(0:neta+1))
+      allocate(cxi(0:nxi+1))
+      allocate(ceta(0:neta+1))
+      
 
       allocate(xighost(0:nxi+1))
       allocate(etaghost(0:neta+1))
@@ -873,8 +876,7 @@ module grid
     end if
     end do
     end subroutine etaghost_position
-
-
+    
     ! --------------------------------------------------------------------------
     !> Output struture information to files and screen.
     !> @brief Outputs structure grid and gaps information to files and also
