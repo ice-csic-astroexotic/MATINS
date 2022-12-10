@@ -1,0 +1,240 @@
+Relevant performance test
+=========================
+
+Current version has been improved using the following techniques:
+
+- Proper loop iteration order 
+- OPENMP directives
+- Common factor extractions
+- Compilation improvement (intel, flags)
+
+
+Some measurements
+=================
+
+Default resolution 21x21x10x6
+
+Without temperature evolution t=1e-5 (with output)
+--------------------------------------------------
+original code 1 thread			6m44
+intel mkl lapack 4 threads		4m5		Factor ~1.6
+intel precision 4 threads		4m32	Factor ~1.5
+
+Without temperature evolution t=1e-5 (without output)
+-----------------------------------------------------
+original code 1 thread			1m11
+intel mkl lapack 4 threads		0m20		Factor ~3.5
+
+
+With temperature evolution t=1d-8
+---------------------------------
+original code 1 thread 			9m10,727
+gnu perf 4 threads				2m58,480	Factor ~3
+intel perf 4 threads    		0m41		Factor ~13.5
+intel mkl lapack 4 threads		0m23		Factor ~20
+intel precision 4 threads		2m47		Factor ~3
+
+With temperature evolution t=1d-7
+---------------------------------
+original code 1 thread 			67m24,123s
+intel mkl lapack 4 threads		3m47,33		Factor ~18
+
+
+Escalability with temp (at Electra)
+-----------------------------------
+original code 1 thread 			351m32
+
+gnu perf 1 thread      			78m18
+gnu perf 6 threads				21m29		Factor ~3.6
+gnu perf 12 threads				13m27		Factor ~5.8
+gnu perf 24 threads				8m9			Factor ~9.6
+
+intel mkl lapack 1 thread 		13m44
+intel mkl lapack 6 threads		3m53		Factor ~3.5
+intel mkl lapack 12 threads		2m55		Factor ~4.7
+intel mkl lapack 24 threads		2m12		Factor ~6.2
+
+
+Escalability without temp (at Electra) t=5e-4
+---------------------------------------------
+original code 1 thread			21m39
+
+gnu perf 1 thread      			15m20
+gnu perf 6 threads				6m37		Factor ~2
+gnu perf 12 threads				7m5			Factor ~2
+gnu perf 24 threads				7m57		Factor ~1.8
+
+intel mkl lapack 1 thread 		8m43
+intel mkl lapack 6 threads		4m27		Factor ~2
+intel mkl lapack 12 threads		4m52		Factor ~1.8
+intel mkl lapack 24 threads		6m19		Factor ~1.4
+
+Escalability without temp (at Electra) 31x31x15 t=2e-5
+------------------------------------------------------
+
+gnu perf 1 thread      			47m5
+gnu perf 6 threads				18m46		Factor ~2.5
+gnu perf 12 threads				18m13		Factor ~2.5
+gnu perf 24 threads				19m58		Factor ~2.3
+
+intel mkl lapack 1 thread 		33m11
+intel mkl lapack 6 threads		15m13		Factor ~2
+intel mkl lapack 12 threads		14m55		Factor ~2
+intel mkl lapack 24 threads		17m18		Factor ~1.9
+
+
+
+NUMA tests without temp (at Electra) t=5e-4
+-------------------------------------------
+
+intel mkl lapack 24 threads		6m19
+
+export OMP_PROC_BIND=spread
+export OMP_PLACES="sockets(4)"	5m52
+export OMP_PLACES="sockets(2)"	5m53
+
+
+Escalability without temp (at Electra) 21x21x61x6  t=1e-6
+-------------------------------------------------------
+
+intel mkl lapack 1 thread 		3m11
+intel mkl lapack 6 threads		1m56	Factor ~1.6
+intel mkl lapack 12 threads		2m0		Factor ~1.6
+intel mkl lapack 24 threads		2m28	Factor ~1.2
+
+
+Hydra without temp t=5e5
+------------------------
+
+original code 1 thread			8m9
+intel mkl 6 threads				2m7  	Factor ~3.8
+intel mkl 8 threads				1m58	Factor ~4	
+intel mkl 12 threads			1m56	Factor ~4
+intel mkl 16 threads			1m54	Factor ~4
+intel mkl 24 threads			1m57	Factor ~4
+intel mkl 32 threads			2m8  	Factor ~3.8
+
+
+Hydra with temp t=5e8
+---------------------
+
+original code 1 thread			59m6
+intel mkl 1 thread				6m54	Factor ~8.5
+intel mkl 6 threads				1m58 	Factor ~30
+intel mkl 8 threads				1m45	Factor ~33.7		
+intel mkl 12 threads			1m27	Factor ~40	
+intel mkl 16 threads			1m20	Factor ~44
+intel mkl 24 threads			1m14	Factor ~48
+intel mkl 32 threads			1m24 	Factor ~42
+intel mkl 48 threads			2m9 	Factor ~27.5
+intel mkl 64 threads			1m36 	Factor ~37
+
+Hydra tests intel temp  t=5e8
+-----------------------------
+
+intel 2013	1 thread 			6m40
+intel 2020	1 thread  			5m23	Factor ~1.2
+
+intel 2013	6 threads			2m3
+intel 2020	6 threads			1m57	Factor ~1
+
+21/07/2022
+==========
+Hydra GNU mag 21x21x20x6 t=1e-5
+-----------------------------
+
+2 threads		4m13
+3 threads		2m54
+4 threads		2m36
+6 threads		5m37
+8 threads		4m16
+12 threads		4m24
+16 threads		4m41
+24 threads		4m4
+
+Hydra GNU mag 41x41x40x6 t=1e-5
+-----------------------------
+
+1 thread 		65m39
+2 threads		56m44
+4 threads		38m22
+6 threads		31m38
+8 threads		35m44
+12 threads		26m16
+16 threads		29m32
+24 threads		23m5
+
+Hydra intel mag 21x21x20x6 t=1e-5
+-------------------------------
+
+1 thread 		2m56
+2 threads		5m39
+3 threads		5m23
+4 threads		5m9
+6 threads		4m33
+8 threads		4m28
+12 threads		5m0
+16 threads		4m6
+24 threads		3m56
+
+Hydra intel mag 21x21x20x6 t=1e-5 vtune
+-------------------------------------
+
+1 thread (hidra0)					180s
+2 threads (hidra0)					122s
+4 threads slurm 					188s
+4 threads (hidra0)					84s
+4 threads slurm nodo dedicado (h8)	127s
+4 threads nodo dedicado	(hidra8)	115s
+
+25/07/2022
+==========
+Hydra intel mag 21x21x20x6 t=1e-5 slurm beta
+------------------------------------------
+1 	4m45
+2       3m31 	1.35
+3       2m30  	1.9
+4   	2m9 	2.21
+6  	1m40 	2.85
+8   	1m31 	3.13
+12 	1m2 	4.6
+16  	0m58  	4.91 	
+24  	1m8 	4.19
+
+Hydra intel mag 21x21x20x6 t=1e-5 slurm mono/multi
+------------------------------------------------
+1 	4m57
+2       5m51 	0.84
+3       5m18 	0.93
+4   	5m8 	0.96
+6  	4m49 	1.02
+8   	4m30 	1.1
+12 	3m55 	1.26
+16  	3m31 	1.4
+24  	3m43 	1.33
+32   	2m59  	1.66
+
+Hydra intel mag 41x41x40x6 t=1e-5 slurm beta
+------------------------------------------
+1 	120m (More)	
+2       96m49	1.24
+3       77m53	1.54
+4   	61m58	1.93
+6  	47m46   2.51
+8   	40m47	2.94
+12 	25m30 	4.7
+16  	22m11 	5.4
+24  	29m30 	4.06
+
+Hydra intel mag 41x41x40x6 t=1e-5 slurm mono/multi
+------------------------------------------------
+1 	70m35
+2       57m16 	1.23
+3       48m39 	1.45
+4   	42m35 	1.65
+6  	28m8 	2.5
+8   	27m53 	2.53
+12 	24m5 	2.93
+16  	23m47 	2.96
+24  	18m57 	3.72
+32   	66m7 	1.06
