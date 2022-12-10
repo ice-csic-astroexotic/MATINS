@@ -28,7 +28,7 @@ subroutine initial_condition()
   use constants, only: PI
   use grid, only: nr, nang, nrt, nangt
   use grid, only: r, theta, phi, tem0, temp, temp_surf, T_core
-  use grid, only: br, beta, bxi, b2, bm, lmax
+  use grid, only: br, beta, bxi, b2, bm, lmax, q_joule
   use grid, only: jr, jeta, jxi, j2
   use grid, only: er, exi, eeta
   use grid, only: ievol, enu, etab
@@ -49,6 +49,7 @@ subroutine initial_condition()
   temp = T_init     ! Uniform temperature
   tem0 = T_init
   T_core = T_init   ! Temperature of the core
+  q_joule = 0.d0
 
   !********* non uniform temperature (for debugging) *********
   !do j = 1, nangt
