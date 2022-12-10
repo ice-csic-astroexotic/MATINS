@@ -287,7 +287,7 @@ module grid
       allocate(phi_scalar(0:nr+1,0:nang+1,0:nang+1,1:6))
       allocate(psi_scalar(0:nr+1,0:nang+1,0:nang+1,1:6))
     ! Joule heating calculation
-      allocate(q_joule(nrt, nangt, nangt, 6))
+      allocate(q_joule(nrt, 0:nangt+1, 0:nangt+1, 1:6))
     end subroutine allocate_grid
 
     !---------------------------------------------------------------------------
