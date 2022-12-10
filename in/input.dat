@@ -1,0 +1,35 @@
+***TIME_AND_RESOLUTION***
+1d-3            Total time [Myr]
+false           Resume from checkpoint [true/false]
+1.d-5           Output times 1D [Myr]
+1.d-3           Output times 2D and 3D (Paraview) [Myr]
+21              Number of the thermal cells in the crust, in the angular direction (nangt)
+20              Number of the thermal cells in the radial direction (nrt)
+10              Number of core shells (ncore, just for microphysical calculations)
+***MAGNETIC FIELD***
+true           Magnetic field evolution [true/false]
+Scalar          Initial magnetic topology (Scalar,Bessel,PerAzo,DP+TQ,PureTQ,Whistler)
+20.             Poloidal normalization
+50.             Toroidal normalization
+***TEMPERATURE***
+false            Temperature evolution [true/false]
+Gudm            Envelope model (Gudm, Iron, Accr, Accr_mag)
+1.d0            Initial temperature [10^8 K]
+***STRUCTURE***
+SLy4mu          EoS [Just a shell: "simple". From CompOSE: SLy4mu, SLy2mu, SkMpmu, Skamu, SKbmu, CMF2mu, CMF6mu]
+1.36e35         Central pressure [cgs]
+7e27            Crust/envelope pressure [cgs]
+realist         fh and eta profiles ("realist" needs an EoS;"uniform","Vigan21","Clara22")
+true            Use relativistic grid [true/false]
+1d0             Impurity parameter in the crust (Qimp)
+1d2             Impurity parameter in the pasta phase (Qpasta)
+***SUPERFLUIDITY*** (needs an EoS)
+SFB             SF n crust [0=deactivate] [advice: SFB] (see superfluid.f90)
+TToa            SF n core [0=deactivate] [advice: TToa] (see superfluid.f90)
+CCDKp           SF p core [0=deactivate] [advice: CCDKp] (see superfluid.f90)
+***NUMERICAL_METHODS***
+RK4             Time advance method ("Eul","RK2","RK3","RK4")
+0.5d0           Courant pre-factor in adaptive timestep (set=0 to fix timestep to dtb0)
+1d-8            Minimum magnetic timestep [Myr] (dtb0)
+Center          Scheme for Etor computation ["Center" or "Upwind"]
+1d-4            Maximum cooling timestep [Myr] (max_dt_cooling)
