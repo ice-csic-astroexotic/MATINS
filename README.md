@@ -1,4 +1,4 @@
-# 3d-grid
+# MATINS
 Cubed sphere 3D code
 This version has the possibility of using realistic microphysics, and coupled temperature-magnetic field evolution.
 It is currently under debugging and testing.
