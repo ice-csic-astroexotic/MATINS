@@ -1,7 +1,8 @@
 # MATINS
-Cubed sphere 3D code
-This version has the possibility of using realistic microphysics, and coupled temperature-magnetic field evolution.
-It is currently under debugging and testing.
+3D code for magneto-thermal evolution, with realistic microphysics, and coupled temperature-magnetic field evolution.
+The magnetic evolution is working and is described in Dehman et al., 2023, MNRAS, Volume 518, Issue 1, pp.1222-1242.
+The thermal evolution is under debugging in a separate repository and here it is very outdated, do not use it yet.
+The code currently uses OPENMP. It works better with Intel compilers.
 
 # Requirements:
 Lapack libraries
@@ -12,6 +13,9 @@ LAPACK releases are [available on netlib](http://www.netlib.org/lapack/).
 
 # To compile, simply:
 make
+# To run, prepare the in/input.dat file and type:
+./mt3d
+
 
 # In paraview
 # For the temperature:
@@ -29,4 +33,3 @@ Scale Array -> B , o bien, No scale array
 Adjust Scale Factor at will
 Coloring -> B
 Apply
-
