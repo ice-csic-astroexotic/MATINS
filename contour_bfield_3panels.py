@@ -74,7 +74,7 @@ def load_table_equatorial(fname):
 #    f = 1.e-2*((r-r[0])*(r[-1]-r))**2*np.sin(theta)*np.cos(theta)
 #    return f
 
-file_name = 'out/2D/b_merid_l0180_volume.dat'
+file_name = 'out/2D/b_merid_l0180_volume.dat' 
 nx, ny, ntimes1, r, theta, br1, bth1, bphi1, phi1_sc, psi1_sc = load_table_vertical(file_name)
 THETA, R1 = np.meshgrid(theta, r)
 #

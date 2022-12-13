@@ -63,7 +63,6 @@ program main
       !     tem0(ic,:,:,:) = 6.8695d0/((time*1.d6)**(1.d0/6.d0)*enu(2*ic-1)) 
       !   enddo
       ! end if 
-
     else
       call adaptive_cooling_timestep(time,dt)
     endif
