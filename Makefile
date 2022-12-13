@@ -13,7 +13,7 @@ SRCDo = $(BASE)/src/output
 SRCDt = $(BASE)/src/thermal
 
 # Compiler, choose (INTEL_MKL, INTEL_openblas, GNU).
-COMPILATION=GNU
+COMPILATION=INTEL_MKL
 ifeq ($(COMPILATION),INTEL_openblas)
   FCOMP = ifort
   FFLAGS = -O3 -xHost -parallel -ipo -fno-math-errno -fp-model precise -fp-model source -ftz -heap-arrays 1024 -qopenmp -check bounds -g -traceback
