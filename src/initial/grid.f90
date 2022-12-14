@@ -446,7 +446,6 @@ module grid
 
     end subroutine build_grid
 
-
     !!--------------------------------------------------------------------------
     !> @brief Subroutine metric_tensor
     !!
