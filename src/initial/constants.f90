@@ -62,5 +62,4 @@ module constants
 ! UNIT_JOULE [1e40 erg/km^3 s]
 !
 !-----------------------------------------------------------------------
-  
 end module constants
