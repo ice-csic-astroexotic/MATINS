@@ -74,7 +74,6 @@ module grid
   real*8, dimension(:,:), allocatable, save :: pos_qm        ! Projected position at each side of each edge, pseudo-perpendicular coordinate
   real*8, dimension(:), allocatable, save :: edge_w, edge_wt    ! Linear interpolation weights at the edges for magnetic and thermal grids
 
-
   ! Star's structure quantities
   ! Radial profiles of:
   !   energy density (rho)
@@ -136,7 +135,6 @@ module grid
 
   ! ievol is the first value to calculate curl operator and to evolve 
   integer, save :: ievol, ncore
-!  real*8, save :: alpha
 
   contains
   
