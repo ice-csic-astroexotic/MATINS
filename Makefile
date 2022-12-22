@@ -1,5 +1,5 @@
 # Executable.
-NAME = mt3d
+NAME = matins
 
 # Paths
 BASE = $(CURDIR)
