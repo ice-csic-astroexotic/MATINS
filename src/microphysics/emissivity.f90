@@ -50,8 +50,12 @@ subroutine compute_neutrino_emissivity()
     q_neutrino_core(i) = emis*UNIT_NU
     qnu_core_tot = qnu_core_tot + vol_shell(i)*q_neutrino_core(i)*enu_core(i)**2
 
+    !qnu_core_tot_der = qnu_core_tot_der +                              &
+    !&           vol_shell(i)*(emis1 - emis)*UNIT_NU*enu_core(i)**2/((INCR_TEM-1d0)*T0) ! 10**40 erg * km^3/Myr/10**8 K
+
+    ! new relativistic correction
     qnu_core_tot_der = qnu_core_tot_der +                              &
-    &           vol_shell(i)*(emis1 - emis)*UNIT_NU*enu_core(i)**2/((INCR_TEM-1d0)*T0) ! 10**40 erg * km^3/Myr/10**8 K
+    &           vol_shell(i)*(emis1 - emis)*UNIT_NU*enu_core(i)/((INCR_TEM-1d0)*T0) ! 10**40 erg * km^3/Myr/10**8 K
 
   end do
 
