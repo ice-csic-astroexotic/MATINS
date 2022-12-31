@@ -74,6 +74,7 @@ module grid
   real*8, dimension(:,:), allocatable, save :: pos_qm        ! Projected position at each side of each edge, pseudo-perpendicular coordinate
   real*8, dimension(:), allocatable, save :: edge_w, edge_wt    ! Linear interpolation weights at the edges for magnetic and thermal grids
 
+
   ! Star's structure quantities
   ! Radial profiles of:
   !   energy density (rho)
@@ -135,6 +136,7 @@ module grid
 
   ! ievol is the first value to calculate curl operator and to evolve 
   integer, save :: ievol, ncore
+!  real*8, save :: alpha
 
   contains
   
@@ -361,9 +363,11 @@ module grid
 
       ! The angular variables xi and eta are spanning the range [-Pi/4 : Pi/4] 
       dang = PI / (2d0*dble(nang-1))
-      do j = 0, nang+1
+      do j = 0, nang/2
        xi(j) = - 0.25d0*PI + (dble(j) - 1) * dang 
+       xi(nang+1-j) = -xi(j)
       end do
+      xi((nang+1)/2) = 0d0
       eta(:) = xi(:)
 
       da = xi(1) - xi(0)
@@ -371,7 +375,6 @@ module grid
 
       dat = xi(2) - xi(0)
       pmt = datan( dtan(xi)/dtan(0.25d0*PI + dat))
-      !pmt = datan( dtan(xi)/dtan(0.25d0*PI + da))
 
       X(:) = dtan(xi(:))
       Y(:) = dtan(eta(:))
@@ -445,6 +448,7 @@ module grid
       call edges
 
     end subroutine build_grid
+
 
     !!--------------------------------------------------------------------------
     !> @brief Subroutine metric_tensor
@@ -1082,18 +1086,6 @@ module grid
         edge_wt(i) = 0.5*(1.d0 - abs(pmt(i-1) - xi(i+1)) / dat)
         edge_wt(nang+1-i) = 0.5*(1.d0 - abs(xi(nang+1-i-1) - pmt(nang+1-i+1)) / dat)
       end do
-
-      !do i =1, nangt
-      !  print*, i, edge_wt(2*i)
-      !enddo
-
-      ! the same for the thermal grid
-
-      !do i = 0, nang/2
-      !  it = 2*i
-      !  edge_wt(i) = (pm(it) - xi(it)) / dat
-      !  edge_wt(nangt+1-i) = (xi(nang+1-it) - pm(nang+1-it)) / dat
-      !end do
    
     end subroutine edges
 
@@ -2316,60 +2308,46 @@ module grid
       real*8, dimension(1:2*nang-1,4) :: theta_mer4
       integer :: j, k, p 
 
-
+      ! Definition of the theta, phi coordinates in each patch
       theta = 0.d0
       phi = 0.d0
 
       do j = 0, nang+1
+
+        if (xi(j) >= 0d0) then
+          phi(j,:,1) = xi(j)
+        else
+          phi(j,:,1) = 2d0*PI + xi(j)
+        endif
+        phi(j,:,2) = xi(j) + 0.5d0*PI
+        phi(j,:,3) = xi(j) + PI
+        phi(j,:,4) = xi(j) + 1.5d0*PI
+
         do k = 0, nang+1
-          ! patch I 
-          p = 1
-            if (xi(j) >= 0d0) then
-              phi(j,k,p) = xi(j)
-            else
-              phi(j,k,p) = 2d0*PI + xi(j)
-            endif
-            theta(j,k,p) = arctan_ratio(C(j),Y(k))
- 
-          ! patch II
-          p = 2
-            phi(j,k,p) = xi(j) + 0.5d0*PI
-            theta(j,k,p) = arctan_ratio(C(j),Y(k))
-  
-          ! patch III 
-          p = 3
-            phi(j,k,p) = xi(j) + PI
-            theta(j,k,p) = arctan_ratio(C(j),Y(k))
-          
-          ! patch IV 
-          p = 4
-            phi(j,k,p) = xi(j) + 1.5d0*PI
-            theta(j,k,p) = arctan_ratio(C(j),Y(k))
 
-          ! patch V 
-          p = 5
-            phi(j,k,p) = arctan_ratio_2pi(X(j),-Y(k))
-            theta(j,k,p) = datan(sqrt(delta(j,k)-1d0))
+          phi(j,k,5) = arctan_ratio_2pi(X(j),-Y(k))
+          phi(j,k,6) = arctan_ratio_2pi(X(j),Y(k))
 
-          ! patch VI
-          p = 6
-            phi(j,k,p) = arctan_ratio_2pi(X(j),Y(k))
-            theta(j,k,p) = PI - datan(sqrt(delta(j,k)-1d0))
+          theta(j,k,1:4) = arctan_ratio(C(j),Y(k))
+          theta(j,k,5) = datan(sqrt(delta(j,k)-1d0))
+          theta(j,k,6) = PI - datan(sqrt(delta(j,k)-1d0))
 
         end do 
       end do
 
-      ! For sake of simplicity I call twice the subroutine 
+      ! For sake of simplicity, call twice the subroutine
+      ! that extracts equatorial and meridional profiles,
       ! and keep the only one profile of theta and phi 
-      ! phi arrives at 2pi, it's periodical
-      ! theta goes from 0 to pi
+      ! phi arrives at 2*PI, it's periodical
+      ! theta goes from 0 to PI
       call get_1d_cuts(theta,(nang+1)/2,theta_mer4,phi_equator)
       theta_meridian(:) = theta_mer4(:,1)
       
       call get_1d_cuts(phi,(nang+1)/2,theta_mer4,phi_equator)
+      phi_equator(1) = 0d0
       phi_equator(4*nang - 3) = 2d0*PI
 
-      ! theta_meridian_2PI: 
+      ! theta_meridian_2PI (for 2D-slice outputs): 
       theta_meridian_2PI(1:2*nang-1) = theta_meridian(:)
       theta_meridian_2PI(2*nang:4*nang-3) = PI + theta_meridian(2:2*nang-1)
 
