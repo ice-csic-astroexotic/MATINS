@@ -22,7 +22,7 @@ Module output
   use grid, only: r, rtot, theta, phi, theta_meridian, phi_equator, theta_meridian_2PI
   use grid, only: vol, area_r, elambda
   use grid, only: eta, xi, xc, yc, zc
-  use grid, only: br, bxi, beta, bm
+  use grid, only: br, bxi, beta, bm, bpdip
   use grid, only: lmax, blm, espec_vol, espec_pol, espec_tor, phi_scalar, psi_scalar
   use grid, only: jr, jxi, jeta
   use grid, only: er, exi, eeta
@@ -645,7 +645,7 @@ Module output
     end if
     
     write(unit, *) '"Label=', label
-    write(unit, *) '"Time=', time
+    write(unit, *) '"Time=', time*1d6
     
     ! If a maximum number for the positions array is specified, use it, if not
     ! fall back to the actual size of the positions array.
@@ -669,6 +669,68 @@ Module output
     
   end subroutine output_1d_ygraph
 
+!-----------------------------------------------------------------------
+  !> This subroutine generates checkpoint files
+  !
+  !> authors 
+  ! Stefano Ascenzi
+  ! 
+  ! NOTE: at the moment the file save only the temperature
+!------------------------------------------------------------------------
+
+subroutine output_checkpoint(it, time)
+  
+  use input_params, only: resume_checkpnt_number
+
+  implicit none
+
+  integer, intent(in) :: it
+  real*8, intent(in) :: time
+  integer :: u, imin_vis
+  integer :: i, j, k, p
+  character(len=50) :: file_name, it_str
+  logical, save :: firstcall_checkpoint = .TRUE.
+
+!  if (firstcall_checkpoint) then
+!    if (resume_checkpnt_number .gt. 0) then 
+!      ! if we resume from checkpoint, we start to number 
+!      ! the new checkpoints from the one we use to restart
+!      timestep_print = resume_checkpnt_number + 1  
+!    else
+!      timestep_print = 1
+!    endif
+!    firstcall_checkpoint = .FALSE.   
+!  endif
+
+  write(it_str, "(I5)") it
+
+  file_name = "out/3D/checkpoint_"//trim(adjustl(it_str))//".dat"
+
+  print*, '** Writing checkpoint_'//trim(adjustl(it_str))//".dat **"
+
+  imin_vis = 0
+
+  u = get_free_unit()
+  open(unit = u, file = file_name, status='replace')
+
+  ! first line is the time, other lines are the temperatures, including ghost cells 
+
+  write(u,*) it
+  write(u,*) time 
+
+  do p=1,6
+    do i=imin_vis+1,nrt
+      do j=0,nangt+1
+        do k=0,nangt+1
+          write(u,*) temp(i,j,k,p)
+        end do
+      end do
+    end do
+  end do
+
+  close(u)
+
+end subroutine output_checkpoint
 
 
 !---------------------------------------------------------------------------
@@ -679,7 +741,6 @@ Module output
     ! Daniele Viganò
     ! Stefano Ascenzi
     !---------------------------------------------------------------------------
-  !subroutine output_vtu(time,print_T,print_B)
   subroutine output_vtu(time,dt)
 
     use input_params, only: final_time
@@ -689,7 +750,7 @@ Module output
     real*8, intent(in) :: time, dt
     !logical, intent(in) :: print_T, print_B
     ! ---------------------------------------------
-    character(len=50) :: time_str, N_Points_str, N_Cells_str, file_name, file_name_pvd
+    character(len=70) :: time_str, N_Points_str, N_Cells_str, file_name, file_name_pvd
     character(len=50) :: timestep_str
     integer :: u = 200, upvd = 220
     integer :: N_Points, N_Cells
@@ -716,9 +777,9 @@ Module output
    
     
     ! Output files names
-    !file_name = "out/paraview/output_time_" // trim(adjustl(time_str)) // ".vtu"
-    file_name = "out/paraview/output_"//trim(adjustl(timestep_str))//".vtu"
-    file_name_pvd = "out/paraview/animation.pvd"
+    !file_name = "out/3D/output_time_" // trim(adjustl(time_str)) // ".vtu"
+    file_name = "out/3D/output_"//trim(adjustl(timestep_str))//".vtu"
+    file_name_pvd = "out/3D/animation.pvd"
 
     !*******************************************
     ! Replacing the . from number to _ to avoid file format problems
@@ -914,45 +975,12 @@ Module output
             jc = 2*j
             kc = 2*k
 
-            ! Total Internal Energy and Neutrino Luminosity
-            ! SA: redshifted temperature here? DV: No, I think it's ok, but maybe a redshift factor is missing in luminosities
-!            if (i == 1) then 
-              !Core 
-!              if (j==1 .and. k==1 .and. p==1) then ! in order to perform this calculation only once
-!                eint = eint + cv_core_tot*tem0(i,j,k,p)
-!              endif
-!            else
-              !Crust
-!              eint = eint + vol(ic,jc,kc)*cv(i,j,k,p)*tem0(i,j,k,p)
-             qnu_crust_tot = qnu_crust_tot + vol(ic,jc,kc)*q_neutrino(i,j,k,p)
-
-             ! Calculate Courant factor
-             
-            ! if (i>1) then
-            !  if (Firstcall_cfl) then 
-            !    ! do I need to consider also the first cell?
-            !    cfl = 0.5*cv(i,j,k,p)*min(area_r(ic,jc,kc), area_xi(ic,jc,kc), area_eta(ic,jc,kc))/kappa_perp_arr(i,j,k,p)
-            !    !cfl = cfl*1.d6
-            !    Firstcall_cfl = .false.
-            !  else
-            !    cfl_serv = 0.5*cv(i,j,k,p)*min(area_r(ic,jc,kc), area_xi(ic,jc,kc), area_eta(ic,jc,kc))/kappa_perp_arr(i,j,k,p)
-            !    !cfl_serv = cfl_serv*1.d6 
-            !    cfl = min(cfl, cfl_serv)
-            !  endif
-            ! endif
-
-!            endif
+              qnu_crust_tot = qnu_crust_tot + vol(ic,jc,kc)*q_neutrino(i,j,k,p)
 
           enddo
         enddo 
       enddo
     enddo
-
-    ! TBD: Here it is not ok, because you should add this at every timestep in main or tevol,
-    ! or consider the dt between the outputs.
-!    erad = erad + lum_em*dt*UNIT_EN ! cumulative radiated energy in BB photons 
-!    enu_rad = enu_rad + qnu_crust_tot*dt*UNIT_EN ! Cumulative radiated in neutrinos
-    !    eint = eint*UNIT_EN ! convert in cgs units
 
     qnu_crust_tot = qnu_crust_tot*(UNIT_EN/UNIT_TIME) ! convert in cgs units
 
@@ -963,13 +991,13 @@ Module output
     if (Firstcall_out_cooling) then
       u1 = get_free_unit()
       open(unit = u1, file='out/energy/cooling_curve.d', status = 'replace')
-      write(u1, "(a95)") "iter, time[yr], BB lum[erg/s], T_core[K], Teff[K], lum.neutrinos[erg/s] (core,crust)"
+      write(u1, "(a95)") "iter, time[yr], BB lum[erg/s], T_core[K], Teff[K], lum.neutrinos[erg/s] (core,crust), Bpdip[G]"
     else
       u1 = get_free_unit()
       open(unit = u1, file='out/energy/cooling_curve.d', access = 'append')
     endif
 
-    write(u1, COOLING_FORMAT) iter, timeMyr*1d6, lum_em, T_core, teff, qnu_core_tot*(UNIT_EN/UNIT_TIME), qnu_crust_tot
+    write(u1, COOLING_FORMAT) iter, timeMyr*1d6, lum_em, T_core, teff, qnu_core_tot*(UNIT_EN/UNIT_TIME), qnu_crust_tot, bpdip*1e12
     close(unit=u1)
 
 
@@ -983,21 +1011,21 @@ Module output
       open(unit = u2, file='out/energy/temperatures.d', access = 'append')
     endif
 
-    write(u2, COOLING_FORMAT) iter, timeMyr, temp(nrt,nangt/2,nangt/2,1:6)*UNIT_T, &
+    write(u2, COOLING_FORMAT) iter, timeMyr*1d6, temp(nrt,nangt/2,nangt/2,1:6)*UNIT_T, &
    &   temp_surf(nangt/2,nangt/2,1:6)
     close(unit=u2)
 
     if (Firstcall_out_cooling) then
       u3 = get_free_unit()
       open(unit=u3, file = 'out/energy/core.d', status = 'replace')
-      write(u3, *), "time, T_core, cv_core [cgs], qnu_core [cgs]"
+      write(u3, *), "time(yr), T_core[K], cv_core [cgs], qnu_core [cgs]"
       Firstcall_out_cooling = .false.
     else
       u3 = get_free_unit()
       open(unit=u3, file = 'out/energy/core.d', access = 'append')
     endif
 
-    write(u3, COOLING_FORMAT) timeMyr, T_core, cv_core_tot*UNIT_EN/UNIT_T, qnu_core_tot*UNIT_EN/UNIT_TIME
+    write(u3, "(14es12.4)") timeMyr*1d6, T_core*1d8, cv_core_tot*UNIT_EN/UNIT_T, qnu_core_tot*UNIT_EN/UNIT_TIME
     close(unit=u3)
 
 
