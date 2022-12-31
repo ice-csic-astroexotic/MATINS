@@ -1,24 +1,24 @@
 ***TIME_AND_RESOLUTION***
-1d-3            Total time [Myr]
-false           Resume from checkpoint [true/false]
+1.d0            Total time [Myr]
+100              Write checkpoints [-1=false, othwerise indicate the timestep frequency]
+-1              Resume from checkpoint [to activate it, indicate a positive integer]
 1.d-5           Output times 1D [Myr]
 1.d-3           Output times 2D and 3D (Paraview) [Myr]
-21              Number of the thermal cells in the crust, in the angular direction (nangt)
-20              Number of the thermal cells in the radial direction (nrt)
-10              Number of core shells (ncore, just for microphysical calculations)
+15              Number of the thermal cells in the crust, in the angular direction (nangt)
+15              Number of the thermal cells in the radial direction (nrt)
+50              Number of core shells (ncore, just for microphysical calculations)
 ***MAGNETIC FIELD***
 true           Magnetic field evolution [true/false]
-Scalar          Initial magnetic topology (Scalar,Bessel,PerAzo,DP+TQ,PureTQ,Whistler)
-20.             Poloidal normalization
-50.             Toroidal normalization
+100.              Poloidal normalization [bpol_init]
+1000.              Toroidal normalization [btor_init]
 ***TEMPERATURE***
-false            Temperature evolution [true/false]
-Gudm            Envelope model (Gudm, Iron, Accr, Accr_mag)
-1.d0            Initial temperature [10^8 K]
+true           Temperature evolution [true/false]
+Gudm           Envelope model (Gudm, Iron_PPP15, Accr_mag, Accr, Iron_PMG09, Iron_PY01, Iron_DV13)
+1.d2            Initial temperature [10^8 K]
 ***STRUCTURE***
 SLy4mu          EoS [Just a shell: "simple". From CompOSE: SLy4mu, SLy2mu, SkMpmu, Skamu, SKbmu, CMF2mu, CMF6mu]
 1.36e35         Central pressure [cgs]
-7e27            Crust/envelope pressure [cgs]
+1e28            Crust/envelope pressure [cgs]
 realist         fh and eta profiles ("realist" needs an EoS;"uniform","Vigan21","Clara22")
 true            Use relativistic grid [true/false]
 1d0             Impurity parameter in the crust (Qimp)
@@ -27,9 +27,38 @@ true            Use relativistic grid [true/false]
 SFB             SF n crust [0=deactivate] [advice: SFB] (see superfluid.f90)
 TToa            SF n core [0=deactivate] [advice: TToa] (see superfluid.f90)
 CCDKp           SF p core [0=deactivate] [advice: CCDKp] (see superfluid.f90)
-***NUMERICAL_METHODS***
+***NUMERICAL METHODS FOR MAGNETIC FIELDS***
 RK4             Time advance method ("Eul","RK2","RK3","RK4")
-0.5d0           Courant pre-factor in adaptive timestep (set=0 to fix timestep to dtb0)
+0.1d0           Courant pre-factor in adaptive timestep (set=0 to fix timestep to dtb0)
 1d-8            Minimum magnetic timestep [Myr] (dtb0)
-Center          Scheme for Etor computation ["Center" or "Upwind"]
-1d-4            Maximum cooling timestep [Myr] (max_dt_cooling)
+Center          Scheme for Etor computation ["Center" -advised- or "Upwind"]
+***COOLING TIMESTEP***
+1d-7            Minimum cooling timestep [Myr] (min_dt_cooling) [1d-7]
+1d-3            Maximum cooling timestep [Myr] (max_dt_cooling) [1d-3]
+0.1d0           Timestep/time in cooling advance (max_dt_cooling) [0.1]
+**********************
+*** INITIAL MULTIPOLES WEIGHTS (if you add/remove lines, change LMAX_IN accordingly in input.f90) ***
+*** Poloidal scalar function ***
+*m= -10   -9   -8   -7   -6   -5   -4   -3   -2   -1    0    1    2    3    4    5    6    7    8    9   10 
+l=1                                               0.0  1.0  0.0  
+l=2                                          0.0  0.0  0.0  0.0  0.0  
+l=3                                     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+l=4                                0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+l=5                           0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+l=6                      0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+l=7                 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+l=8            0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+l=9       0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+l=10 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+*** Toroidal scalar function ***
+*m= -10   -9   -8   -7   -6   -5   -4   -3   -2   -1    0    1    2    3    4    5    6    7    8    9   10 
+l=1                                               0.0  0.0  0.0  
+l=2                                          0.0  0.0  1.0  0.0  0.0  
+l=3                                     0.0  0.0  0.0  0.0  0.0  0.0  0.0
+l=4                                0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+l=5                           0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+l=6                      0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+l=7                 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
+l=8            0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+l=9       0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0 
+l=10 0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0  0.0
