@@ -41,25 +41,32 @@ module constants
   real*8, parameter :: UNIT_T = 1.d8                 ! Units of temperature [K]
   real*8, parameter :: UNIT_B = 1.d12                ! Units of magnetic field [G]
   real*8, parameter :: UNIT_R = 1.d5                 ! Units of lengths [cm]
+  real*8, parameter :: UNIT_EN = 1.d40               ! Units of the energy rates [erg/s] used in the thermal part
+  real*8, parameter :: UNIT_TIME = T_YEAR*1.d6       ! Units of time used in the thermal part [s]
   real*8, parameter :: UNIT_E = UNIT_B*UNIT_R/(T_YEAR*CLIGHT) ! Units of electric field [statVolt = G]
-  real*8, parameter :: UNIT_EN = 1.d40              ! Units of the energy [erg/s] used in the thermal part
-  real*8, parameter :: UNIT_JOULE = UNIT_B**2*UNIT_R**3/(UNIT_EN*4d0*PI*T_YEAR)  ! Joule heating density units [10^40 erg/(km^3*s)]
-  real*8, parameter :: UNIT_TIME = T_YEAR*1.d6         ! Units of time [s]
+  real*8, parameter :: UNIT_JOULE = UNIT_B**2*UNIT_R**3/(UNIT_EN*4d0*PI)  ! Joule heating density units [from 10^40 erg/(km^3*s)] TO BE CHECKED
 
 !-----------------------------------------------------------------------
 ! UNITS FOR MAGNETIC ANALYSIS AND JOULE HEATING:
 !-----------------------------------------------------------------------
-! Numerically we use:
-!
+! The energy rates in the cooling scheme are in units
+!                UNIT_EN/(UNIT_R^3*UNIT_TIMECOOL) = [1e40 erg/km^3 Myr]
+
+! In the magnetic scheme, eta is in UNIT_R^2/UNIT_TIMEETA = [km^2/Myr]
+!                         J^2 is in UNIT_B^2/UNIT_R^2 = [(10^12 G)^2/km^2] 
+!                               using G^2=erg/cm^3:     [10^24 erg/cm^3/Myr]
+
+! Moreover, numerically we use:
 ! Jnum = e^nu 4pi J / c
-! Q_joule = - (4*pi/c^2)*eta*J^2*e^(2nu)
-!     = - eta*Jnum^2/(4*pi) = - UNIT_JOULE*eta*Jnum^2/(4*pi)
-! with UNIT_JOULE = UNIT_J^2*UNIT_ETA*UNIT_R**3/(4*pi) / [10^40] = 2.522e(-16)
+! so that in cgs:
+! Q_j,cgs = - (4*pi/c^2)*eta*J^2*e^(2nu) = - etanum*Jnum^2*UNIT_B^2/(UNIT_TIMEETA*4*pi)
+
+! Therefore, finally, to have it in the units of the cooling scheme,
+! Qj,cool = Q_j,cgs / (UNIT_EN/(UNIT_R^3*UNIT_TIMECOOL)):
+
+! UNIT_JOULE = UNIT_B^2*UNIT_R**3/(UNIT_EN*4*pi) * (UNIT_TIMECOOL/UNIT_TIMEETA)
+! In our code, UNIT_TIMECOOL = UNIT_TIMEETA = Myr, so the last factor is = 1.
 !  
-! UNIT_J   [1e12 G/km]
-! UNIT_ETA [km^2/Myr]
-! UNIT_R^3 [km^3] to pass from G^2/s = erg/cm^3/s to erg/km^3/s
-! UNIT_JOULE [1e40 erg/km^3 s]
-!
 !-----------------------------------------------------------------------
+  
 end module constants
