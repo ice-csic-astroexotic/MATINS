@@ -147,7 +147,26 @@ $(OBJD)/%.o: $(SRCDp)/%.f
 
 # Other rules.
 clean:
-	rm -f -r $(EXEC) obj/* ./*.mod ./*.out ./*.dat ./out/1D/* ./out/2D/* ./out/paraview/* ./out/energy/*
+	rm -f -r $(EXEC) obj/*.o obj/*.mod ./out/1D/*.yg ./out/1D/*.d ./out/2D/*.dat ./out/3D/*.vtu ./out/3D/*.pvd ./out/energy/*.dat ./out/energy/*.yg ./out/energy/*.d
+
+outremove:
+	rm -f -r ./out/1D/*.yg ./out/1D/*.d ./out/2D/*.dat ./out/3D/*.vtu ./out/3D/*.pvd ./out/energy/*.dat ./out/energy/*.yg ./out/energy/*.d
+
+out_temp:
+	mkdir OUT_TEMP
+	cp in/input.dat OUT_TEMP/
+	mkdir OUT_TEMP/1D
+	mv out/1D/*.yg OUT_TEMP/1D/
+	mv out/1D/*.d OUT_TEMP/1D/
+	mkdir OUT_TEMP/2D
+	mv out/2D/*.dat OUT_TEMP/2D/
+	mkdir OUT_TEMP/3D
+	mv out/3D/*.vtu OUT_TEMP/3D/
+	mv out/3D/*.pvd OUT_TEMP/3D/
+	mkdir OUT_TEMP/energy
+	mv out/energy/*.dat OUT_TEMP/energy/
+	mv out/energy/*.yg OUT_TEMP/energy/
+	cp -r out/python OUT_TEMP/
 
 copy:
 	rm -rf ../code_bckp
@@ -158,6 +177,3 @@ copy:
 	cp -r in ../code_bckp/.
 	cp -r src ../code_bckp/.
 
-
-outremove:
-	rm -f -r out/1D/*.* out/2D/*.* out/energy/*.* out/paraview/*.* out/*.*
