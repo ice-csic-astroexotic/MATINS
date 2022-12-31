@@ -574,7 +574,7 @@ module magnetic_evolution
 
      call get_blm(br_bc(nr,:,:,:),blm_out)
      blm = blm_out
-     bpdip = dsqrt(sum(blm(1,:)**2))
+     bpdip = dsqrt(sum(blm(1,:)**2))/elambda(nr)
 
     ! Reconstructing the magnetic field components for r >= R 
      br_temp = 0.d0 
@@ -731,15 +731,15 @@ module magnetic_evolution
       ! In what we are considering as inner BC, they are located at ievol-2 
 
       do p = 1,6 
-        do jt = 2, nangt
+        do jt = 1, nangt
           j = 2*jt ! corresponds to the center of the thermal cell 
-          do kt = 2, nangt
+          do kt = 1, nangt
             k = 2*kt
             ! The first cell where Joule is to be calculated is at it=(ievol+2)/2, which
             ! corresponds to the centre of the thermal cell since ievol=2 
             do it = (ievol+2)/2,nrt
               i=2*it-1
-              ! Zer-order approximation: center of the thermal cell 
+              ! Zero-order approximation: center of the thermal cell 
               ! q_joule(it,jt,kt,p) = - UNIT_JOULE*etab(i,j,k,p)*j2(i,j,k,p)
 
               ! Refined version by considering the centers, face centers, edges and corners:
@@ -779,13 +779,6 @@ module magnetic_evolution
     ! Alternative:
     !   real*8, dimension(0:nr+1) :: dtb_local
     !   integer i 
-
-    !   do i = 1, nr
-    !! lxi(i,(nang+1)/1,1) is the smaller length 
-    !! leta(i,1,(nang+1)/2) = lxi(i,(nang+1)/1,1)
-    !   dtb_local(i) = minval([lr(i)**2,lxi(i,(nang+1)/2,1)**2])/(fh(i)*maxval(bm(i,:,:,:)) + maxval(etab(i,:,:,:)))
-    !   end do
-    !   dtb_ad = minval(dtb_local(1:nr))
 
     end subroutine dtb_adaptive
 

@@ -85,7 +85,7 @@ module magnetic_analysis
       enddo
     enddo
   
-    en_joule_star_tot = en_joule_star_tot + q_joule_star*dtb*T_YEAR
+    en_joule_star_tot = en_joule_star_tot + q_joule_star*dtb
     poynting_star_tot = poynting_star_tot + poynting_star*dtb*T_YEAR
     poynting_star_tot_surface = poynting_star_tot_surface + poynting_star_surface*dtb*T_YEAR
     poynting_star_tot_interior = poynting_star_tot_interior + poynting_star_interior*dtb*T_YEAR
@@ -157,19 +157,6 @@ module magnetic_analysis
       end do 
       ratio(i) = maxval(bm(i,2:nang-1,2:nang-1,1:6)/etab(i,2:nang-1,2:nang-1,1:6))*fh(i)
     end do
-
-    ! do p = 1, 6
-    !   write (name,'(a8,i1,a2)') "out/divB", p, ".d"
-    !   open(unit=20,file=trim(name),status='replace')
-    !   do j = 2, nang - 1
-    !     do k = 2, nang - 1
-    !       write(20,*) xi(j),eta(k),theta(j,k,p),phi(j,k,p), & 
-    !  &     divb_local(3,j,k,p), divb_local(5,j,k,p), divb_local(10,j,k,p), & 
-    !  &      divb_local(20,j,k,p), divb_local(nr-1,j,k,p)
-    !    end do
-    !   end do
-    !   close(20)
-    ! end do
 
     b_avg = (en_mag_star*8d0*PI/(UNIT_R**3*voltot))**0.5d0
     rey = rey/voltot
