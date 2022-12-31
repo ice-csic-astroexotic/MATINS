@@ -17,7 +17,7 @@ subroutine envelope_model()
   implicit none
 
   ! external functions
-  real*8 iron_env_B, light_env, light_mag_env
+  real*8 iron_env_B, light_env, light_mag_env, iron_env_B_PMG2009, iron_env_B_PY2001, iron_env_B_DV2013
   ! internal variables
   integer j,k,jt,kt,p
   real*8 tb9
@@ -72,7 +72,7 @@ subroutine envelope_model()
   ! Magnetized envelopes (Potekhin, Pons & Page 2015, Appendix B).
   ! (A surface density of 10^10 g/cm^3 is assumed.)
   !-----------------------------------------------------------------------
-  else if (envelope == "Iron") then
+  else if (envelope == "Iron_PPP15") then
     do p=1,6
       do kt = 1,nangt
         do jt = 1,nangt
@@ -81,6 +81,54 @@ subroutine envelope_model()
           tb9=0.1d0*tem0(nrt,jt,kt,p)
           temp_surf(jt,kt,p) = iron_env_B(g14,tb9,bpdip,br(nr,j,k,p),bm(nr,j,k,p))
           temp_surf_incr(jt,kt,p) = iron_env_B(g14,tb9*INCR_TEM,bpdip,br(nr,j,k,p),bm(nr,j,k,p))
+        enddo
+      enddo
+    enddo
+
+  !-----------------------------------------------------------------------
+  ! Magnetized envelopes (Pons 2009 envelope model).
+  !-----------------------------------------------------------------------
+    else if (envelope == "Iron_PMG09") then 
+    do p=1,6
+      do kt = 1,nangt
+        do jt = 1,nangt
+          j = 2*jt
+          k = 2*kt
+          tb9=0.1d0*tem0(nrt,jt,kt,p)
+          temp_surf(jt,kt,p) = iron_env_B_PMG2009(g14,tb9,br(nr,j,k,p),bm(nr,j,k,p))
+          temp_surf_incr(jt,kt,p) = iron_env_B_PMG2009(g14,tb9*INCR_TEM,br(nr,j,k,p),bm(nr,j,k,p))
+        enddo
+      enddo
+    enddo
+
+  !-----------------------------------------------------------------------
+  ! Magnetized envelopes (Potekhin 2001 envelope model).
+  !-----------------------------------------------------------------------
+    else if (envelope == "Iron_PY01") then 
+    do p=1,6
+      do kt = 1,nangt
+        do jt = 1,nangt
+          j = 2*jt
+          k = 2*kt
+          tb9=0.1d0*tem0(nrt,jt,kt,p)
+          temp_surf(jt,kt,p) = iron_env_B_PY2001(g14,tb9,br(nr,j,k,p),bm(nr,j,k,p))
+          temp_surf_incr(jt,kt,p) = iron_env_B_PY2001(g14,tb9*INCR_TEM,br(nr,j,k,p),bm(nr,j,k,p))
+        enddo
+      enddo
+    enddo
+
+  !-----------------------------------------------------------------------
+  ! Magnetized envelopes (Vigano 2013 envelope model).
+  !-----------------------------------------------------------------------
+  else if (envelope == "Iron_DV13") then 
+    do p=1,6
+      do kt = 1,nangt
+        do jt = 1,nangt
+          j = 2*jt
+          k = 2*kt
+          tb9=0.1d0*tem0(nrt,jt,kt,p)
+          temp_surf(jt,kt,p) = iron_env_B_DV2013(g14,tb9,br(nr,j,k,p),bm(nr,j,k,p))
+          temp_surf_incr(jt,kt,p) = iron_env_B_DV2013(g14,tb9*INCR_TEM,br(nr,j,k,p),bm(nr,j,k,p))
         enddo
       enddo
     enddo
@@ -176,20 +224,12 @@ real*8 function iron_env_B(g14,tb9,bpdip,brad,b)
 
 end function iron_env_B
 
-
-real*8 function light_env(g14,tb9)
-
-  implicit none
-  real*8, intent(in) :: g14, tb9
-  real*8 :: tFe4, tacc4, corr
-
-  tFe4 = g14*0.55*(10.*tb9)**2.4/(1.+0.9*tb9)
-  corr = 0.447d0+0.075d0*dlog10(1d9*tb9)/(1d0+(6.2d0*tb9)**4)
-  tacc4 = (g14*(18.1d0*tb9)**2.42d0*corr+3.2d0*tb9**1.67d0*tFe4)/(1d0+3.2d0*tb9**1.67d0)
-  light_env = 1.d6*(tacc4)**(0.25)
-
-end function light_env
-
+!-----------------------------------------------------------------------
+! Light magnetised envelopes (Potekhin et al. 2003)
+!
+!> @author
+! Clara Dehman 
+!-----------------------------------------------------------------------
 real*8 function light_mag_env(g14,tb9,brad,b) 
 
     implicit none
@@ -222,3 +262,157 @@ real*8 function light_mag_env(g14,tb9,brad,b)
     light_mag_env = 1.d6*tacc4**0.25*(chip**alpha*cosph**2+chit**alpha*(1.d0-cosph**2))**(1./alpha)
 
 end function light_mag_env
+
+real*8 function light_env(g14,tb9)
+
+  implicit none
+  real*8, intent(in) :: g14, tb9
+  real*8 :: tFe4, tacc4, corr
+
+  tFe4 = g14*0.55*(10.*tb9)**2.4/(1.+0.9*tb9)
+  corr = 0.447d0+0.075d0*dlog10(1d9*tb9)/(1d0+(6.2d0*tb9)**4)
+  tacc4 = (g14*(18.1d0*tb9)**2.42d0*corr+3.2d0*tb9**1.67d0*tFe4)/(1d0+3.2d0*tb9**1.67d0)
+  light_env = 1.d6*(tacc4)**(0.25)
+
+end function light_env
+
+real*8 function iron_env_B_DV2013(g14,tb9,brad,b) 
+
+    implicit none
+
+    real*8, intent(in) :: g14, tb9, brad, b 
+    real*8 :: tFe4, tacc4, corr, chip, chit, tt, tp, cosph, logb, tpmax, ttmax, ts0
+
+    tFe4 = g14*0.55*(10.*tb9)**2.4/(1.+0.9*tb9)
+    corr = 0.447d0+0.075d0*dlog10(1d9*tb9)/(1d0+(6.2d0*tb9)**4)
+    tacc4 = (g14*(18.1d0*tb9)**2.42d0*corr+3.2d0*tb9**1.67d0*tFe4)/(1d0+3.2d0*tb9**1.67d0)
+    ts0 = 1.d6*(tacc4)**(0.25)
+
+	  logb=dlog10(b)
+
+	  chip=1.d0+b**.5*(0.1*(10.*tb9)**(-0.27) &  
+     &	-	0.081*(10.*tb9)**(-0.58)*logb  & 
+     &	+	0.0149*(10.*tb9)**(-0.8)*logb**2)
+
+	  chit=1.d0+b**.5*(-0.231-0.514*exp(-(10.*tb9)*0.138) &
+     &		+ 0.675*exp(-(10.*tb9)*0.148)*logb &
+     &		- 0.204*exp(-(10.*tb9)*0.193)*logb**2 ) &
+     &		/(1.+0.0204*b)
+
+	  !dcos2th=br(i,np)**2/bm(i,np)**2
+      if (b /= 0.) then
+        cosph = dabs(brad/b) ! angle between the local magnetic field and the normal 
+      else
+        cosph = 1d0
+      endif
+
+	  tp = chip*ts0
+	  tt = chit*ts0
+
+    if (b >= 0.) then
+  ! with the limit due to neutrino emission from the crust
+  ! tpmax and ttmax are eq. 32 of Pons et al 2009
+     tpmax = 3.6d6*(1.d0+0.02*logb)
+     ttmax = 2.8d6/(1.d0+0.6*logb)   
+     tp =  (1.d0/tp**4+1.d0/tpmax**4)**(-0.25d0)
+     tt = (1.d0/tt**4+1.d0/ttmax**4)**(-0.25d0)
+    end if 
+
+    iron_env_B_DV2013 = (tp**4.5*cosph**2+tt**4.5*(1.d0-cosph**2))**(1./4.5)
+
+  end function iron_env_B_DV2013
+
+
+!-----------------------------------------------------------------------
+! Iron magnetised envelopes (Pons et al. 2009)
+!
+!> @author
+! Clara Dehman 
+!-----------------------------------------------------------------------
+real*8 function iron_env_B_PMG2009(g14,tb9,brad,b) 
+
+    implicit none
+
+    real*8, intent(in) :: g14, tb9, brad, b 
+    real*8 :: tacc4, zeta, chip, chit, tt, tp, cosph, logb, tpmax, ttmax, ts0
+
+    zeta = tb9 - 1.d-3*g14**0.25*dsqrt(7.d0*tb9)
+    tacc4 = g14*((7.d0*zeta)**2.25+(zeta/3.d0)**1.25)
+    ts0 = 1.d6*(tacc4)**(0.25)
+
+	  logb=dlog10(b)
+
+	  chip = 1.d0+0.05d0*b**(0.25d0)/tb9**(0.24d0) 
+    
+	  chit= dsqrt(1.d0+0.07d0*b*(0.03d0+tb9)**(-0.559d0)) / &
+      &          (1.d0+0.9d0*b/(0.03d0+tb9))**(0.4d0)
+    
+	  !dcos2th=br(i,np)**2/bm(i,np)**2
+      if (b /= 0.) then
+        cosph = dabs(brad/b) ! angle between the local magnetic field and the normal 
+      else
+        cosph = 1.d0
+      endif
+
+	  tp = chip*ts0
+	  tt = chit*ts0
+
+    if (b >= 0.) then
+  ! with the limit due to neutrino emission from the crust
+  ! tpmax and ttmax are eq. 32 of Pons et al 2009
+     tpmax = 3.6d6*(1.d0+0.02*logb)
+     ttmax = 2.8d6/(1.d0+0.6*logb)   
+     tp =  (1.d0/tp**4+1.d0/tpmax**4)**(-0.25d0)
+     tt = (1.d0/tt**4+1.d0/ttmax**4)**(-0.25d0)
+    end if 
+
+    iron_env_B_PMG2009 = (tp**4.5*cosph**2+tt**4.5*(1.d0-cosph**2))**(1./4.5)
+
+  end function iron_env_B_PMG2009
+
+!-----------------------------------------------------------------------
+! Iron magnetised envelopes (Potekhin et al. 2001)
+!
+!> @author
+! Clara Dehman 
+!-----------------------------------------------------------------------
+  real*8 function iron_env_B_PY2001(g14,tb9,brad,b) 
+
+    implicit none
+
+    real*8, intent(in) :: g14, tb9, brad, b 
+    real*8 :: tacc4, zeta, chip, chit, tt, tp, cosph, logb, tpmax, ttmax, ts0
+
+    zeta = tb9 - 1.d-3*g14**0.25*dsqrt(7.d0*tb9)
+    tacc4 = g14*((7.d0*zeta)**2.25+(zeta/3.d0)**1.25)
+    ts0 = 1.d6*(tacc4)**(0.25)
+
+	  logb=dlog10(b)
+
+	  chip = 1.d0+0.0492d0*b**(0.292d0)/tb9**(0.24d0)
+    
+	  chit= dsqrt(1.d0+0.1076d0*b*(0.03d0+tb9)**(-0.559d0)) / &
+      &          (1.d0+0.819d0*b/(0.03d0+tb9))**(0.6463d0)
+    
+	  !dcos2th=br(i,np)**2/bm(i,np)**2
+      if (b /= 0.) then
+        cosph = dabs(brad/b) ! angle between the local magnetic field and the normal 
+      else
+        cosph = 1.d0
+      endif
+
+	  tp = chip*ts0
+	  tt = chit*ts0
+
+    if (b >= 0.) then
+  ! with the limit due to neutrino emission from the crust
+  ! tpmax and ttmax are eq. 32 of Pons et al 2009
+     tpmax = 3.6d6*(1.d0+0.02*logb)
+     ttmax = 2.8d6/(1.d0+0.6*logb)   
+     tp =  (1.d0/tp**4+1.d0/tpmax**4)**(-0.25d0)
+     tt = (1.d0/tt**4+1.d0/ttmax**4)**(-0.25d0)
+    end if 
+
+    iron_env_B_PY2001 = (tp**4.5*cosph**2+tt**4.5*(1.d0-cosph**2))**(1./4.5)
+
+  end function iron_env_B_PY2001
