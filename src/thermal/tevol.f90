@@ -95,7 +95,6 @@ subroutine tevol(dt)
   real*8, dimension(:, :, :, :), allocatable :: zxir, zxieta
   real*8, dimension(:, :, :, :), allocatable :: zetar, zetaxi
   real*8, dimension(:, :, :, :), allocatable :: h
-  !real*8, dimension(:, :, :, :), allocatable :: cv
   real*8, dimension(:, :), allocatable, save :: matrix
   real*8, dimension(:,:), allocatable :: matrix_solve
   real*8, dimension(:), allocatable :: source
@@ -123,37 +122,19 @@ subroutine tevol(dt)
   !real*8, save, dimension(:), allocatable :: temp
  ! real*8 :: lat, long, ang
  real*8 :: maxbm
-
-
-  !if (FirstCall) then
-  !  allocate(temp(0: 6*nrt*(nangt+2)*(nangt+2)-1))
-  !endif
-
   
   !pl_index = log(T_ext/T_int)/log(r(1)/r(2*nrt-1)) !this is the index of a PL temperature profile
   !*************************************************
 
 
   ! ******** Variables for the source term ******
-
    real*8 :: Q, nu_loss, nu_loss_deriv
    real*8 :: lat = 0.0, long = 0.0, ang = 20.0*PI/180.0
    real*8 :: condition
   ! *********************************************
 
-
-!  OPEN(unit = 100, file='matrix_input.dat',status='replace')
-  !OPEN(unit = 101, file='matrix_output.dat',status='unknown')
-  !OPEN(unit = 102, file='source_input.dat',status='unknown')
-  !OPEN(unit = 103, file='source_output.dat',status='unknown')
-
-
 ! allocate the variable h. The index p is not used now, but we keep it.
   allocate(h(1:nrt, 1:6, 1:nangt, 1:nangt))
-  !allocate(cv(1:nrt, 1:6, 1:nangt, 1:nangt))
-
-  ! By now we play with a constant heat capacity
-  !cv = c_v
 
 ! allocate the component of the conductivity tensor
     
@@ -169,9 +150,7 @@ subroutine tevol(dt)
   allocate(kappa_etar_etap(1:nrt, 1:6, 0:nangt, 0:nangt))
   allocate(kappa_etaxi_etap(1:nrt, 1:6, 0:nangt, 0:nangt))
 
-! Allocate the auxiliary variables
-! WARNING: check the dimensions are correct
-
+  ! Allocate the auxiliary variables
   allocate(zrr(1:nrt, 1:6, 0:nangt, 0:nangt))
   allocate(zxixi(1:nrt, 1:6, 0:nangt, 0:nangt))
   allocate(zetaeta(1:nrt, 1:6, 0:nangt, 0:nangt))
@@ -182,7 +161,7 @@ subroutine tevol(dt)
   allocate(zetar(1:nrt, 1:6, 0:nangt, 0:nangt))
   allocate(zetaxi(1:nrt, 1:6, 0:nangt, 0:nangt))
 
-  !set the half-width of the matrix central band (diagonal excluded)
+  ! set the half-width of the matrix central band (diagonal excluded)
 
   bandwd = (nangt +2)*(6*(nangt+2)+1)
 
@@ -199,8 +178,6 @@ subroutine tevol(dt)
   allocate(source(0: 6*nrt*(nangt+2)*(nangt+2)-1))
 
   ! Allocation Variables for TESTs ********************************************
-
-
   allocate(flux_r_anl_out(1:nrt, 1:6, 0:nangt, 0:nangt))
   allocate(flux_xi_anl_xip(1:nrt, 1:6, 0:nangt, 0:nangt))
   allocate(flux_eta_anl_etap(1:nrt, 1:6, 0:nangt, 0:nangt))
@@ -213,10 +190,7 @@ subroutine tevol(dt)
     allocate(temp_anlt(1:nrt, 0:nangt+1, 0:nangt+1, 1:6))
   endif
 
-  ! ****************************************************
-
-! Initialize the coeffficients of the auxiliary variables to zero
-
+  ! Initialize the coeffficients of the auxiliary variables to zero
   zrr = 0.d0
   zxixi = 0.d0
   zetaeta = 0.d0
@@ -227,19 +201,16 @@ subroutine tevol(dt)
   zetar = 0.d0
   zetaxi = 0.d0
 
-! Initialize Flux_core 
-
+  ! Initialize Flux_core 
   Flux_core = 0.d0
 
   ! Initialize Fluxes for diagnostic
-
   flux_r_out(:,:,:,:) = 0.d0
   flux_xi_xip(:,:,:,:) = 0.d0
   flux_eta_etap(:,:,:,:) = 0.d0
 
-! Here we calculate the auxiliary variables for each thermal cell
-! indexs i, j, k refers to the thermal grid
-
+  ! Here we calculate the auxiliary variables for each thermal cell
+  ! indexs i, j, k refers to the thermal grid
   maxbm = maxval(bm)
 
   !$OMP Parallel do reduction(+: Flux_core) private(p,i,j,k, ic, kc, jc, omegatau_out, kappa_perp_out, & 
@@ -253,18 +224,12 @@ subroutine tevol(dt)
           kc = 2*k   ! center in the magnetic grid
           jc = 2*j   ! center in the magnetic grid
 
-        !write(*,*) i, j, k
-        !write(*,*) "Br =", br(ic, jc, kc, p), "Bxi =", bxi(ic, jc, kc, p), &
-        !&           "Beta=", beta(ic, jc, kc, p), "Bm=", bm(ic, jc, kc, p)
-
           if ((k /= 0) .and. (j /= 0)) then
             h(i, p, j, k) = dt/(cv(i,j,k,p)*vol(ic, jc, kc))
             ! units h = dt/(cv*vol) = Myr*1e8 K / 10**40 erg
           endif
 
           ! Average
-
-
           if (i == nrt) then
             omegatau_out = omegatau_arr(i,j,k,p)
             kappa_perp_out = kappa_perp_arr(i,j,k,p)
@@ -286,86 +251,11 @@ subroutine tevol(dt)
           omegatau_etap = 0.5d0*(omegatau_arr(i, j, k, p) + omegatau_arr(i, j, k+1, p))
 
           ! Linear interpolation to obtain the value at the borders
-
           kappa_perp_xip = kappa_perp_arr(i,j,k,p) + &
           & (kappa_perp_arr(i,j+1,k,p) - kappa_perp_arr(i,j,k,p))*(xi(jc+1)-xi(jc))/(xi(jc+2)-xi(jc))
 
           kappa_perp_etap = kappa_perp_arr(i,j,k,p) + &
           & (kappa_perp_arr(i,j,k+1,p) - kappa_perp_arr(i,j,k,p))*(eta(kc+1)-eta(kc))/(eta(kc+2)-eta(kc))
-
-
-          ! TEST --------------------
-
-         ! if ((p==1 .and. j==nangt) .or. (p==2 .and. j==0))then
-         !   omegatau_xip = 0.25d0*(omegatau_arr(i,nangt, k, 1) + omegatau_arr(i, nangt+1, k, 1) &
-         !   & + omegatau_arr(i,0, k, 2) + omegatau_arr(i, 1, k, 2))
-          !
-!
-!            kappa_perp_xip = 0.5d0*(kappa_perp_arr(i,nangt,k,1) + &
-!            & (kappa_perp_arr(i,nangt+1,k,1) - &
-!            &  kappa_perp_arr(i,nangt,k,1))*(xi(2*nangt+1)-xi(2*nangt))/(xi(2*nangt+2)-xi(2*nangt)) + &
-!            & kappa_perp_arr(i,0,k,2) + &
-!            & (kappa_perp_arr(i,1,k,2) - kappa_perp_arr(i,0,k,2))*(xi(1)-xi(0))/(xi(2)-xi(0)))
-!
-!          elseif((p==2 .and. j==nangt) .or. (p==3 .and. j==0)) then
-!
-!            omegatau_xip = 0.25d0*(omegatau_arr(i,nangt, k, 2) + omegatau_arr(i, nangt+1, k, 2) &
-!            & + omegatau_arr(i,0, k, 3) + omegatau_arr(i, 1, k, 3))
-!
-!
-!            kappa_perp_xip = 0.5d0*(kappa_perp_arr(i,nangt,k,2) + &
-!            & (kappa_perp_arr(i,nangt+1,k,2) - &
-!            &  kappa_perp_arr(i,nangt,k,2))*(xi(2*nangt+1)-xi(2*nangt))/(xi(2*nangt+2)-xi(2*nangt)) + &
-!            & kappa_perp_arr(i,0,k,3) + &
-!            & (kappa_perp_arr(i,1,k,3) - kappa_perp_arr(i,0,k,3))*(xi(1)-xi(0))/(xi(2)-xi(0)))
-!
-!          elseif((p==3 .and. j == nangt) .or. (p==4 .and. j==0)) then
-!
-!            omegatau_xip = 0.25d0*(omegatau_arr(i,nangt, k, 3) + omegatau_arr(i, nangt+1, k, 3) &
-!            & + omegatau_arr(i,0, k, 4) + omegatau_arr(i, 1, k, 4))
-!
-!
-!            kappa_perp_xip = 0.5d0*(kappa_perp_arr(i,nangt,k,3) + &
-!            & (kappa_perp_arr(i,nangt+1,k,3) - &
-!            &  kappa_perp_arr(i,nangt,k,3))*(xi(2*nangt+1)-xi(2*nangt))/(xi(2*nangt+2)-xi(2*nangt)) + &
-!            & kappa_perp_arr(i,0,k,4) + &
-!            & (kappa_perp_arr(i,1,k,4) - kappa_perp_arr(i,0,k,4))*(xi(1)-xi(0))/(xi(2)-xi(0)))
-!
-!          elseif((p==4 .and. j == nangt) .or. (p==1 .and. j==0)) then 
-!
-!            omegatau_xip = 0.25d0*(omegatau_arr(i,nangt, k, 4) + omegatau_arr(i, nangt+1, k, 4) &
-!            & + omegatau_arr(i,0, k, 1) + omegatau_arr(i, 1, k, 1))
-!
-!
-!            kappa_perp_xip = 0.5d0*(kappa_perp_arr(i,nangt,k,4) + &
-!            & (kappa_perp_arr(i,nangt+1,k,4) - &
-!            &  kappa_perp_arr(i,nangt,k,4))*(xi(2*nangt+1)-xi(2*nangt))/(xi(2*nangt+2)-xi(2*nangt)) + &
-!            & kappa_perp_arr(i,0,k,1) + &
-!            & (kappa_perp_arr(i,1,k,1) - kappa_perp_arr(i,0,k,1))*(xi(1)-xi(0))/(xi(2)-xi(0)))  
-!
-!          elseif((p==1 .and. k==nangt) .or. (p==5 .and. k==0)) then    
-!            omegatau_etap = 0.25d0*(omegatau_arr(i,j,nangt,1) + omegatau_arr(i,j,nangt+1,1) &
-!            & + omegatau_arr(i,j,0,5) + omegatau_arr(i,j,1,5))
-!
-!            kappa_perp_xip = 0.5d0*(kappa_perp_arr(i,j,nangt,1) + &
-!            & (kappa_perp_arr(i,j,nangt+1,1) - &
-!            &  kappa_perp_arr(i,j,nangt,1))*(eta(2*nangt+1)-eta(2*nangt))/(eta(2*nangt+2)-eta(2*nangt)) + &
-!            & kappa_perp_arr(i,j,0,5) + &
-!            & (kappa_perp_arr(i,j,1,5) - kappa_perp_arr(i,j,0,5))*(eta(1)-eta(0))/(eta(2)-eta(0)))
-!
-!          elseif((p==6 .and. k==nangt) .or. (p==1 .and. k==0)) then    
-!            omegatau_etap = 0.25d0*(omegatau_arr(i,j,nangt,6) + omegatau_arr(i,j,nangt+1,6) &
-!            & + omegatau_arr(i,j,0,1) + omegatau_arr(i,j,1,1))
-!
-!            kappa_perp_xip = 0.5d0*(kappa_perp_arr(i,j,nangt,6) + &
-!            & (kappa_perp_arr(i,j,nangt+1,6) - &
-!            &  kappa_perp_arr(i,j,nangt,6))*(eta(2*nangt+1)-eta(2*nangt))/(eta(2*nangt+2)-eta(2*nangt)) + &
-!            & kappa_perp_arr(i,j,0,1) + &
-!            & (kappa_perp_arr(i,j,1,1) - kappa_perp_arr(i,j,0,1))*(eta(1)-eta(0))/(eta(2)-eta(0)))
-!
-!          endif
-
-          !--------------------------------
 
           if (maxval(bm) == 0d0) then
             kappa_rr_out(i, p, j, k) = A_kappa(ic+1, kappa_perp_out)
@@ -373,16 +263,6 @@ subroutine tevol(dt)
             kappa_etaeta_etap(i, p, j, k) = G_kappa(ic, jc, kappa_perp_etap)
             kappa_xieta_xip(i, p, j, k) = E_kappa(ic, jc+1, kc, kappa_perp_xip)
             kappa_etaxi_etap(i, p, j, k) = F_kappa(ic, jc, kc+1, kappa_perp_etap)
-
-            !--------- TEST ------------------------
-            !if (i==nrt-2) then
-            !  if ((p==1 .and. j==nangt) .or. (p==2 .and. j==0))then
-            !   print*, p, k, 'B:', B_kappa(ic, kc, kappa_perp_xip),  &
-            !    & 'E:', E_kappa(ic, jc+1, kc, kappa_perp_xip)
-            !  endif
-            !endif
-          !--------------------------------- delate after
-
 
           else
 
@@ -397,21 +277,6 @@ subroutine tevol(dt)
           kappa_xixi_xip(i, p, j, k) = B_kappa(ic, kc, kappa_perp_xip) + & 
           &              I_kappa(ic, p, jc+1, kc, omegatau_xip, kappa_perp_xip)*     &
           &              bxi(ic, jc+1, kc, p)/bm(ic, jc+1, kc, p)
-
-
-          ! ------------TEST----------
-          !if (i==nrt-2) then
-          !  if ((p==1 .and. j==nangt) .or. (p==2 .and. j==0))then
-          !    print*, p, k, 'B:', B_kappa(ic, kc, kappa_perp_xip), 'I:', I_kappa(ic, p, jc+1, kc, omegatau_xip, kappa_perp_xip), &
-          !    & 'E:', E_kappa(ic, jc+1, kc, kappa_perp_xip), 'N:', &
-          !    & N_kappa(ic, p, jc+1, kc, omegatau_xip, kappa_perp_xip), 'J:', &
-          !    & J_kappa(ic, p, jc+1, kc, omegatau_xip, kappa_perp_xip), 'H:', &
-          !    & H_kappa(ic, p, jc+1, kc, omegatau_xip, kappa_perp_xip), 'M:', &
-          !    & M_kappa(ic, p, jc+1, kc, omegatau_xip, kappa_perp_xip)
-          !  endif
-          !endif
-
-          ! --------------------------------- delate after
 
           kappa_etaeta_etap(i, p, j, k) = G_kappa(ic, jc, kappa_perp_etap) + & 
           &              J_kappa(ic, p, jc, kc+1, omegatau_etap, kappa_perp_etap)*   &
@@ -443,7 +308,6 @@ subroutine tevol(dt)
           &              I_kappa(ic, p, jc, kc+1, omegatau_etap, kappa_perp_etap)*           &
           &              beta(ic, jc, kc+1, p)/bm(ic, jc, kc+1, p)!0.d0
           endif
-          !----------------------------------------
 
           ! The areas here are the covariant components
           if (i .ne. nrt) then
@@ -455,7 +319,7 @@ subroutine tevol(dt)
           zetaeta(i, p, j, k) = enu(ic)*kappa_etaeta_etap(i, p, j, k)*area_eta(ic, jc, kc+1)/(eta(kc+2) - eta(kc))
           
           if (k .ne. 0) then
-            !These terms with k = 0 are never used
+            ! These terms with k = 0 are never used
             if (i .ne. nrt) then 
               zreta(i, p, j, k) = 0.25*enu(ic+1)*kappa_reta_out(i, p, j, k)*area_r(ic+1, jc, kc)/(eta(kc+1) - eta(kc-1))
             else 
@@ -465,7 +329,7 @@ subroutine tevol(dt)
           endif
           
           if (j .ne. 0) then
-            !These terms with j = 0 are never used
+            ! These terms with j = 0 are never used
             if (i .ne. nrt) then
               zrxi(i, p, j, k) = 0.25*enu(ic+1)*kappa_rxi_out(i, p, j, k)*area_r(ic+1, jc, kc)/(xi(jc+1) - xi(jc-1))
             else
@@ -478,28 +342,22 @@ subroutine tevol(dt)
             zxir(i, p, j, k) = 0.25*enu(ic)*kappa_xir_xip(i, p, j, k)*area_xi(ic, jc+1, kc)/(r(ic+1) - r(ic-1))
             zetar(i, p, j, k) = 0.25*enu(ic)*kappa_etar_etap(i, p, j, k)*area_eta(ic, jc, kc+1)/(r(ic+1) - r(ic -1))
           else ! if we are at the last radial layer we use the center of the cell to estimate the derivative
-          ! DV: Why? SA: because we don't have a i+1 cell
-            ! NOTE: I set them to 0 just for debugging
-            zxir(i, p, j, k) = 0.d0!0.25*enu(ic)*kappa_xir_xip(i, p, j, k)*area_xi(ic, jc+1, kc)/(r(ic) - r(ic-1))
-            zetar(i, p, j, k) = 0.d0!0.25*enu(ic)*kappa_etar_etap(i, p, j, k)*area_eta(ic, jc, kc+1)/(r(ic) - r(ic -1))
+            zxir(i, p, j, k) = 0.25*enu(ic)*kappa_xir_xip(i, p, j, k)*area_xi(ic, jc+1, kc)/(r(ic) - r(ic-1))
+            zetar(i, p, j, k) = 0.25*enu(ic)*kappa_etar_etap(i, p, j, k)*area_eta(ic, jc, kc+1)/(r(ic) - r(ic -1))
           endif
           
 
-          !Compute the flux between the core and the crust 
+          ! Compute the flux between the core and the crust 
           if (i==1)then
             if ((j .ne. 0) .and. (k .ne. 0)) then ! exclude the ghost cells 
               Flux_core = Flux_core - zrr(i,p,j,k)*(temp(2,j,k,p)-T_core) - &
               &           zrxi(i,p,j,k)*(temp(2,j+1,k,p)-temp(2,j-1,k,p)) - &
               &           zreta(i,p,j,k)*(temp(2,j,k+1,p)-temp(2,j,k-1,p)) 
-              !Flux_core = Flux_core + 1 
-              !print*, Flux_core
             endif
           endif
           
           
-         !Compute the fluxes for test
-
-
+          ! Compute the fluxes for test
           if (i .ne. 1 .and. i .ne. nrt) then
             if (j .ne. 0 .and. k .ne.0) then ! exclude radial flux in ghost cell
               flux_r_out(i,p,j,k) = - zrr(i,p,j,k)*(temp(i+1,j,k,p) - temp(i,j,k,p))    &
@@ -510,8 +368,6 @@ subroutine tevol(dt)
             endif
           
             if (k .ne. 0) then ! exclude k=0 ghost layer
-              !flux_xi_xip(i,p,j,k) = - zxir(i,p,j,k)*(temp(i+1,j+1,k,p) + temp(i+1,j,k,p)  &
-              !&                       - temp(i-1,j+1,k,p) - temp(i-1,j,k,p))                  
               flux_xi_xip(i,p,j,k) = - zxir(i,p,j,k)*(temp(i+1,j+1,k,p) + temp(i+1,j,k,p)  &
               &                       - temp(i-1,j+1,k,p) - temp(i-1,j,k,p))                  &
               &                       - zxixi(i,p,j,k)*(temp(i,j+1,k,p) - temp(i,j,k,p))      &
@@ -531,26 +387,6 @@ subroutine tevol(dt)
           if (CalculateFlux) then 
         
             if ((i .ne. nrt) .and. (j .ne. nangt) .and. (k .ne. nangt) .and. (i > 1) .and. (j > 1) .and. (k > 1)) then
-
-              ! ******************    START DEPRECATED  *****************************
-              ! Areas Missing
-              !flux_r_out(i, p, j, k) = - kappa_rr_out(i, p, j, k)*(temp(i+1, j, k, p) - temp(i, j, k, p))/(r(ic+2)- r(ic)) + &
-              !&                 - kappa_rxi_out(i, p, j, k)*(temp(i+1, j+1, k, p) + temp(i, j+1, k, p) - temp(i+1, j-1, k, p) + &
-              !&                      - temp(i, j-1, k, p))/(4.*(xi(jc+1)-xi(jc-1))) + &
-              !&                      - kappa_reta_out(i, p, j, k)*(temp(i+1, j, k+1, p) + temp(i, j, k+1, p) + &
-              !&                      - temp(i+1, j, k-1, p) - temp(i, j, k-1, p))/(4.*(eta(kc+1)-eta(kc-1)))
-              !
-              !flux_xi_xip(i, p, j, k) = - kappa_xir_xip(i, p, j, k)*(temp(i+1, j+1, k, p) + temp(i+1, j, k, p) + &
-              !&                       - temp(i-1, j+1, k, p) - temp(i-1, j, k, p))/(4.0*(r(ic+1)-r(ic-1))) + &
-              !&                       - kappa_xixi_xip(i, p, j, k)*(temp(i, j+1, k, p) - temp(i, j, k, p))/(xi(jc+2)- xi(jc)) + &
-              !&                       - kappa_xieta_xip(i, p, j, k)*(temp(i, j+1, k+1, p) + temp(i, j, k+1, p) + &
-              !&                       - temp(i, j+1, k-1, p) - temp(i, j, k-1, p))/(4.0*(eta(kc+1)-eta(kc-1)))
-              !
-              !flux_eta_etap(i, p, j, k) = - kappa_etar_etap(i, p, j, k)*(temp(i+1, j, k+1, p) + temp(i+1, j, k, p) + &
-              !&                       - temp(i-1, j, k+1, p) - temp(i-1, j, k, p))/(4.0*(r(ic+1)-r(ic-1))) + &
-              !&                       - kappa_etaxi_etap(i, p, j, k)*(temp(i, j+1, k+1, p) + temp(i, j+1, k, p) + &
-              !&                       - temp(i, j-1, k+1, p) - temp(i, j-1, k, p))/(4.0*(xi(jc+1)-xi(jc-1))) + &
-              !&                       - kappa_etaeta_etap(i, p, j, k)*(temp(i, j, k+1, p) - temp(i, j, k, p))/(eta(kc+2)- eta(jc))
 
               ! ---- Now the following is for Perez-Azorin Test -------
 
@@ -586,12 +422,6 @@ subroutine tevol(dt)
 
           endif 
 
-          !if (i == 2 .and. (p .ne. 5) .and. (p .ne. 6) .and. k ==4 .and. (i*j>0) .and. (i < nrt) .and. (j < nangt)) then
-            !write(*,*) 'j =', j, 'p =', p, 'r =', r(ic), 'time =', time, 'T =', 0.5*(temp(i, j+1, k, p) + temp(i, j, k, p))
-            !write(*,*) 'Flux_xi =', flux_xi_xip(i,p,j,k), 'Flux_anl_xi =', flux_xi_anl_xip(i,p,j,k)
-            !write(*,*) 'error =', 100*(flux_xi_xip(i,p,j,k)/flux_xi_anl_xip(i,p,j,k) -1.0)
-          !endif
-          
         enddo
       enddo
     enddo
@@ -599,46 +429,12 @@ subroutine tevol(dt)
   !$OMP end Parallel do
 
 
-
-  ! ----------- Test for the fluxes ---------------------
-  !print*, 'Flux test'
-  !print*, 'k', 'Flux'
-  !do k =1, nangt
-  !!  print*, k, (zxixi(nrt-2, 1, nangt,k)-zxixi(nrt-2, 2, 0,k))/zxixi(nrt-2, 2, 0,k), &
-  !!  & (kappa_xixi_xip(nrt-2, 1, nangt,k)-kappa_xixi_xip(nrt-2, 2, 0,k))/(kappa_xixi_xip(nrt-2, 2, 0,k))
-  !!  print*, k, -zxir(28,1,nangt,k)*(temp(29,nangt+1,k,1)+temp(29,nangt,k,1)-temp(27,nangt+1,k,1)-temp(27,nangt,k,1)) - &
-  !!  & zxixi(28,1,nangt,k)*(temp(28,nangt+1,k,1)-temp(28,nangt,k,1)) - &
-  !!  & zxieta(28,1,nangt,k)*(temp(28,nangt+1,k+1,1)+temp(28,nangt,k+1,1)-temp(28,nangt+1,k,1)-temp(28,nangt,k,1)), &
-  !!  & -zxir(28,2,0,k)*(temp(29,1,k,2)+temp(29,0,k,2)-temp(27,1,k,2)-temp(27,0,k,2)) - &
-  !!  & zxixi(28,2,0,k)*(temp(28,1,k,2)-temp(28,0,k,2)) - &
-  !!  & zxieta(28,2,0,k)*(temp(28,1,k+1,2)+temp(28,0,k+1,2)-temp(28,1,k,2)-temp(28,0,k,2))
-  !  if (abs(flux_xi_xip(28,2,0,k))>0.d0) then 
-  !    print*, k, flux_xi_xip(28,1,nangt,k),  flux_xi_xip(28,2,0,k), &
-  !     &       (flux_xi_xip(28,1,nangt,k) - flux_xi_xip(28,2,0,k))/flux_xi_xip(28,2,0,k)
-  !  else 
-  !    print*, k, flux_xi_xip(28,1,nangt,k),  flux_xi_xip(28,2,0,k), &
-  !    & kappa_xixi_xip(28,1,nangt,k)*(temp(28,nangt+1,k,1) - temp(28,nangt,k,1)) , &
-  !    &kappa_xixi_xip(28,2,0,k)*(temp(28,1,k,2) - temp(28,0,k,2)) , &
-  !    & kappa_xieta_xip(28,1,nangt,k)*(temp(28,nangt+1,k+1,1) + temp(28,nangt,k+1,1)  &
-  !    &                       - temp(28,nangt+1,k-1,1) - temp(28,nangt,k-1,1)), &
-  !    & kappa_xieta_xip(28,2,0,k)*(temp(28,1,k+1,2) + temp(28,0,k+1,2)  &
-  !    &                       - temp(28,1,k-1,2) - temp(28,0,k-1,2))
-  !  endif
-  !enddo
-
-  ! -----------------------------------------------------
-
-
-
-
   if (FirstCall) then
     matrix = 0.d0 ! initialize all the elements to 0
   endif
   source = 0.d0 ! Initialize the source to 0 each timestep 
 
-
   call envelope_model() ! we calculate the surface temperature, the flux and flux derivative
-
 
   ! Start filling the matrix in the interior's points, excluding the radial extremes, 1 and nrt+1
   !$OMP Parallel do private(p,i,j,k, ic, kc, jc, precoeff, nu_loss, nu_loss_deriv, Q, n)
@@ -687,6 +483,7 @@ subroutine tevol(dt)
          &                                    zxixi(i, p, j, k) + zxixi(i, p, j-1, k)   +   &
          &                                    zetaeta(i, p, j,k) + zetaeta(i, p, j, k-1))   &
          &       - nu_loss_deriv*enu(ic)*dt/cv(i,j,k,p) ! source term
+          
 
          
 
@@ -701,17 +498,6 @@ subroutine tevol(dt)
             & zetar(i, p, j, k-1))
 
          endif 
-
-          
-
-        ! condition = dcos(phi(jc,kc,p))*dsin(theta(jc,kc,p))*dcos(long)*dsin(lat) + &
-        ! & dsin(phi(jc,kc,p))*dsin(theta(jc,kc,p))*dsin(lat)*dsin(long) + &
-         !& dcos(theta(jc,kc,p))*dcos(lat)
-         
-        
-         !if ((condition .ge. dcos(ang)) .and. (r(ic) .le. rmax/2.0)) then
-         !   Q = 100.0*exp(-(time+dt)/1.5)
-         !endif
 
           ! Source for the internal patches
           source(n) = temp(i, j, k, p) + Q*dt/cv(i,j,k,p)
@@ -845,11 +631,9 @@ subroutine tevol(dt)
 
   
   if (FirstCall) then
-    !do i =2, nrt !before i=2, nrt-1 !check I included the last layer
-    !do i =2, nrt ! MAYBE USE THIS FOR PEREZ-AZORIN TEST(exclud first layer or maybe also the last) 
-    do i=1,nrt!i =2, nrt
+    do i=1,nrt
       do p = 1, 6
-        do k = 1, nangt   ! CHECK if the interval is right. Before it was k = 2, nangt-1
+        do k = 1, nangt
         
           if (k <= nangt/2) then
             kprime = k + 1
@@ -949,14 +733,7 @@ subroutine tevol(dt)
           matrix(2*bandwd+n_ksup-n1_ksup, n1_ksup) = - (1.d0 - edge_wt(kc))!- (1.d0 - 0.5*edge_wt(kc)) !- (1.d0 - 0.5*edge_w(kc))
           matrix(2*bandwd+n_ksup-n2_ksup, n2_ksup) = - edge_wt(kc)!- 0.5*edge_wt(kc) !- 0.5*edge_w(kc)
 
-          !write(*,*) n_jinf, n1_jinf, n2_jinf
-          !write(*,*) n_jsup, n1_jsup, n2_jsup
-          !write(*,*) matrix(2*bandwd, n_jinf), matrix(2*bandwd+n_jinf-n1_jinf, n1_jinf), matrix(2*bandwd+n_jinf-n2_jinf, n2_jinf)
-          !write(*,*) matrix(2*bandwd, n_jsup), matrix(2*bandwd+n_jsup-n1_jsup, n1_jsup), matrix(2*bandwd+n_jsup-n2_jsup, n2_jsup)
-          !write(*,*) "*****************************************************"
-
         enddo  ! End of k loop
-
 
 
         ! Interpolation constraints at the four corners
@@ -993,7 +770,7 @@ subroutine tevol(dt)
           n1_corner(3) = n_matrix(i, 2, nangt, nangt)
           n2_corner(3) = n_matrix(i, 5, nangt, nangt)
           n1_corner(4) = n_matrix(i, 4, 1, nangt)
-          n2_corner(4) = n_matrix(i, 5, 1, nangt)!n_matrix(i, 5, nangt, nangt)<-error
+          n2_corner(4) = n_matrix(i, 5, 1, nangt)
 
         elseif(p==4) then
           n1_corner(1) = n_matrix(i, 3, nangt, 1)
@@ -1058,7 +835,6 @@ subroutine tevol(dt)
 
 
   call core_cooling(T_core, dt, Flux_core) !This routine evolve the temperature in the core
-  !print*, time*1.d6, T_core, Flux_core, temp(2,2,2,2), zrr(1,2,2,2)*(temp(2,2,2,2) - T_core)
 
   !$OMP Parallel do private(p,j,k, kc, jc, n_jinf, n_jsup)  collapse(2)
   do p = 1, 6
@@ -1073,21 +849,15 @@ subroutine tevol(dt)
 
         matrix(2*bandwd, n_jinf) = 1.d0
 
-
         ! --------------------  Realistic BC  --------------------------
         ! Here we consider the cooling of the core and the BB cooling from the surface.
         ! we also call the envelope model
-     
         
         if (k .ne. 0 .and. j .ne. 0 .and. j .ne.  nangt+1 .and. k .ne. nangt+1) then
 
           ! units h = dt/(cv*vol) = Myr*1e8 K / 10**40 erg
           ! units source: Qnu*dt/cv : 1e8 K
           ! units of sfluxb have to be then: 1e40 erg/Myr
-
-          !if (k == 2 .and. j == 2 .and. p ==2 ) then !DEBUGGING
-          !  print*, time, h(nrt,p,j,k), sfluxb(j,k,p)*UNIT_EN/UNIT_TIME, h(nrt,p,j,k)*sfluxb(j,k,p)
-          !endif 
 
           source(n_jsup) = source(n_jsup) - h(nrt,p,j,k)*sfluxb(j,k,p)
           source(n_jinf) = T_core !inner cooling core
@@ -1096,26 +866,6 @@ subroutine tevol(dt)
             source(n_jsup) = 0.d0
             source(n_jinf) = 0.d0
         endif 
-
-        
-
-        ! ------ Perez-Azorin 2006 test ----------
-        ! set omegatau = 0 for isotropic case
-
-        !ang_term = dsin(theta(jc, kc, p))**2 + (dcos(theta(jc, kc, p))**2)/(1.d0 + omegatau*omegatau)
-        
-        ! Generalized PA test
-        !cos_th_prime = dsin(beta_ang)*dsin(theta(jc, kc ,p))*(-dcos(gamma_ang)*dcos(phi(jc, kc, p)) + &
-        !&              dsin(gamma_ang)*dsin(phi(jc, kc, p))) + dcos(beta_ang)*dcos(theta(jc, kc, p))
-        !ang_term = 1.d0 - cos_th_prime*cos_th_prime*omegatau*omegatau/(1.d0 + omegatau*omegatau)
-
-        !source(n_jinf) = T_int*((1./((time+dt)))**(3./2.))*exp(-r(1)*r(1)*ang_term/(4.*kappa_perp*(time+dt)))!Perez Azorin
-        !source(n_jsup) = T_int*((1./((time+dt)))**(3./2.))*exp(-r(2*nrt-1)*r(2*nrt-1)*ang_term/(4.*kappa_perp*(time+dt)))!Perez Azorin
-
-        ! --- Hot Spot Test -------
-        !source(n_jinf) = T_ext
-        !source(n_jsup) = T_ext
-        ! ----------------------------
 
        if (k == 0 .or. j == 0 .or. j ==  nangt+1 .or. k == nangt+1) then
             source(n_jinf) = 0.d0
@@ -1127,7 +877,6 @@ subroutine tevol(dt)
   enddo
   !$OMP end Parallel do
 
-  !--------------------------------------------------------------------------------------------------------------
   ! End Boundary Conditions -------------------------------------------------------------------------------------
 
   ! end filling the matrix and source
@@ -1145,286 +894,42 @@ subroutine tevol(dt)
   ! LDB  = lead dimension of B
   ! INFO = success/not success, 0 if succesfull
 
-!  do i = 0, 3*bandwd
-!    write(100,*) matrix(i,:)
-!  enddo
-
-  !write(*,*) "Source Before"
-  !if (FirstCall) then
-  !  do i = 0,6*nrt*(nangt+2)*(nangt+2)-1
-  !      write(102, *) source(i)
-        !write(*,*) i, source(i)
-  !  enddo
-  !endif
-
-  
-
-  !if (FirstCall) then
-  !  do p = 1, 6
-  !     write (name,'(a12,i1,a2)') "out/temp_ini", p, ".d"
-  !     open(unit = 120, file=trim(name), status = 'replace')
-  !     
-  ! !open(unit=115,file=trim(name),status='replace')
-  !
-  !     do j = 1, nangt
-  !         do k =1, nangt
-  !             jc = 2*j
-  !             kc = 2*k
-  !             !ang_term = (dsin(theta(jc, kc, p))**2 + (dcos(theta(jc, kc, p))**2)/(1.d0 + omegatau*omegatau))
-  !             
-  !
-  !             ! generlized PA solution
-  !              cos_th_prime = dsin(beta_ang)*dsin(theta(j, k ,p))*(-dcos(gamma_ang)*dcos(phi(j, k, p)) + &
-  !              &              dsin(gamma_ang)*dsin(phi(j, k, p))) + dcos(beta_ang)*dcos(theta(j, k, p))
-  !              ang_term = 1.d0 - cos_th_prime*cos_th_prime*omegatau*omegatau/(1.d0 + omegatau*omegatau)
-  !             T_analit = T_int*((1./(time+dt))**(3./2.))!*exp(-r(2)*r(2)*ang_term/(4.*kappa_perp*(time+dt))) !Perez-Azorin
-  !                !T_analit = 0.d0
-  !
-  !             write(120, *) theta(jc, kc, p), phi(jc, kc, p), (source(n_matrix(2,p, j, k)) - T_analit)/T_analit, &
-  !             &     source(n_matrix(2,p, j, k))
-  !         enddo
-  !     enddo
-  !     close(120)
-  ! enddo
-  !endif
-  ! Open a file for the L2 measure
-
-  ! *************    PEREZ-AZORIN TEST ----- WRITE L2 Error    ****************
-  !write (name,'(a10)') "out/L2_T.d"
-  !if (FirstCall) then
-  !  open(unit = 130, file=trim(name), status = 'replace')
-
-    ! we write the analitic temperature at the first timestep 
-    ! WARNING The following loop seems pretty useless and it's repeted after matrix 
-    ! inversion. I comment it but think about it
-    !do p = 1, 6
-    !  !do k = 1, nangt ! do not include ghost cells
-    !  do k = 0, nangt+1 ! here we also save ghost cells 
-    !      !do j = 1, nangt
-    !      do j = 0, nangt+1
-    !          do i =1, nrt
-    !              n = n_matrix(i, p, j, k)
-    !!              !temp(i, j, k, p) = source(n)
-    !              if (abs(source(n))>= 1.d50) then             
-    !                write(*,*) i, j, k, p, source(n), temp(i, j, k, p)
-    !              endif
-    !!
-    !!              ! we save analitic temperature
-    !!              ! Perez-Azorin 2006 Isotropic
-    !!              
-    !!              ic = 2*i - 1
-    !!              jc = 2*j
-    !!              kc = 2*k
-    !!
-    !!              !ang_term = dsin(theta(jc, kc, p))**2 + (dcos(theta(jc, kc, p))**2)/(1.d0 + omegatau*omegatau) !standard PA
-    !!              cos_th_prime = dsin(beta_ang)*dsin(theta(jc, kc ,p))*(-dcos(gamma_ang)*dcos(phi(jc, kc, p)) + &
-    !!              &              dsin(gamma_ang)*dsin(phi(jc, kc, p))) + dcos(beta_ang)*dcos(theta(jc, kc, p))
-    !!              ang_term = 1.d0 - cos_th_prime*cos_th_prime*omegatau*omegatau/(1.d0 + omegatau*omegatau) !generalized PA
-    !!
-    !!              temp_anlt(i, j, k, p) = T_int*((1./(time))**(3./2.))*exp(-r(ic)*r(ic)*ang_term/(4.*kappa_perp*(time)))
-    !          enddo
-    !      enddo
-    !  enddo
-    !enddo
-
-    ! at the first time step, write the L2 before matrix is inverted. This is L2 at time 0
-  !  write(130, *) time, sum((temp(:,1:nangt,1:nangt,:)-temp_anlt(:,1:nangt,1:nangt,:))**2)/sum(temp_anlt(:,1:nangt,1:nangt,:)**2) 
-  !else
-  !  open(unit = 130, file=trim(name), access = 'append')
-  !endif
-  ! ****** PEREZ_AZORIN TEST - L2 *********
-
-
-
   !************************ MATRIX INVERSION *********************************
 
   ! we do not have to pass matrix in the inversion routine because it will be modified 
   ! while we want to preserve the sparse elements. We define an appropriate array
   ! matrix_solve for that
 
-
   matrix_solve = matrix
 
  call dgbsv(6*nrt*(nangt+2)*(nangt+2), bandwd, bandwd, 1, matrix_solve, 3*bandwd+1, &
  &          IPIV, source, 6*nrt*(nangt+2)*(nangt+2), INFO)
-
-
 
   !*************************************************************************
 
  ! We assign to the temperature vector the values resulting from the linear system solving
 
  ! We assign to the temperature array the value stored in source
-! This loop seems pretty slow...
 !$OMP Parallel do private(p,i,j,k, n)
 do i =1, nrt
  do p = 1, 6
-    !do k = 1, nangt ! do not include ghost cells
     do k = 0, nangt+1 ! here we also save ghost cells 
-        !do j = 1, nangt
         do j = 0, nangt+1
             
                 n = n_matrix(i, p, j, k)
                 temp(i, j, k, p) = source(n)
 
-                if(temp(i,j,k,p)<1.d-2) temp(i,j,k,p)=1.d-2 ! we impose a floor to the temperature
-
-                !if (k == 0 .or. j == 0 .or. j ==  nangt+1 .or. k == nangt+1) then
-                !  write(*,*) i, j, k, p, temp(i,j,k,p)
-                !endif 
+                if (temp(i,j,k,p)<1.d-2) temp(i,j,k,p)=1.d-2 ! we impose a floor to the temperature
 
                 if (temp(i,j,k,p)>1d2 .or. temp(i,j,k,p)<0.d0) then 
                   write(*,*) i, j, k, p, 'temp:', temp(i,j,k,p)
                 endif 
 
-
-                ! we save analitic temperature
-                ! Perez-Azorin 2006 
-                !
-                !ic = 2*i - 1
-                !jc = 2*j
-                !kc = 2*k
-
-                !ang_term = dsin(theta(jc, kc, p))**2 + (dcos(theta(jc, kc, p))**2)/(1.d0 + omegatau*omegatau) !standard PA
-                !cos_th_prime = dsin(beta_ang)*dsin(theta(jc, kc ,p))*(-dcos(gamma_ang)*dcos(phi(jc, kc, p)) + &
-                !&              dsin(gamma_ang)*dsin(phi(jc, kc, p))) + dcos(beta_ang)*dcos(theta(jc, kc, p))
-                !ang_term = 1.d0 - cos_th_prime*cos_th_prime*omegatau*omegatau/(1.d0 + omegatau*omegatau) !generalized PA
-
-                !temp_anlt(i, j, k, p) = T_int*((1./(time+dt))**(3./2.))*exp(-r(ic)*r(ic)*ang_term/(4.*kappa_perp*(time+dt)))
             enddo
         enddo
     enddo
   enddo
   !$OMP end Parallel do
-
-! *********** DEGUGGING ghost cells and flux ***************
-
- !print*, 'Cells'
- !do k = 1,2*nangt+1
- ! print*, k, eta(k), pmt(k)
- !enddo 
-
- !print*, 'PESI'
- !do k =1, nangt
- ! kc = 2*k
- ! if (k<(nangt+1)/2) then
- !   print*, k, 0.5*edge_wt(kc), 1.0 - 0.5*(1.0 + dabs(pmt(kc-1) - eta(kc+1))/(eta(2)-eta(0))), dabs(pmt(kc-1) - eta(kc+1))
- ! elseif (k == (nangt+1)/2) then
- !   print*, k, 0.5*edge_wt(kc), 0.d0, dabs(pmt(kc-1) + eta(kc+1))
- ! else
- !   print*, k, 0.5*edge_wt(kc), 1.0 - 0.5*(1.0 + dabs(pmt(kc+1) - eta(kc-1))/(eta(2)-eta(0))), dabs(pmt(kc+1) - eta(kc-1))
- ! endif
- !enddo 
- !stop
-
-  !do k=1, nangt
-  !  print*, eta(2*k), edge_wt(2*k), pmt(2*k)
-  !enddo 
-  !do p = 1, 6
-  !  do k = 1, nangt
-  !    do j = 1, nangt
-  !      kc = 2*k
-  !      i = nrt-1
-  !      if (p == 1 .and. k==8) then
-  !        !write(*,*) p, j, flux_r_out(i,p,j,k)-flux_r_out(i-1,p,j,k) + flux_xi_xip(i,p,j,k) - &
-  !        !& flux_xi_xip(i,p,j-1,k) + flux_eta_etap(i,p,j,k) - flux_eta_etap(i,p,j,k-1)
-  !        !write(*,*) p, j, (temp(i+1,j,k+1,p) + temp(i+1,j,k,p)  &
-  !        !    &  - temp(i-1,j,k+1,p) - temp(i-1,j,k,p)), temp(i,j,k+1,p) - temp(i,j,k,p), &
-  !        !    &  (temp(i,j+1,k+1,p) + temp(i,j+1,k,p)  &
-  !        !    &  - temp(i,j-1,k+1,p) - temp(i,j-1,k,p))
-  !        !write(*,*) p, j, flux_xi_xip(i,j,k,p) - flux_xi_xip(i,j-1,k,p)  
-  !        !write(*,*) p, j, flux_eta_etap(i,j,k,p) - flux_eta_etap(i,j,k-1,p)
-  !        !write(*,*) p, j, flux_r_out(i-1,j,k,p)-flux_r_out(i-1,j,k,p), zreta(i,p,j,k)
-  !        !write(*,*) p, j, temp(i,j,k+1,p), temp(i,j,k,p),temp(i,j,k+1,p) - temp(i,j,k,p)
-  !        write(*,*) p, j, (temp(i+1,j,k+1,p) + temp(i+1,j,k,p)  &
-  !            &  - temp(i-1,j,k+1,p) - temp(i-1,j,k,p))
-  !      elseif (p == 4 .and. k == 8) then
-  !         !write(*,*) p, j, flux_r_out(i,p,j,k)-flux_r_out(i-1,p,j,k) + flux_xi_xip(i,p,j,k) - &
-  !        !& flux_xi_xip(i,p,j-1,k) + flux_eta_etap(i,p,j,k) - flux_eta_etap(i,p,j,k-1)
-  !        !write(*,*) p, j, flux_xi_xip(i,j,k,p) - flux_xi_xip(i,j-1,k,p) 
-  !        !write(*,*) p, j, flux_eta_etap(i,j,k,p) - flux_eta_etap(i,j,k-1,p)
-  !        !write(*,*) p, j, flux_r_out(i-1,j,k,p)-flux_r_out(i-1,j,k,p), zreta(i,p,j,k)
-  !        !write(*,*) p, j, (temp(i+1,j,k+1,p) + temp(i+1,j,k,p)  &
-  !        !    &  - temp(i-1,j,k+1,p) - temp(i-1,j,k,p)), temp(i,j,k+1,p) - temp(i,j,k,p), &
-  !        !    &  (temp(i,j+1,k+1,p) + temp(i,j+1,k,p)  &
-  !        !    &  - temp(i,j-1,k+1,p) - temp(i,j-1,k,p))
-  !        !write(*,*) p, j, temp(i,j,k+1,p), temp(i,j,k,p), temp(i,j,k+1,p) - temp(i,j,k,p)
-  !        write(*,*) p, j, (temp(i+1,j,k+1,p) + temp(i+1,j,k,p)  &
-  !            &  - temp(i-1,j,k+1,p) - temp(i-1,j,k,p))
-  !      endif
-  !    enddo
-  !  enddo
-  !enddo
-  ! *************************************************
-
-   !Now we write the fluxes for a diagnostic 
-!  i_print = 5
-!  
-!  if (CalculateFlux) then
-!
-!    do p = 1, 6
-!      do k = 1, nangt
-!        do j = 1, nangt
-!          ic = 2*i_print -1 
-!          jc = 2*j
-!          kc = 2*k
-!          ! here we calculate the net_fluxs along different directions
-!        
-!          netflux_r(p, j, k) = -zrr(i_print, p, j, k)*(temp(i_print+1, j, k, p) - temp(i_print, j, k, p)) &
-!          & - zrxi(i_print, p, j, k)*(temp(i_print+1, j+1, k, p) + temp(i_print, j+1, k, p)               &
-!          & - temp(i_print+1, j-1, k, p) - temp(i_print, j-1, k, p))                                      &
-!          & - zreta(i_print, p, j, k)*(temp(i_print+1, j, k+1, p) + temp(i_print, j, k+1, p)              &
-!          & - temp(i_print+1, j, k-1, p) - temp(i_print, j, k-1, p))                                      &
-!          & + zrr(i_print-1, p, j, k)*(temp(i_print, j, k, p) - temp(i_print-1, j, k, p))                 &
-!          & + zrxi(i_print-1, p, j, k)*(temp(i_print, j+1, k, p) + temp(i_print-1, j, k, p)               &
-!          & - temp(i_print, j-1, k, p) - temp(i_print-1, j-1, k, p))
-!
-!
-!          netflux_xi(p, j, k) = -zxir(i_print, p, j, k)*(temp(i_print+1, j+1, k, p) + temp(i_print+1, j, k, p)  &
-!          & - temp(i_print-1, j+1, k, p) - temp(i_print-1, j, k, p))                                            &
-!          & - zxixi(i_print, p, j, k)*(temp(i_print, j+1, k, p) - temp(i_print, j, k, p))                       &
-!          & - zxieta(i_print, p, j, k)*(temp(i_print, j+1, k+1, p) + temp(i_print, j, k+1, p)                   &
-!          & - temp(i_print, j+1, k-1, p) - temp(i_print, j, k-1, p))                                            &
-!          & + zxir(i_print, p, j-1, k)*(temp(i_print+1, j, k, p) + temp(i_print+1, j-1, k, p)                   &
-!          & - temp(i_print-1, j, k, p) - temp(i_print-1, j-1, k, p))                                            &
-!          & + zxixi(i_print, p, j-1, k)*(temp(i_print, j, k, p) - temp(i_print, j-1, k, p))                     &
-!          & + zxieta(i_print, p, j-1, k)*(temp(i_print, j, k+1, p) + temp(i_print, j-1, k+1, p)                 &
-!          & - temp(i_print, j, k-1, p) - temp(i_print, j-1, k-1, p)) 
-!
-!          netflux_eta(p, j, k) = - zetar(i_print, p, j, k)*(temp(i_print+1, j, k+1, p) + temp(i_print+1, j, k, p)  &
-!          & - temp(i_print-1, j, k+1, p) - temp(i_print-1, j, k, p))                                               &
-!          & - zetaxi(i_print, p, j, k)*(temp(i_print, j+1, k+1, p) + temp(i_print, j+1, k, p)                      &
-!          & - temp(i_print, j-1, k+1, p) - temp(i_print, j-1, k, p))                                               &
-!          & - zetaeta(i_print, p, j, k)*(temp(i_print, j, k+1, p) - temp(i_print, j, k, p))                        &
-!          & + zetar(i_print, p, j, k-1)*(temp(i_print+1, j, k, p) + temp(i_print+1, j, k-1, p)                     &
-!          & - temp(i_print-1, j, k, p) - temp(i_print-1, j, k-1, p))                                               &
-!          & + zetaxi(i_print, p, j, k-1)*(temp(i_print, j+1, k, p) + temp(i_print, j+1, k-1, p)                    &
-!          & - temp(i_print, j-1, k, p) - temp(i_print, j-1, k-1, p))                                               &
-!          & + zetaeta(i_print, p, j, k-1)*(temp(i_print, j, k, p) - temp(i_print, j, k-1, p)) 
-!        
-!        enddo
-!      enddo
-!    enddo
-!  endif  
-  !write(*,*) "L2_Temp =", sum((temp(:,:,:,:)-temp_anlt(:,:,:,:))**2)/sum(temp_anlt(:,:,:,:)**2)
-
-  
-
-  ! PEREZ AZORIN - Write the L2 measure on file 
-  !
-  !write(130, *) time+dt, sum((temp(:,1:nangt,1:nangt,:)-temp_anlt(:,1:nangt,1:nangt,:))**2)/sum(temp_anlt(:,1:nangt,1:nangt,:)**2)
-  !close(130)
-  ! PEREZ AZORIN
-
-  !do i = 0, 3*bandwd
-  !  write(100,*) matrix(i,:)
-  !enddo
- 
-
-!  write(*,*) "INFO = 0 --> succesfull"
-!  write(*,*) "INFO = -i, the i-th argument had an illegal value"
-!  write(*,*) "INFO = i, U(i,i) is exactly zero. U singular"
-!  write(*,*) "INFO =", INFO
 
 
 
@@ -1437,51 +942,7 @@ do i =1, nrt
  
   !source vector
 
-!  write(*,*) "Source After"
-
-  !do i = 0,6*nrt*(nangt+2)*(nangt+2)-1
-  !  write(103, *) source(i)
-!    write(*,*) i, source(i)
-  !enddo
-
   do p = 1, 6
-
-!    close(100)
-  !close(101)
-  !close(102)
-  !close(103)
-!:
-!: ! Print the temperature profile in real coordinate
-!:    write (name,'(a13,i1,a2)') "out/temp_prof", p, ".d"
-!:    write (name_kappa,'(a14,i1,a2)') "out/kappa_prof", p, ".d"
-!:    write (name_flux,'(a13,i1,a2)') "out/flux_prof", p, ".d"
-!:    if (FirstCall) then
-!:        open(unit = 115, file=trim(name), status = 'replace')
-!:        if (CalculateFlux) then
-!:          open(unit = 215, file=trim(name_kappa), status = 'replace')
-!:          open(unit = 315, file=trim(name_flux), status = 'replace')
-!:        endif
-!:    else
-!:        open(unit = 115, file=trim(name), access = 'append')
-!:        if (CalculateFlux) then
-!:          open(unit = 215, file=trim(name_kappa), access = 'append')
-!:          open(unit = 315, file=trim(name_flux), access = 'append')
-!:        endif
-!:
-!:
-!:        ! We leave two blank line
-!:        write(115, *)
-!:        write(115, *)
-!:        if (CalculateFlux) then
-!:          write(215, *)
-!:          write(215, *)
-!:          write(315, *)
-!:          write(315, *)
-!:        endif
-!:
-!:    endif
-    !open(unit=115,file=trim(name),status='replace')
-
     do j = 1, nangt 
         do k =1, nangt
             jc = 2*j
@@ -1537,10 +998,9 @@ do i =1, nrt
     endif
  enddo
 
-  ! tem(1:nrt+1,1:6,0:nangt+1,0:nangt+1) = x
 
   counter = counter + 1 ! variable to count the timesteps in termal evolution
-  time = time + dt !For Debugging (or not?)
+  time = time + dt !For Debugging
   if (FirstCall) then
     FirstCall = .FALSE.
   endif
@@ -1550,7 +1010,7 @@ do i =1, nrt
     implicit none
     integer, intent(in) :: i, p, j, k
  
-    n_matrix = j + (nangt+2)*(k + (nangt+2)*((p - 1) + 6*(i-1)))  ! change i ---> i-1
+    n_matrix = j + (nangt+2)*(k + (nangt+2)*((p - 1) + 6*(i-1)))  
   end function n_matrix
 
   !----- Functions used to build the conductivity tensors. We leave the kappa_perp term outside the definition --
@@ -1603,13 +1063,12 @@ do i =1, nrt
     real*8, intent(in) :: omegatau
     real*8, intent(in) :: kappa
 
-    H_kappa = kappa*omegatau*omegatau*br(i, j, k, p)/bm(i, j, k, p)/elambda(i)
-    if (H_kappa /= H_kappa) then
-    print*,bm(i,j,k,p),elambda(i),i,j,k,p,H_kappa,omegatau,kappa,"HK"
-   
-    stop
+    if (bm(i, j, k, p) == 0d0) then
+      H_kappa = 0d0
+    else
+      H_kappa = kappa*omegatau*omegatau*br(i, j, k, p)/bm(i, j, k, p)/elambda(i)
     endif
-    !H_kappa = 0.d0
+
   end function H_kappa
 
   real*8 function I_kappa(i, p, j, k, omegatau, kappa)
@@ -1619,8 +1078,13 @@ do i =1, nrt
     real*8, intent(in) :: kappa
 
     I_kappa = (D(k) - X(j)*X(j)*Y(k)*Y(k)/C(j)/C(j)/D(k))/r(i)
-    I_kappa = kappa*I_kappa*omegatau*omegatau*bxi(i, j, k, p)/bm(i, j, k, p)
-    !I_kappa = 0.d0
+
+    if (bm(i, j, k, p) == 0d0) then
+      I_kappa = 0d0
+    else
+      I_kappa = kappa*I_kappa*omegatau*omegatau*bxi(i, j, k, p)/bm(i, j, k, p)
+    endif
+
   end function I_kappa
 
   real*8 function J_kappa(i, p, j, k, omegatau, kappa)
@@ -1630,8 +1094,13 @@ do i =1, nrt
     real*8, intent(in) :: kappa
 
     J_kappa = (C(j) - X(j)*X(j)*Y(k)*Y(k)/D(k)/D(k)/C(j))/r(i)
-    J_kappa = kappa*J_kappa*omegatau*omegatau*beta(i, j, k, p)/bm(i, j, k, p)
-    !J_kappa = 0.d0
+
+    if (bm(i, j, k, p) == 0d0) then
+      J_kappa = 0d0
+    else
+      J_kappa = kappa*J_kappa*omegatau*omegatau*beta(i, j, k, p)/bm(i, j, k, p)
+    endif
+
   end function J_kappa
 
   real*8 function K_kappa(i, p, j, k, omegatau, kappa)
@@ -1641,11 +1110,14 @@ do i =1, nrt
     real*8, intent(in) :: kappa
     real*8 :: sqrtdelta
   
-    sqrtdelta = dsqrt(1 + X(j)**2 + Y(k)**2)
+    if (bm(i, j, k, p) == 0d0) then
+      K_kappa = 0d0
+    else
+      sqrtdelta = dsqrt(1 + X(j)**2 + Y(k)**2)
+      K_kappa = (bxi(i, j, k, p)*X(j)*Y(k)/C(j) - D(k)*beta(i, j, k, p))/bm(i, j, k, p)
+      K_kappa = kappa*K_kappa*omegatau*sqrtdelta/C(j)/D(k)/r(i)
+    endif
 
-    K_kappa = (bxi(i, j, k, p)*X(j)*Y(k)/C(j) - D(k)*beta(i, j, k, p))/bm(i, j, k, p)
-    K_kappa = kappa*K_kappa*omegatau*sqrtdelta/C(j)/D(k)/r(i)
-    !K_kappa = 0.d0
   end function K_kappa
 
   real*8 function L_kappa(i, p, j, k, omegatau, kappa)
@@ -1655,11 +1127,14 @@ do i =1, nrt
     real*8, intent(in) :: kappa
     real*8 :: sqrtdelta
 
-    sqrtdelta = dsqrt(1 + X(j)**2 + Y(k)**2)
+    if (bm(i, j, k, p) == 0d0) then
+      L_kappa = 0d0
+    else
+      sqrtdelta = dsqrt(1 + X(j)**2 + Y(k)**2)
+      L_kappa = (bxi(i, j, k, p)*C(j) - beta(i, j, k, p)*X(j)*Y(k)/D(k))/bm(i, j, k, p)
+      L_kappa = kappa*L_kappa*omegatau*sqrtdelta/C(j)/D(k)/r(i)
+    endif
 
-    L_kappa = (bxi(i, j, k, p)*C(j) - beta(i, j, k, p)*X(j)*Y(k)/D(k))/bm(i, j, k, p)
-    L_kappa = kappa*L_kappa*omegatau*sqrtdelta/C(j)/D(k)/r(i)
-    !L_kappa = 0.d0
   end function L_kappa
 
   real*8 function M_kappa(i, p, j, k, omegatau, kappa)
@@ -1669,11 +1144,14 @@ do i =1, nrt
     real*8, intent(in) :: kappa
     real*8 :: sqrtdelta
 
-    sqrtdelta = dsqrt(1 + X(j)**2 + Y(k)**2)
+    if (bm(i, j, k, p) == 0d0) then
+      M_kappa = 0d0
+    else
+      sqrtdelta = dsqrt(1 + X(j)**2 + Y(k)**2)
+      M_kappa = (C(j)*D(k)*beta(i, j, k, p) - X(j)*Y(k)*bxi(i, j, k, p))/bm(i, j, k, p)
+      M_kappa = kappa*M_kappa*omegatau/sqrtdelta/elambda(i)
+    endif
 
-    M_kappa = (C(j)*D(k)*beta(i, j, k, p) - X(j)*Y(k)*bxi(i, j, k, p))/bm(i, j, k, p)
-    M_kappa = kappa*M_kappa*omegatau/sqrtdelta/elambda(i)
-    !M_kappa = 0.d0
   end function M_kappa
 
   real*8 function N_kappa(i, p, j, k, omegatau, kappa)
@@ -1683,10 +1161,13 @@ do i =1, nrt
     real*8, intent(in) :: kappa
     real*8 :: sqrtdelta
 
-    sqrtdelta = dsqrt(1 + X(j)**2 + Y(k)**2)
+    if (bm(i, j, k, p) == 0d0) then
+      N_kappa = 0d0
+    else
+      sqrtdelta = dsqrt(1 + X(j)**2 + Y(k)**2)
+      N_kappa = kappa*omegatau*sqrtdelta*br(i, j, k, p)/bm(i, j, k, p)/D(k)/r(i)
+    endif
 
-    N_kappa = kappa*omegatau*sqrtdelta*br(i, j, k, p)/bm(i, j, k, p)/D(k)/r(i)
-    !N_kappa = 0.d0
   end function N_kappa
 
   real*8 function O_kappa(i, p, j, k, omegatau, kappa)
@@ -1696,12 +1177,15 @@ do i =1, nrt
     real*8, intent(in) :: kappa
     real*8 :: sqrtdelta
 
-    sqrtdelta = dsqrt(1 + X(j)**2 + Y(k)**2)
+    if (bm(i, j, k, p) == 0d0) then
+      O_kappa = 0d0
+    else
+      sqrtdelta = dsqrt(1 + X(j)**2 + Y(k)**2)
+      O_kappa = (X(j)*Y(k)*beta(i, j, k, p) - C(j)*D(k)*bxi(i, j, k, p))/bm(i, j, k, p)
+      O_kappa = kappa*O_kappa*omegatau/sqrtdelta/elambda(i)
+    endif
 
-    O_kappa = (X(j)*Y(k)*beta(i, j, k, p) - C(j)*D(k)*bxi(i, j, k, p))/bm(i, j, k, p)
-    O_kappa = kappa*O_kappa*omegatau/sqrtdelta/elambda(i)
-    !O_kappa = 0.d0
- end function O_kappa
+  end function O_kappa
 
   real*8 function P_kappa(i, p, j, k, omegatau, kappa)
     implicit none
@@ -1710,10 +1194,13 @@ do i =1, nrt
     real*8, intent(in) :: kappa
     real*8 :: sqrtdelta
 
-    sqrtdelta = dsqrt(1 + X(j)**2 + Y(k)**2)
+    if (bm(i, j, k, p) == 0d0) then
+      P_kappa = 0d0
+    else
+      sqrtdelta = dsqrt(1 + X(j)**2 + Y(k)**2)
+      P_kappa = kappa*omegatau*sqrtdelta*br(i, j, k, p)/bm(i, j, k, p)/C(j)/r(i)
+    endif
 
-    P_kappa = kappa*omegatau*sqrtdelta*br(i, j, k, p)/bm(i, j, k, p)/C(j)/r(i)
-    !P_kappa = 0.d0
   end function P_kappa
 !---------------------------------------------------------------
 
@@ -1735,9 +1222,7 @@ subroutine core_cooling(T_core, dt, flux)
   real*8, intent(in) :: flux
   real*8, intent(inout) :: T_core
   real*8, dimension(1:4) :: integrated_cv, integrated_loss
-  ! DV: Why do they have 4 values? Even for RK4, you don't need them, you only need k1,k2,k3,k4...
   real*8 :: T_0 = 20.d0, alpha = 8.d0
-  real*8 :: k1, k2, k3, k4 !Runge-Kutta Parameters
   real*8 :: deriv_rhs
   real*8 :: ddt, t_prime
   real*8 :: core_cooling_rhs, core_cooling_rhs_deriv
@@ -1811,8 +1296,11 @@ subroutine core_cooling(T_core, dt, flux)
   core_cooling_rhs = core_cooling_rhs - flux/cv_core_tot
   core_cooling_rhs_deriv = core_cooling_rhs_deriv +flux*cv_core_tot_der/cv_core_tot**2
 
-  T_core = (T_core + dt*(core_cooling_rhs - core_cooling_rhs_deriv*enu(1)*T_core))/ &
-  &        (1.d0 - core_cooling_rhs_deriv*enu(1)*dt)
+  !T_core = (T_core + dt*(core_cooling_rhs - core_cooling_rhs_deriv*enu(1)*T_core))/ &
+  !&        (1.d0 - core_cooling_rhs_deriv*enu(1)*dt)
+
+  T_core = (T_core + dt*(core_cooling_rhs - core_cooling_rhs_deriv*T_core))/ &
+  &        (1.d0 - core_cooling_rhs_deriv*dt)
 
 
 end subroutine core_cooling
