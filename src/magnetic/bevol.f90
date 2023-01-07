@@ -368,36 +368,36 @@ module magnetic_evolution
     call fghost(brint,bxiint,betaint)
 
     call RK_substep(dtb,brint,bxiint,betaint,dbr4,dbxi4,dbeta4)
-    brint = br + ((9.d0*dsqrt(21.d0)-21.d0)*dbr1 - (56.d0-8.d0*dsqrt(21.d0))*dbr2  & 
-    & + (336.d0-48.d0*dsqrt(21.d0))*dbr3 - (63.d0-3.d0*dsqrt(21.d0))*dbr4)/392.d0 
-    bxiint = bxi + ((9.d0*dsqrt(21.d0)-21.d0)*dbxi1 - (56.d0-8.d0*dsqrt(21.d0))*dbxi2  & 
-    & + (336.d0-48.d0*dsqrt(21.d0))*dbxi3 - (63.d0-3.d0*dsqrt(21.d0))*dbxi4)/392.d0 
-    betaint = beta + ((9.d0*dsqrt(21.d0)-21.d0)*dbeta1 - (56.d0-8.d0*dsqrt(21.d0))*dbeta2  & 
-    & + (336.d0-48.d0*dsqrt(21.d0))*dbeta3 - (63.d0-3.d0*dsqrt(21.d0))*dbeta4)/392.d0 
+    brint = br + (3.d0*(3.d0*dsqrt(21.d0)-7.d0)*dbr1 - 8.d0*(7.d0-dsqrt(21.d0))*dbr2  & 
+    & + 48.d0*(7.d0-dsqrt(21.d0))*dbr3 - 3.d0*(21.d0-dsqrt(21.d0))*dbr4)/392.d0 
+    bxiint = bxi + (3.d0*(3.d0*dsqrt(21.d0)-7.d0)*dbxi1 - 8.d0*(7.d0-dsqrt(21.d0))*dbxi2  & 
+    & + 48.d0*(7.d0-dsqrt(21.d0))*dbxi3 - 3.d0*(21.d0-dsqrt(21.d0))*dbxi4)/392.d0 
+    betaint = beta + (3.d0*(3.d0*dsqrt(21.d0)-7.d0)*dbeta1 - 8.d0*(7.d0-dsqrt(21.d0))*dbeta2  & 
+    & + 48.d0*(7.d0-dsqrt(21.d0))*dbeta3 - 3.d0*(21.d0-dsqrt(21.d0))*dbeta4)/392.d0 
     call magnetic_bc(brint,bxiint,betaint)
     call fghost(brint,bxiint,betaint)
 
     call RK_substep(dtb,brint,bxiint,betaint,dbr5,dbxi5,dbeta5)
     brint = br + (-5.d0*(231.d0+51.d0*dsqrt(21.d0))*dbr1 - 40.d0*(7.d0+dsqrt(21.d0))*dbr2  & 
     & - 320.d0*dsqrt(21.d0)*dbr3 + 3.d0*(21.d0+121.d0*dsqrt(21.d0))*dbr4 &
-    & + 392.d0*(6.d0 + dsqrt(21.d0))*dbr5 )/1960.d0  
+    & + 392.d0*(6.d0+dsqrt(21.d0))*dbr5)/1960.d0  
     bxiint = bxi + (-5.d0*(231.d0+51.d0*dsqrt(21.d0))*dbxi1 - 40.d0*(7.d0+dsqrt(21.d0))*dbxi2  & 
     & - 320.d0*dsqrt(21.d0)*dbxi3 + 3.d0*(21.d0+121.d0*dsqrt(21.d0))*dbxi4 &
-    & + 392.d0*(6.d0 + dsqrt(21.d0))*dbxi5 )/1960.d0  
-    betaint = beta + (-5.d0*(231.d0+51.d0*dsqrt(21.d0))*dbeta1 - 40.d0*(7.d0+dsqrt(21.d0))*dbeta2  & 
+    & + 392.d0*(6.d0+dsqrt(21.d0))*dbxi5)/1960.d0  
+    betaint = beta+(-5.d0*(231.d0+51.d0*dsqrt(21.d0))*dbeta1 - 40.d0*(7.d0+dsqrt(21.d0))*dbeta2  & 
     & - 320.d0*dsqrt(21.d0)*dbeta3 + 3.d0*(21.d0+121.d0*dsqrt(21.d0))*dbeta4 &
-    & + 392.d0*(6.d0 + dsqrt(21.d0))*dbeta5 )/1960.d0  
+    & + 392.d0*(6.d0+dsqrt(21.d0))*dbeta5)/1960.d0  
     call magnetic_bc(brint,bxiint,betaint)
     call fghost(brint,bxiint,betaint)
 
     call RK_substep(dtb,brint,bxiint,betaint,dbr6,dbxi6,dbeta6)
-    brint = br + (15.d0*(22.d0+7.d0*dsqrt(21.d0))*dbr1 - 120.d0*dbr2  & 
+    brint = br + (15.d0*(22.d0+7.d0*dsqrt(21.d0))*dbr1 + 120.d0*dbr2  & 
     & + 40.d0*(7.d0*dsqrt(21.d0)-5.d0)*dbr3 - 63.d0*(3.d0*dsqrt(21.d0)-2.d0)*dbr4 &
     & - 14.d0*(49.d0+9.d0*dsqrt(21.d0))*dbr5 + 70.d0*(7.d0-dsqrt(21.d0))*dbr6)/180.d0  
-    bxiint = bxi + (15.d0*(22.d0+7.d0*dsqrt(21.d0))*dbxi1 - 120.d0*dbxi2  & 
+    bxiint = bxi + (15.d0*(22.d0+7.d0*dsqrt(21.d0))*dbxi1 + 120.d0*dbxi2  & 
     & + 40.d0*(7.d0*dsqrt(21.d0)-5.d0)*dbxi3 - 63.d0*(3.d0*dsqrt(21.d0)-2.d0)*dbxi4 &
     & - 14.d0*(49.d0+9.d0*dsqrt(21.d0))*dbxi5 + 70.d0*(7.d0-dsqrt(21.d0))*dbxi6)/180.d0  
-    betaint = beta + (15.d0*(22.d0+7.d0*dsqrt(21.d0))*dbeta1 - 120.d0*dbeta2  & 
+    betaint = beta + (15.d0*(22.d0+7.d0*dsqrt(21.d0))*dbeta1 + 120.d0*dbeta2  & 
     & + 40.d0*(7.d0*dsqrt(21.d0)-5.d0)*dbeta3 - 63.d0*(3.d0*dsqrt(21.d0)-2.d0)*dbeta4 &
     & - 14.d0*(49.d0+9.d0*dsqrt(21.d0))*dbeta5 + 70.d0*(7.d0-dsqrt(21.d0))*dbeta6)/180.d0  
     call magnetic_bc(brint,bxiint,betaint)
@@ -412,7 +412,7 @@ module magnetic_evolution
     call fghost(br,bxi,beta)
   end subroutine RK6
 
-  
+
   !!------------------------------------------------------------------------
   !> @brief Subroutine for the substeps of the Runge-Kutta time-advance method
   !!
