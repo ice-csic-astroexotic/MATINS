@@ -295,9 +295,9 @@ module magnetic_evolution
     call fghost(brint,bxiint,betaint)
    ! call magnetic_bc_bessel(t+0.5d0*dtb,brint,bxiint,betaint)
     call RK_substep(dtb,brint,bxiint,betaint,dbr3,dbxi3,dbeta3)
-    brint   = br   + 0.5d0*dbr3
-    bxiint  = bxi  + 0.5d0*dbxi3
-    betaint = beta + 0.5d0*dbeta3
+    brint   = br   + dbr3
+    bxiint  = bxi  + dbxi3
+    betaint = beta + dbeta3
     call magnetic_bc(brint,bxiint,betaint)
     call fghost(brint,bxiint,betaint)
     !call magnetic_bc_bessel(t+0.75d0*dtb,brint,bxiint,betaint)
