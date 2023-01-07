@@ -28,7 +28,7 @@ SFB             SF n crust [0=deactivate] [advice: SFB] (see superfluid.f90)
 TToa            SF n core [0=deactivate] [advice: TToa] (see superfluid.f90)
 CCDKp           SF p core [0=deactivate] [advice: CCDKp] (see superfluid.f90)
 ***NUMERICAL METHODS FOR MAGNETIC FIELDS***
-RK4             Time advance method ("Eul","RK2","RK3","RK4")
+RK4             Time advance method ("Eul","RK2","RK3","RK4","RK6")
 0.1d0           Courant pre-factor in adaptive timestep (set=0 to fix timestep to dtb0)
 1d-8            Minimum magnetic timestep [Myr] (dtb0)
 Center          Scheme for Etor computation ["Center" -advised- or "Upwind"]
