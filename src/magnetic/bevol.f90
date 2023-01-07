@@ -12,7 +12,10 @@
 !>        subroutine magnetic_evol (called in main)
 !>        The contained subroutines:
 !>        subroutine euler
+!>        subroutine RK2
+!>        subroutine RK3
 !>        subroutine RK4
+!>        subroutine RK6
 !>        subroutine RK_substep
 !>        subroutine curl_fnvol
 !>        subroutine curl_fndiff
@@ -101,6 +104,8 @@ module magnetic_evolution
         call RK3(dtb)
       case ("RK4")
         call RK4(dtb)
+      case ("RK6")
+        call RK6(dtb)
       end select
 
       ! Calculation of new electric currents
@@ -250,9 +255,6 @@ module magnetic_evolution
 
   end subroutine RK3
 
-
-
-
   !---------------------------------------------------------------------------
   !> @brief Subroutine for the Runge-Kutta 4th-order time-advance method
   !!
@@ -310,6 +312,107 @@ module magnetic_evolution
  !   call magnetic_bc_bessel(t+dtb,br,bxi,beta)
   end subroutine RK4
 
+
+
+
+  !----------------------------------------------------------------------------------------------------
+  !> @brief Subroutine for the Runge-Kutta 6th-order time-advance method
+  !! An Explicit Sixth-Order Runge-Kutta Formula
+  !! Ref. https://www.ams.org/journals/mcom/1968-22-102/S0025-5718-68-99876-1/S0025-5718-68-99876-1.pdf
+  !!
+  !! @param[in]     dtb   Timestep in Myr
+  !!
+  !!  Code owners:
+  !!    Clara Dehman
+  !!---------------------------------------------------------------------------------------------------
+  subroutine RK6(dtb)
+
+    implicit none
+    
+    ! Subroutine arguments ---------------------------------------------------
+    real*8, intent(in) :: dtb
+
+    ! Local variables --------------------------------------------------------
+    ! Auxiliary fields for intermediate calculations and increments.
+    real*8, dimension (0:nr+1,0:nang+1,0:nang+1,6) :: dbr1,dbxi1,dbeta1
+    real*8, dimension (0:nr+1,0:nang+1,0:nang+1,6) :: dbr2,dbxi2,dbeta2
+    real*8, dimension (0:nr+1,0:nang+1,0:nang+1,6) :: dbr3,dbxi3,dbeta3
+    real*8, dimension (0:nr+1,0:nang+1,0:nang+1,6) :: dbr4,dbxi4,dbeta4
+    real*8, dimension (0:nr+1,0:nang+1,0:nang+1,6) :: dbr5,dbxi5,dbeta5
+    real*8, dimension (0:nr+1,0:nang+1,0:nang+1,6) :: dbr6,dbxi6,dbeta6
+    real*8, dimension (0:nr+1,0:nang+1,0:nang+1,6) :: dbr7,dbxi7,dbeta7
+    real*8, dimension (0:nr+1,0:nang+1,0:nang+1,6) :: brint,bxiint,betaint
+    ! ------------------------------------------------------------------------
+    ! In the first substep the values of B, J and E coming from the previous magnetic loop are used
+    call compute_dB(dtb,er,exi,eeta,dbr1,dbxi1,dbeta1)
+
+    brint   = br   + dbr1
+    bxiint  = bxi  + dbxi1
+    betaint = beta + dbeta1
+    call magnetic_bc(brint,bxiint,betaint)
+    call fghost(brint,bxiint,betaint)
+ 
+    ! In the following three sub-steps J and E are recalculated using Bint
+    call RK_substep(dtb,brint,bxiint,betaint,dbr2,dbxi2,dbeta2)
+    brint   = br   + (3.d0*dbr1 + dbr2)/8.d0
+    bxiint  = bxi  + (3.d0*dbxi1 + dbxi2)/8.d0
+    betaint = beta + (3.d0*dbeta1 + dbeta2)/8.d0
+    call magnetic_bc(brint,bxiint,betaint)
+    call fghost(brint,bxiint,betaint)
+
+    call RK_substep(dtb,brint,bxiint,betaint,dbr3,dbxi3,dbeta3)
+    brint   = br   + (8.d0*dbr1 + 2.d0*dbr2 + 8.d0*dbr3)/27.d0
+    bxiint  = bxi  + (8.d0*dbxi1 + 2.d0*dbxi2 + 8.d0*dbxi3)/27.d0   
+    betaint = beta + (8.d0*dbeta1 + 2.d0*dbeta2 + 8.d0*dbeta3)/27.d0  
+    call magnetic_bc(brint,bxiint,betaint)
+    call fghost(brint,bxiint,betaint)
+
+    call RK_substep(dtb,brint,bxiint,betaint,dbr4,dbxi4,dbeta4)
+    brint = br + ((9.d0*dsqrt(21.d0)-21.d0)*dbr1 - (56.d0-8.d0*dsqrt(21.d0))*dbr2  & 
+    & + (336.d0-48.d0*dsqrt(21.d0))*dbr3 - (63.d0-3.d0*dsqrt(21.d0))*dbr4)/392.d0 
+    bxiint = bxi + ((9.d0*dsqrt(21.d0)-21.d0)*dbxi1 - (56.d0-8.d0*dsqrt(21.d0))*dbxi2  & 
+    & + (336.d0-48.d0*dsqrt(21.d0))*dbxi3 - (63.d0-3.d0*dsqrt(21.d0))*dbxi4)/392.d0 
+    betaint = beta + ((9.d0*dsqrt(21.d0)-21.d0)*dbeta1 - (56.d0-8.d0*dsqrt(21.d0))*dbeta2  & 
+    & + (336.d0-48.d0*dsqrt(21.d0))*dbeta3 - (63.d0-3.d0*dsqrt(21.d0))*dbeta4)/392.d0 
+    call magnetic_bc(brint,bxiint,betaint)
+    call fghost(brint,bxiint,betaint)
+
+    call RK_substep(dtb,brint,bxiint,betaint,dbr5,dbxi5,dbeta5)
+    brint = br + (-5.d0*(231.d0+51.d0*dsqrt(21.d0))*dbr1 - 40.d0*(7.d0+dsqrt(21.d0))*dbr2  & 
+    & - 320.d0*dsqrt(21.d0)*dbr3 + 3.d0*(21.d0+121.d0*dsqrt(21.d0))*dbr4 &
+    & + 392.d0*(6.d0 + dsqrt(21.d0))*dbr5 )/1960.d0  
+    bxiint = bxi + (-5.d0*(231.d0+51.d0*dsqrt(21.d0))*dbxi1 - 40.d0*(7.d0+dsqrt(21.d0))*dbxi2  & 
+    & - 320.d0*dsqrt(21.d0)*dbxi3 + 3.d0*(21.d0+121.d0*dsqrt(21.d0))*dbxi4 &
+    & + 392.d0*(6.d0 + dsqrt(21.d0))*dbxi5 )/1960.d0  
+    betaint = beta + (-5.d0*(231.d0+51.d0*dsqrt(21.d0))*dbeta1 - 40.d0*(7.d0+dsqrt(21.d0))*dbeta2  & 
+    & - 320.d0*dsqrt(21.d0)*dbeta3 + 3.d0*(21.d0+121.d0*dsqrt(21.d0))*dbeta4 &
+    & + 392.d0*(6.d0 + dsqrt(21.d0))*dbeta5 )/1960.d0  
+    call magnetic_bc(brint,bxiint,betaint)
+    call fghost(brint,bxiint,betaint)
+
+    call RK_substep(dtb,brint,bxiint,betaint,dbr6,dbxi6,dbeta6)
+    brint = br + (15.d0*(22.d0+7.d0*dsqrt(21.d0))*dbr1 - 120.d0*dbr2  & 
+    & + 40.d0*(7.d0*dsqrt(21.d0)-5.d0)*dbr3 - 63.d0*(3.d0*dsqrt(21.d0)-2.d0)*dbr4 &
+    & - 14.d0*(49.d0+9.d0*dsqrt(21.d0))*dbr5 + 70.d0*(7.d0-dsqrt(21.d0))*dbr6)/180.d0  
+    bxiint = bxi + (15.d0*(22.d0+7.d0*dsqrt(21.d0))*dbxi1 - 120.d0*dbxi2  & 
+    & + 40.d0*(7.d0*dsqrt(21.d0)-5.d0)*dbxi3 - 63.d0*(3.d0*dsqrt(21.d0)-2.d0)*dbxi4 &
+    & - 14.d0*(49.d0+9.d0*dsqrt(21.d0))*dbxi5 + 70.d0*(7.d0-dsqrt(21.d0))*dbxi6)/180.d0  
+    betaint = beta + (15.d0*(22.d0+7.d0*dsqrt(21.d0))*dbeta1 - 120.d0*dbeta2  & 
+    & + 40.d0*(7.d0*dsqrt(21.d0)-5.d0)*dbeta3 - 63.d0*(3.d0*dsqrt(21.d0)-2.d0)*dbeta4 &
+    & - 14.d0*(49.d0+9.d0*dsqrt(21.d0))*dbeta5 + 70.d0*(7.d0-dsqrt(21.d0))*dbeta6)/180.d0  
+    call magnetic_bc(brint,bxiint,betaint)
+    call fghost(brint,bxiint,betaint)
+
+    call RK_substep(dtb,brint,bxiint,betaint,dbr7,dbxi7,dbeta7)
+
+    br   = br   + (9.d0*dbr1 + 64.d0*dbr3 + 49.d0*dbr5 + 49.d0*dbr6 + 9.d0*dbr7)/180.d0
+    bxi  = bxi  + (9.d0*dbxi1 + 64.d0*dbxi3 + 49.d0*dbxi5 + 49.d0*dbxi6 + 9.d0*dbxi7)/180.d0
+    beta = beta + (9.d0*dbeta1 + 64.d0*dbeta3 + 49.d0*dbeta5 + 49.d0*dbeta6 + 9.d0*dbeta7)/180.d0
+    call magnetic_bc(br,bxi,beta)
+    call fghost(br,bxi,beta)
+  end subroutine RK6
+
+  
   !!------------------------------------------------------------------------
   !> @brief Subroutine for the substeps of the Runge-Kutta time-advance method
   !!
