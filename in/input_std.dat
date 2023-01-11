@@ -9,7 +9,7 @@
 50              Number of core shells (ncore, just for microphysical calculations)
 ***MAGNETIC FIELD***
 true           Magnetic field evolution [true/false]
-100.              Poloidal normalization [bpol_init]
+50.              Poloidal normalization [bpol_init]
 1000.              Toroidal normalization [btor_init]
 ***TEMPERATURE***
 true           Temperature evolution [true/false]
