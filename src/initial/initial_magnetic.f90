@@ -39,9 +39,13 @@ module initial_magnetic
   ! Thus, one can drop the r factor, and what is defined in the code is r*phi and r*psi 
   ! and not psi and phi scalar functions. 
   !
+  ! Note: For the poloidal scalar function, we multiply the fr_crustconf by 10 in order to 
+  ! increase the weights of the l>1 multipoles. If we remove the factor 10, the contribution 
+  ! of the higher order multipoles (l>1) becomes negligible 
+  !
   !! Authors:
-  !!  Daniele Viganò
   !!  Clara Dehman
+  !!  Daniele Viganò
   !---------------------------------------------------------------------------   
   subroutine binit()
 
@@ -50,7 +54,7 @@ module initial_magnetic
    ! Internal variables.
    integer i, p, l, m 
    real*8 mu, N1, N2, dummy
-   real*8, dimension(0:nang+1, 0:nang+1, 1:6) :: fang_pol, fang_tor
+   real*8, dimension(0:nang+1, 0:nang+1, 1:6) :: fang_pol, fang_tor, fang_poldip
    real*8, dimension(0:nr+1,0:nang+1,0:nang+1,1:6) :: phi_sf, psi_sf
    real*8, dimension(0:nr+1,0:nang+1,0:nang+1,1:6) :: brpol, bxipol, betapol   
    real*8, dimension(0:nr+1,0:nang+1,0:nang+1,1:6) :: ar, axi, aeta 
@@ -61,31 +65,38 @@ module initial_magnetic
    psi_sf = 0d0
    fang_pol = 0d0
    fang_tor = 0d0
+   fang_poldip = 0d0
    brpol = 0d0
    bxipol = 0d0
    betapol = 0d0
    bxitor = 0d0
    betator = 0d0
 
-   do l=1,LMAX_IN
-     fang_pol(:,:,:) = fang_pol(:,:,:) + pol_lm(l,0)*y_lm(:,:,:,l,0)
+! Poloidal and toroidal funtion for l=1 and m=0,+1,-1 
+  fang_poldip(:,:,:) = fang_poldip(:,:,:) + pol_lm(1,0)*y_lm(:,:,:,1,0) + &
+  & pol_lm(1,1)*y_lm(:,:,:,1,1) + pol_lm(1,-1)*y_lm(:,:,:,1,-1)
+  fang_tor(:,:,:) = fang_tor(:,:,:) + tor_lm(1,0)*y_lm(:,:,:,1,0) + &
+  & tor_lm(1,1)*y_lm(:,:,:,1,1) + tor_lm(1,-1)*y_lm(:,:,:,1,-1)
+
+   do l=2,LMAX_IN
+     fang_pol(:,:,:) = fang_pol(:,:,:) + pol_lm(l,0)*y_lm(:,:,:,l,0) ! symmetric part 
      fang_tor(:,:,:) = fang_tor(:,:,:) + tor_lm(l,0)*y_lm(:,:,:,l,0)
-     do m=1,l
+     do m=1,l ! asymmetric part 
        fang_pol(:,:,:) = fang_pol(:,:,:) + pol_lm(l,m)*y_lm(:,:,:,l,m) + pol_lm(l,-m)*y_lm(:,:,:,l,-m)
        fang_tor(:,:,:) = fang_tor(:,:,:) + tor_lm(l,m)*y_lm(:,:,:,l,m) + tor_lm(l,-m)*y_lm(:,:,:,l,-m)
      enddo
    enddo
-
+  
    ! mu is the parameter used for the radial function of the initial poloidal field
    call getmu(r(nr),r(1),mu)
    ! This is the radial function used for the initial toroidal field
    fr_crustconf(:) = - (r(nr)-r(:))**2*(r(i)-r(:))**2
 
    do i = 0, nr+1
-     phi_sf(i,:,:,:) = 0.5*funa(mu*r(i),mu*r(nr))*fang_pol(:,:,:)
+     phi_sf(i,:,:,:) = 0.5*funa(mu*r(i),mu*r(nr))*fang_poldip(:,:,:) + 1.d1*fr_crustconf(i)*fang_pol(:,:,:) 
      psi_sf(i,:,:,:) = fr_crustconf(i)*fang_tor(:,:,:)
    enddo
-   
+
   ! Poloidal magnetic field
   call curl_fnvol(phi_sf,0.*phi_sf,0.*phi_sf,ar,axi,aeta,1)
   call fghost(ar,axi,aeta)
@@ -112,7 +123,7 @@ module initial_magnetic
   ar = 0d0
   call dot_prod(0.*bxitor,0.*bxitor,bxitor,bxitor,betator,betator,ar)
   dummy = 0d0
-  ar = sqrt(ar)
+  ar = dsqrt(ar)
   do p=1,6
     dummy = dummy + sum(ar(2:nr-1:2,2:nang-1:2,2:nang-1:2,p)*vol(2:nr-1:2,2:nang-1:2,2:nang-1:2)) & 
     & /sum(vol(2:nr-1:2,2:nang-1:2,2:nang-1:2))
@@ -120,6 +131,15 @@ module initial_magnetic
   if (dummy /= 0.) then
     N2 = btor_init/dummy         
   endif
+
+  ! Previous normalization
+  ! ! Normalization (we can change it, just one choice!)
+  ! if (brpol(nr,nang/2+1,nang/2+1,5) /= 0.) then
+  !   N1 = bpol_init/brpol(nr,nang/2+1,nang/2+1,5)
+  ! endif
+  ! if (maxval(abs(bxitor(:,:,:,1:4))) /= 0.) then
+  !   N2 = btor_init/maxval(abs(bxitor(:,:,:,1:4)))         
+  ! endif
 
   br = brpol*N1
   bxi = bxipol*N1 + bxitor*N2
@@ -130,6 +150,7 @@ module initial_magnetic
   call fghost(br,bxi,beta)
 
   end subroutine binit
+
 
   
 !!-----------------------------------------------------------------------
