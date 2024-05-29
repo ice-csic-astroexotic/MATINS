@@ -63,7 +63,6 @@ module magnetic_evolution
   use grid, only: er, exi, eeta
   use grid, only: y_lm, dyth_lm, dyphi_lm, blm, bpdip, lmax
   use grid, only: area_r, vol
-  use grid, only: q_joule
   use magnetic_analysis, only: compute_energy_balance, wint
   use OMP_LIB 
 
@@ -73,7 +72,7 @@ module magnetic_evolution
 
   contains
 
-    subroutine magnetic_evol(dtb, t)
+    subroutine magnetic_evol(dtb, t) 
     
     implicit none
 
@@ -255,6 +254,9 @@ module magnetic_evolution
 
   end subroutine RK3
 
+
+
+
   !---------------------------------------------------------------------------
   !> @brief Subroutine for the Runge-Kutta 4th-order time-advance method
   !!
@@ -311,7 +313,6 @@ module magnetic_evolution
     call fghost(br,bxi,beta)
  !   call magnetic_bc_bessel(t+dtb,br,bxi,beta)
   end subroutine RK4
-
 
 
 
@@ -411,7 +412,6 @@ module magnetic_evolution
     call magnetic_bc(br,bxi,beta)
     call fghost(br,bxi,beta)
   end subroutine RK6
-
 
   !!------------------------------------------------------------------------
   !> @brief Subroutine for the substeps of the Runge-Kutta time-advance method
@@ -587,36 +587,36 @@ module magnetic_evolution
   end subroutine compute_E
 
 
-  !!-----------------------------------------------------------------------
-  !> @brief Subroutine for the Boundary Conditions considering an analytical 
-  !! solution for the bessel test mainly 
-  !! 
-  !! Code owners:
-  !!  Clara Dehman
-  !!  Daniele Viganò
-  !!-----------------------------------------------------------------------
-   subroutine magnetic_bc_bessel(time,brout,bxiout,betaout) 
+  ! !!-----------------------------------------------------------------------
+  ! !> @brief Subroutine for the Boundary Conditions considering an analytical 
+  ! !! solution for the bessel test mainly 
+  ! !! 
+  ! !! Code owners:
+  ! !!  Clara Dehman
+  ! !!  Daniele Viganò
+  ! !!-----------------------------------------------------------------------
+  !  subroutine magnetic_bc_bessel(time,brout,bxiout,betaout) 
 
-    implicit none 
+  !   implicit none 
       
-    ! Subroutine arguments -------------------------------------------------------
-       real*8, intent(in) :: time
-       real*8, dimension (0:nr+1,0:nang+1,0:nang+1,6), intent(out) :: brout, bxiout, betaout
+  !   ! Subroutine arguments -------------------------------------------------------
+  !      real*8, intent(in) :: time
+  !      real*8, dimension (0:nr+1,0:nang+1,0:nang+1,6), intent(out) :: brout, bxiout, betaout
 
-       brout(0,:,:,:) = 0 !decay(time)*brin(0:1,:,:,:) 
-      ! brout(nr+1,:,:,:) = 0 !decay(time)*brin(nr:nr+1,:,:,:)
-       bxiout(0,:,:,:) = 0 !decay(time)*bxiin(0:1,:,:,:)
-      ! bxiout(nr+1,:,:,:) = 0 !decay(time)*bxiin(nr:nr+1,:,:,:)
-       betaout(0,:,:,:) = 0 !decay(time)*betain(0:1,:,:,:)
-      ! betaout(nr+1,:,:,:) = 0 !decay(time)*betain(nr:nr+1,:,:,:)
-       brout(1,:,:,:) = 0.5d0*brout(2,:,:,:)
-      ! brout(nr,:,:,:) = 0.5d0*brout(nr-1,:,:,:)
-       bxiout(1,:,:,:) = 0.5d0*bxiout(2,:,:,:)
-      ! bxiout(nr,:,:,:) = 0.5d0*bxiout(nr-1,:,:,:)
-       betaout(1,:,:,:) = 0.5d0*betaout(2,:,:,:)
-      ! betaout(nr,:,:,:) = 0.5d0*betaout(nr-1,:,:,:)
+  !      brout(0,:,:,:) = 0 !decay(time)*brin(0:1,:,:,:) 
+  !     ! brout(nr+1,:,:,:) = 0 !decay(time)*brin(nr:nr+1,:,:,:)
+  !      bxiout(0,:,:,:) = 0 !decay(time)*bxiin(0:1,:,:,:)
+  !     ! bxiout(nr+1,:,:,:) = 0 !decay(time)*bxiin(nr:nr+1,:,:,:)
+  !      betaout(0,:,:,:) = 0 !decay(time)*betain(0:1,:,:,:)
+  !     ! betaout(nr+1,:,:,:) = 0 !decay(time)*betain(nr:nr+1,:,:,:)
+  !      brout(1,:,:,:) = 0.5d0*brout(2,:,:,:)
+  !     ! brout(nr,:,:,:) = 0.5d0*brout(nr-1,:,:,:)
+  !      bxiout(1,:,:,:) = 0.5d0*bxiout(2,:,:,:)
+  !     ! bxiout(nr,:,:,:) = 0.5d0*bxiout(nr-1,:,:,:)
+  !      betaout(1,:,:,:) = 0.5d0*betaout(2,:,:,:)
+  !     ! betaout(nr,:,:,:) = 0.5d0*betaout(nr-1,:,:,:)
     
-    end subroutine magnetic_bc_bessel  
+  !   end subroutine magnetic_bc_bessel  
 
 
   !-----------------------------------------------------------------------
@@ -652,7 +652,7 @@ module magnetic_evolution
      real*8, dimension (nr+1:nr+1,0:nang+1,0:nang+1,6) :: br_temp, bth_temp, bphi_temp, bxi_temp, beta_temp 
      real*8, dimension(0:lmax,-lmax:lmax) :: blm_out
      real*8, dimension(0:nang+1,0:nang+1,6) :: sin_theta
-     real*8 :: r_const, rl
+     real*8 :: rl
     ! ------------------------------------------------------------------------- 
     ! Inner Boundary Conditions
 
@@ -674,10 +674,12 @@ module magnetic_evolution
     ! Outer Boundary Conditions  
 
      blm = 0.d0
+     bpdip = 0.d0 
 
      call get_blm(br_bc(nr,:,:,:),blm_out)
      blm = blm_out
      bpdip = dsqrt(sum(blm(1,:)**2))/elambda(nr)
+
 
     ! Reconstructing the magnetic field components for r >= R 
      br_temp = 0.d0 
@@ -814,9 +816,7 @@ module magnetic_evolution
   
       ! Module imports -------------------------------------------------------------
       use constants, only: UNIT_JOULE
-      use grid, only: nangt, nrt
-      use grid, only: etab, enu
-      use grid, only: q_joule, j2
+      use grid, only: q_joule
   
       implicit none
   
