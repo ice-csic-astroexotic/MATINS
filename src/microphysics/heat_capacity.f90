@@ -47,8 +47,13 @@ subroutine compute_heat_capacity
 
     cv_core(i) = cv_cgs*UNIT_CV
     cv_core_tot = cv_core_tot + vol_shell(i)*cv_core(i)
-    cv_core_tot_der = cv_core_tot_der + vol_shell(i)*(cv_cgs1-cv_cgs)*UNIT_CV/((INCR_TEM-1.d0)*tem)
-  end do
+    !cv_core_tot_der = cv_core_tot_der + vol_shell(i)*(cv_cgs1-cv_cgs)*UNIT_CV/((INCR_TEM-1.d0)*tem)
+  
+  ! New relativistic correction
+    cv_core_tot_der = cv_core_tot_der + vol_shell(i)*(cv_cgs1-cv_cgs)*UNIT_CV/((INCR_TEM-1.d0)*tem)/enu_core(i)
+    
+  enddo
+    
 
   do it=1,nrt
    do p=1,6
