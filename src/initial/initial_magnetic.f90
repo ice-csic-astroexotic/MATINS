@@ -89,11 +89,12 @@ module initial_magnetic
   
    ! mu is the parameter used for the radial function of the initial poloidal field
    call getmu(r(nr),r(1),mu)
-   ! This is the radial function used for the initial toroidal field
-   fr_crustconf(:) = - (r(nr)-r(:))**2*(r(i)-r(:))**2
+  ! This is the radial function used for the initial toroidal field and high order poloidal field (l>1)
+   fr_crustconf(:) = - (r(nr)-r(:))**2*(r(:)-r(1))**2
 
    do i = 0, nr+1
-     phi_sf(i,:,:,:) = 0.5*funa(mu*r(i),mu*r(nr))*fang_poldip(:,:,:) + 1.d1*fr_crustconf(i)*fang_pol(:,:,:) 
+    ! poloidal and toroidal scalar functions respectively
+     phi_sf(i,:,:,:) = funa(mu*r(i),mu*r(nr))*fang_poldip(:,:,:) + fr_crustconf(i)*fang_pol(:,:,:) 
      psi_sf(i,:,:,:) = fr_crustconf(i)*fang_tor(:,:,:)
    enddo
 
@@ -150,7 +151,6 @@ module initial_magnetic
   call fghost(br,bxi,beta)
 
   end subroutine binit
-
 
   
 !!-----------------------------------------------------------------------
