@@ -117,8 +117,8 @@ contains
             ! equal to 10^20 erg/cm^3/s, with a dependence with temperature as 
             ! T^8
 
-            q_neutrino(i,j,k,p) = 0.d0!3.154d8*t9**8
-            q_neutrino_der(i,j,k,p) = 0.d0 !8*3.154d8*t9**7
+            q_neutrino(i,j,k,p) = 3.154d8*t9**8
+            q_neutrino_der(i,j,k,p) = 8*3.154d8*t9**7
 
           enddo 
         enddo
@@ -172,8 +172,9 @@ contains
 
   ! De Grandis (cv core does not depends on T)
 
-  emiss_0 = 0.d0! 1.d21*4.d0*PI*rmin**3/3d0*(UNIT_R**3)*(UNIT_TIME)/UNIT_EN
+  emiss_0 =  1.d21*4.d0*PI*rmin**3/3d0*(UNIT_R**3)*(UNIT_TIME)/UNIT_EN
   cv_core_tot = 1.d20*4.d0*PI*(rmin*UNIT_R)**3/3d0*UNIT_T/UNIT_EN
+  cv_core_tot_der = 0.d0 
 
   qnu_core_tot = emiss_0*(t9_core/enu(1))**8*4*PI*rmin**3/3. !Just for output
 
