@@ -19,7 +19,7 @@ Module thermal_evolution
   use grid, only: enu, elambda
   use grid, only: edge_wt, pmt
   use grid, only: br, bxi, beta, bm! magnetic field
-  use grid, only: temp
+  use grid, only: temp, tem0 ! tem0 only for debugging
   use grid, only: rmax
   use grid, only: theta, phi ! DEBUG
 
@@ -61,6 +61,7 @@ subroutine tevol(dt)
   real*8, parameter :: alpha = 8.d0, T_0 = 20.d0 !deprecated
   real*8, parameter :: sb_constant = 1.78843596d11! Stef-Boltz const in sim. units !1.d-5 
   character(len=20) :: name, name_kappa, name_flux
+  character(len=70) :: file_name_debugging, counter_str ! debugging variables
 
   integer i, p, j, k, ic, jc, kc, n
   integer n_jinf, n_jsup, n_kinf, n_ksup
@@ -196,7 +197,7 @@ subroutine tevol(dt)
   zetaeta = 0.d0
   zrxi = 0.d0
   zreta = 0.d0
-  zxir = 0.d0
+  zxir = 0.d0 
   zxieta = 0.d0
   zetar = 0.d0
   zetaxi = 0.d0
@@ -237,25 +238,44 @@ subroutine tevol(dt)
             omegatau_out = omegatau_arr(i+1,j,k,p)
             kappa_perp_out = kappa_perp_arr(i+1,j,k,p)
           else
-            omegatau_out = 0.5d0*(omegatau_arr(i, j, k, p) + omegatau_arr(i+1, j, k, p))
+            !omegatau_out = 0.5d0*(omegatau_arr(i, j, k, p) + omegatau_arr(i+1, j, k, p))
+            omegatau_out = 0.5d0*(Log10(omegatau_arr(i, j, k, p)) + Log10(omegatau_arr(i+1, j, k, p))) ! DEBUGGING !!! THIS IS JUST A TRY (ERASE IT IF IT DOES NOT WORK)
+            omegatau_out = 10.0**(omegatau_out) ! DEBUGGING !!! THIS IS JUST A TRY (ERASE IT IF IT DOES NOT WORK)
+
             if (omegatau_out /= omegatau_out) then
               print*,i,j,k,p,omegatau_out,omegatau_arr(i,j,k,p),omegatau_arr(i+1,j,k,p)
               stop
             endif
-            kappa_perp_out = kappa_perp_arr(i,j,k,p)+ &
-            & (kappa_perp_arr(i+1,j,k,p) - kappa_perp_arr(i,j,k,p))*(r(ic+1)-r(ic))/(r(ic+2)-r(ic))
+            !kappa_perp_out = kappa_perp_arr(i,j,k,p)+ &
+            !& (kappa_perp_arr(i+1,j,k,p) - kappa_perp_arr(i,j,k,p))*(r(ic+1)-r(ic))/(r(ic+2)-r(ic))
+            kappa_perp_out = Log10(kappa_perp_arr(i,j,k,p))+ &
+            & (Log10(kappa_perp_arr(i+1,j,k,p)) - Log10(kappa_perp_arr(i,j,k,p)))*(r(ic+1)-r(ic))/(r(ic+2)-r(ic)) ! DEBUGGING !!! THIS IS JUST A TRY (ERASE IT IF IT DOES NOT WORK)
+            kappa_perp_out = 10.0**(kappa_perp_out) ! DEBUGGING !!! THIS IS JUST A TRY (ERASE IT IF IT DOES NOT WORK)
+      
 
           endif 
 
-          omegatau_xip = 0.5d0*(omegatau_arr(i, j, k, p) + omegatau_arr(i, j+1, k, p))
-          omegatau_etap = 0.5d0*(omegatau_arr(i, j, k, p) + omegatau_arr(i, j, k+1, p))
+          !omegatau_xip = 0.5d0*(omegatau_arr(i, j, k, p) + omegatau_arr(i, j+1, k, p))
+          !omegatau_etap = 0.5d0*(omegatau_arr(i, j, k, p) + omegatau_arr(i, j, k+1, p))
+          omegatau_xip = 0.5d0*(Log10(omegatau_arr(i, j, k, p)) + Log10(omegatau_arr(i, j+1, k, p))) ! DEBUGGING !!! THIS IS JUST A TRY (ERASE IT IF IT DOES NOT WORK)
+          omegatau_xip = 10.0**omegatau_xip ! DEBUGGING !!! THIS IS JUST A TRY (ERASE IT IF IT DOES NOT WORK)
+          omegatau_etap = 0.5d0*(Log10(omegatau_arr(i, j, k, p)) + Log10(omegatau_arr(i, j, k+1, p))) ! DEBUGGING !!! THIS IS JUST A TRY (ERASE IT IF IT DOES NOT WORK)
+          omegatau_etap = 10.0**omegatau_etap ! DEBUGGING !!! THIS IS JUST A TRY (ERASE IT IF IT DOES NOT WORK)
 
           ! Linear interpolation to obtain the value at the borders
-          kappa_perp_xip = kappa_perp_arr(i,j,k,p) + &
-          & (kappa_perp_arr(i,j+1,k,p) - kappa_perp_arr(i,j,k,p))*(xi(jc+1)-xi(jc))/(xi(jc+2)-xi(jc))
+          !kappa_perp_xip = kappa_perp_arr(i,j,k,p) + &
+          !& (kappa_perp_arr(i,j+1,k,p) - kappa_perp_arr(i,j,k,p))*(xi(jc+1)-xi(jc))/(xi(jc+2)-xi(jc))
 
-          kappa_perp_etap = kappa_perp_arr(i,j,k,p) + &
-          & (kappa_perp_arr(i,j,k+1,p) - kappa_perp_arr(i,j,k,p))*(eta(kc+1)-eta(kc))/(eta(kc+2)-eta(kc))
+          !kappa_perp_etap = kappa_perp_arr(i,j,k,p) + &
+          !& (kappa_perp_arr(i,j,k+1,p) - kappa_perp_arr(i,j,k,p))*(eta(kc+1)-eta(kc))/(eta(kc+2)-eta(kc))
+
+          kappa_perp_xip = Log10(kappa_perp_arr(i,j,k,p)) + &
+          & (Log10(kappa_perp_arr(i,j+1,k,p)) - Log10(kappa_perp_arr(i,j,k,p)))*(xi(jc+1)-xi(jc))/(xi(jc+2)-xi(jc)) ! DEBUGGING !!! THIS IS JUST A TRY (ERASE IT IF IT DOES NOT WORK)
+          kappa_perp_xip = 10.0**kappa_perp_xip ! DEBUGGING !!! THIS IS JUST A TRY (ERASE IT IF IT DOES NOT WORK)
+
+          kappa_perp_etap = Log10(kappa_perp_arr(i,j,k,p)) + &
+          & (Log10(kappa_perp_arr(i,j,k+1,p)) - Log10(kappa_perp_arr(i,j,k,p)))*(eta(kc+1)-eta(kc))/(eta(kc+2)-eta(kc))! DEBUGGING !!! THIS IS JUST A TRY (ERASE IT IF IT DOES NOT WORK)
+          kappa_perp_etap = 10.0**kappa_perp_etap ! DEBUGGING !!! THIS IS JUST A TRY (ERASE IT IF IT DOES NOT WORK)
 
           if (maxval(bm) == 0d0) then
             kappa_rr_out(i, p, j, k) = A_kappa(ic+1, kappa_perp_out)
@@ -309,6 +329,14 @@ subroutine tevol(dt)
           &              beta(ic, jc, kc+1, p)/bm(ic, jc, kc+1, p)!0.d0
           endif
 
+          ! ****** DEBUGGING **********
+          !if (counter > 310 .and. counter <= 344 .and. i == nrt .and. (k ==0 .or. k ==1) .and. j == 3 .and. p==3) then
+          !  write(*, '(i1, e15.6, e15.6, e15.6, e15.6, e15.6)') k, kappa_etar_etap(i, p, j, k), kappa_perp_etap, &
+          !  & omegatau_etap, br(ic, jc, kc+1, p)/bm(ic, jc, kc+1, p), H_kappa(ic, p, jc, kc+1, omegatau_etap, kappa_perp_etap)
+          !endif
+          !
+          ! ********* END DEBUGGING*******************
+
           ! The areas here are the covariant components
           if (i .ne. nrt) then
             zrr(i, p, j, k) = enu(ic+1)*kappa_rr_out(i, p, j, k)*area_r(ic+1, jc, kc)/(r(ic+2) - r(ic))
@@ -342,8 +370,8 @@ subroutine tevol(dt)
             zxir(i, p, j, k) = 0.25*enu(ic)*kappa_xir_xip(i, p, j, k)*area_xi(ic, jc+1, kc)/(r(ic+1) - r(ic-1))
             zetar(i, p, j, k) = 0.25*enu(ic)*kappa_etar_etap(i, p, j, k)*area_eta(ic, jc, kc+1)/(r(ic+1) - r(ic -1))
           else ! if we are at the last radial layer we use the center of the cell to estimate the derivative
-            zxir(i, p, j, k) = 0.25*enu(ic)*kappa_xir_xip(i, p, j, k)*area_xi(ic, jc+1, kc)/(r(ic) - r(ic-1))
-            zetar(i, p, j, k) = 0.25*enu(ic)*kappa_etar_etap(i, p, j, k)*area_eta(ic, jc, kc+1)/(r(ic) - r(ic -1))
+            zxir (i, p, j, k) = 0.0!0.25*enu(ic)*kappa_xir_xip(i, p, j, k)*area_xi(ic, jc+1, kc)/(r(ic) - r(ic-1))
+            zetar(i, p, j, k) = 0.0!0.25*enu(ic)*kappa_etar_etap(i, p, j, k)*area_eta(ic, jc, kc+1)/(r(ic) - r(ic -1))
           endif
           
 
@@ -902,8 +930,21 @@ subroutine tevol(dt)
 
   matrix_solve = matrix
 
+  
+
  call dgbsv(6*nrt*(nangt+2)*(nangt+2), bandwd, bandwd, 1, matrix_solve, 3*bandwd+1, &
  &          IPIV, source, 6*nrt*(nangt+2)*(nangt+2), INFO)
+
+ ! DEBUGGING  *****
+ !
+ ! do p =1,4
+ !   do j = 0, nangt+1 
+ !     k = nangt/2 + 1
+ !    print*, p, j, temp(nrt,j,k,p)
+ !   enddo 
+ ! enddo
+
+  !**END DEBUGGING ***************************************************************
 
   !*************************************************************************
 
@@ -922,7 +963,7 @@ do i =1, nrt
                 if (temp(i,j,k,p)<1.d-2) temp(i,j,k,p)=1.d-2 ! we impose a floor to the temperature
 
                 if (temp(i,j,k,p)>1d2 .or. temp(i,j,k,p)<0.d0) then 
-                  write(*,*) i, j, k, p, 'temp:', temp(i,j,k,p)
+                  write(*,*) i, j, k, p, 'temp:', temp(i,j,k,p), 'it:', counter
                 endif 
 
             enddo
@@ -1281,11 +1322,13 @@ subroutine core_cooling(T_core, dt, flux)
     core_cooling_rhs = - qnu_core_tot/cv_core_tot
     core_cooling_rhs_deriv = - (qnu_core_tot_der*cv_core_tot - &
     &                         qnu_core_tot*cv_core_tot_der)/cv_core_tot**2 
+    ! Explicit cv
+    !core_cooling_rhs_deriv = - qnu_core_tot_der/cv_core_tot
+
   else 
     !semianalytic
     call CoreCooling_Implicit(core_cooling_rhs, core_cooling_rhs_deriv)
   endif
-
   ! now we calculate T in the next timestep 
   !T_core = (T_core + dt*(core_cooling_rhs - core_cooling_rhs_deriv*enu(1)*T_core - flux/cv_core_tot))/ &
   !&        (1.d0 - core_cooling_rhs_deriv*enu(1)*dt)
@@ -1295,6 +1338,8 @@ subroutine core_cooling(T_core, dt, flux)
   !correct for flux term
   core_cooling_rhs = core_cooling_rhs - flux/cv_core_tot
   core_cooling_rhs_deriv = core_cooling_rhs_deriv +flux*cv_core_tot_der/cv_core_tot**2
+  ! explicit cv
+  !core_cooling_rhs_deriv = core_cooling_rhs_deriv !+flux*cv_core_tot_der/cv_core_tot**2
 
   !T_core = (T_core + dt*(core_cooling_rhs - core_cooling_rhs_deriv*enu(1)*T_core))/ &
   !&        (1.d0 - core_cooling_rhs_deriv*enu(1)*dt)

@@ -8,7 +8,7 @@
 !
 subroutine envelope_model()
 
-  use grid, only: nr, nrt, nang, nangt, g14, enu, br, bm, bpdip
+  use grid, only: nr, nrt, nang, nangt, g14, enu, br, bm
   use grid, only: tem0, temp_surf, area_r
   use grid, only: bb_flux, cfluxb, sfluxb 
   use constants, only: STEFAN_BOLTZMANN, UNIT_R, UNIT_EN, UNIT_TIME
@@ -37,7 +37,7 @@ subroutine envelope_model()
   !-----------------------------------------------------------------------
   if (envelope == "Gudm") then
     temp_surf(1:nangt,1:nangt,1:6) = 1.d6*(g14**0.455*tem0(nrt,1:nangt,1:nangt,1:6)/1.288d0)**(1./1.82)   
-
+    !temp_surf_incr(1:nangt,1:nangt,1:6) = 1.d6*(g14**0.455*tem0(nrt,1:nangt,1:nangt,1:6)*INCR_TEM/1.288d0)**(1./1.82) !JUST FOR DEBUGGING
   !-----------------------------------------------------------------------
   ! Accreted non-magnetic envelope.
   !-----------------------------------------------------------------------
@@ -61,6 +61,8 @@ subroutine envelope_model()
     do p=1,6
       do kt = 1,nangt
         do jt = 1,nangt
+          j = 2*jt
+          k = 2*kt
           tb9=0.1d0*tem0(nrt,jt,kt,p)
           temp_surf(jt,kt,p) = light_mag_env(g14,tb9,br(nr,j,k,p),bm(nr,j,k,p))
           temp_surf_incr(jt,kt,p) = light_mag_env(g14,tb9*INCR_TEM,br(nr,j,k,p),bm(nr,j,k,p))
@@ -79,8 +81,8 @@ subroutine envelope_model()
           j = 2*jt
           k = 2*kt
           tb9=0.1d0*tem0(nrt,jt,kt,p)
-          temp_surf(jt,kt,p) = iron_env_B(g14,tb9,bpdip,br(nr,j,k,p),bm(nr,j,k,p))
-          temp_surf_incr(jt,kt,p) = iron_env_B(g14,tb9*INCR_TEM,bpdip,br(nr,j,k,p),bm(nr,j,k,p))
+          temp_surf(jt,kt,p) = iron_env_B(g14,tb9,bm(nr,j,k,p),br(nr,j,k,p),bm(nr,j,k,p))
+          temp_surf_incr(jt,kt,p) = iron_env_B(g14,tb9*INCR_TEM,bm(nr,j,k,p),br(nr,j,k,p),bm(nr,j,k,p))
         enddo
       enddo
     enddo
@@ -159,17 +161,23 @@ subroutine envelope_model()
   if (envelope == "Gudm") then
     ! For Gudmundsson, it is analytical
     cfluxb(1:nangt, 1:nangt, 1:6) = bb_flux(1:nangt, 1:nangt, 1:6)*enu(nr)*(4d0/1.82d0)/tem0(nrt,1:nangt,1:nangt,1:6)
-  else
+ else
 
     ! For the other, we do it numerically
     !cfluxb(:,:,:) = bb_flux*((temp_surf_incr/temp_surf)**4 - 1d0)/((INCR_TEM-1d0)*(0.1*tem0(nr,1:nangt,1:nangt,:)))
     ! HERE the 0.1 at the denominator is not very intuitive. It comes from the fact that the increment 
     !is tb9*INCR_TEM, so it is done in unit of 10^9 and not in unit of 10^8
     
+    !cfluxb(1:nangt, 1:nangt, 1:6) = bb_flux(1:nangt, 1:nangt, 1:6)*enu(nr)*   &
+    !& ((temp_surf_incr(1:nangt, 1:nangt, 1:6)/temp_surf(1:nangt, 1:nangt, 1:6))**4  - 1d0)/  &
+    !&               ((INCR_TEM-1d0)*(0.1*tem0(nrt,1:nangt,1:nangt,1:6)))
+
     cfluxb(1:nangt, 1:nangt, 1:6) = bb_flux(1:nangt, 1:nangt, 1:6)*enu(nr)*   &
     & ((temp_surf_incr(1:nangt, 1:nangt, 1:6)/temp_surf(1:nangt, 1:nangt, 1:6))**4  - 1d0)/  &
-    &               ((INCR_TEM-1d0)*(0.1*tem0(nrt,1:nangt,1:nangt,1:6)))
+    &               ((INCR_TEM-1d0)*(tem0(nrt,1:nangt,1:nangt,1:6)))
   endif
+
+
   
   !sfluxb = bb_flux - cfluxb*tem0(nrt,1:nangt,1:nangt,:) !SA: I think it is not correct 
 
@@ -185,44 +193,71 @@ subroutine envelope_model()
   sfluxb(1:nangt, 1:nangt, 1:6) = bb_flux(1:nangt, 1:nangt, 1:6) - &
   &  cfluxb(1:nangt, 1:nangt, 1:6)*tem0(nrt,1:nangt,1:nangt,1:6) !SA: This should be correct
 
+  ! if we already reached the floor do not subtract further energy to the cell 
+  ! save bb_flux anyway for output
+  do p=1,6
+    do kt = 1,nangt
+      do jt = 1,nangt
+        if (tem0(nrt, jt, kt, p)*enu(nr) <= 1.d-2) then
+          sfluxb(jt, kt, p) = 0.d0
+          cfluxb(jt, kt, p) = 0.d0 
+        endif
+      enddo
+    enddo
+  enddo
+
+
+  !****** DEBUGGING ********
+  !
+  !do p = 1,6
+  !  do k=1,nangt
+  !    do j=1,nangt
+  !      write(*, '(i1, i1, i1, e15.6, e15.6, e15.6)') j, k, p, temp_surf(j,k,p), cfluxb(j,k,p), temp_surf_incr(j,k,p)/temp_surf(j,k,p) -1.d0
+  !    enddo
+  !  enddo
+  !enddo 
+  !*************************
+
+
   temp_surf = temp_surf*enu(nr)
 
 
 end subroutine envelope_model
   
   
-real*8 function iron_env_B(g14,tb9,bpdip,brad,b)
+real*8 function iron_env_B(g14,tb9,b12,brad,b)
 
   implicit none
-  real*8, intent(in) :: g14, tb9, bpdip, brad, b
+  real*8, intent(in) :: g14, tb9, b12, brad, b
   real*8 :: chip, chit, tFe4, t04, t14, tt, tp, aa1, aa2, tmax, costh
     
   t04 = (15.7d0*tb9**1.5d0+1.36d0*tb9)**1.5184d0
-  t14 = 1.63d0*bpdip**0.476d0*tb9**(1.348d0/(1d0+1d-2*dsqrt(bpdip)))
-  tFe4 = g14*(t14+(1d0+0.15d0*dsqrt(bpdip))*t04)
+  t14 = 1.63d0*b12**0.476d0*tb9**(1.348d0/(1d0+1d-2*dsqrt(b12)))
+  tFe4 = g14*(t14+(1d0+0.15d0*dsqrt(b12))*t04)
   tp = 1d6*tFe4**(0.25d0)
-  if (bpdip == 0.d0) then
+  if (b12 == 0.d0) then
     iron_env_b = tp
   else  
-    tmax = 1d6*(5.2d0*g14**0.65d0+0.093d0*dsqrt(g14*bpdip))
+    tmax = 1d6*(5.2d0*g14**0.65d0+0.093d0*dsqrt(g14*b12))
     tp = tp*(1d0+(tp/tmax)**4)**(-0.25d0)
-    chit = 1d0/(1d0+(1230d0*tb9)**3.35d0*bpdip &
- &          *dsqrt(1d0+2d0*bpdip**2)  &
- &          /(bpdip+450d0*tb9+119d0*bpdip*tb9)**4  &
- &          +6.6d-3*bpdip**2.5d0/(dsqrt(tb9)+2.58d-3*bpdip**2.5d0))
+    chit = 1d0/(1d0+(1230d0*tb9)**3.35d0*b12 &
+ &          *dsqrt(1d0+2d0*b12**2)  &
+ &          /(b12+450d0*tb9+119d0*b12*tb9)**4  &
+ &          +6.6d-3*b12**2.5d0/(dsqrt(tb9)+2.58d-3*b12**2.5d0))
     tt = chit*tp
     if (b /= 0.) then
       costh = dabs(brad/b)
     else
       costh = 1d0
     endif
-    aa2 = 10d0*bpdip/(dsqrt(tb9)+0.1d0*bpdip*tb9**(-0.25d0))
+    aa2 = 10d0*b12/(dsqrt(tb9)+0.1d0*b12*tb9**(-0.25d0))
     aa1 = aa2*dsqrt(tb9)/3d0
     chip = (1d0+aa1+aa2)*costh**2/(1d0+aa1*costh+aa2*costh**2)
     iron_env_b = tt+(tp-tt)*chip
   endif
 
 end function iron_env_B
+
 
 !-----------------------------------------------------------------------
 ! Light magnetised envelopes (Potekhin et al. 2003)
@@ -290,9 +325,8 @@ real*8 function iron_env_B_DV2013(g14,tb9,brad,b)
 
 	  logb=dlog10(b)
 
-	  chip=1.d0+b**.5*(0.1*(10.*tb9)**(-0.27) &  
-     &	-	0.081*(10.*tb9)**(-0.58)*logb  & 
-     &	+	0.0149*(10.*tb9)**(-0.8)*logb**2)
+	  chip=1.d0+b**.5*(0.1*(10.*tb9)**(-0.27) -	0.081*(10.*tb9)**(-0.58)*logb & 
+    &	+	0.0149*(10.*tb9)**(-0.8)*logb**2)
 
 	  chit=1.d0+b**.5*(-0.231-0.514*exp(-(10.*tb9)*0.138) &
      &		+ 0.675*exp(-(10.*tb9)*0.148)*logb &
