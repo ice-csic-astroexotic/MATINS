@@ -45,11 +45,14 @@ subroutine initial_condition(it, time_read)
   real*8, dimension (0:nr+1,0:nang+1,0:nang+1,6) :: xr, xxi, xeta, bth, bphi
   
 
-  integer p, j, k
+  integer p, j, k, ic
   
   ! Temperature definition
   temp = T_init     ! Uniform temperature
-  tem0 = T_init
+ ! tem0 = T_init
+  do ic = 1,nrt
+    tem0(ic,:,:,:) = temp(ic,:,:,:)/enu(2*ic-1)
+  enddo 
   T_core = T_init   ! Temperature of the core
   q_joule = 0.d0
 
@@ -66,7 +69,6 @@ subroutine initial_condition(it, time_read)
     it = 0
   endif  
 
-  call envelope_model()
 
   ! Set the initial magnetic topology.
   if (bpol_init == 0. .and. btor_init == 0.) then
@@ -111,6 +113,9 @@ subroutine initial_condition(it, time_read)
     ! Calculation of magnetic field intensity
     call dot_prod(br,br,bxi,bxi,beta,beta,b2)
     bm = sqrt(b2)
+
+    call envelope_model()
+
     ! Calculate J**2 used for the Joule dissipation
     call dot_prod(jr,jr,jxi,jxi,jeta,jeta,j2)
     call compute_joule
@@ -137,7 +142,7 @@ end subroutine initial_condition
 subroutine set_from_checkpoint(checkpoint_number, it, time_read)
 
   use grid, only: nrt, nangt
-  use grid, only: T_core, temp
+  use grid, only: T_core, temp, last_timestep_print
 
   implicit none 
 
@@ -157,6 +162,7 @@ subroutine set_from_checkpoint(checkpoint_number, it, time_read)
   
   read(230,*) it
   read(230,*) time_read
+  read(230,*) last_timestep_print
   do p=1,6
     do i=imin_vis+1,nrt
       do j=0,nangt+1
