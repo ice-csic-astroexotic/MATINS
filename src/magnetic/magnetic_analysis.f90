@@ -4,10 +4,6 @@ module magnetic_analysis
   !!
   !! @param[in]     tyear_b   Time elapsed for the magnetic field in years
   !! @param[in]     dtb       Timestep in years
-  !! 
-  !!  Code owners:
-  !!    Clara Dehman
-  !!    Daniele Viganò
   !!------------------------------------------------------------------------------
 
   use constants, only: UNIT_B, UNIT_E, UNIT_R, UNIT_EN, CLIGHT, T_YEAR, PI
@@ -183,6 +179,7 @@ module magnetic_analysis
  !!  Code owners:
  !!    Clara Dehman
  !!    Jose Antonio Pons
+ !!    Daniele Viganò
  !!------------------------------------------------------------------------------ 
   subroutine energy_spectrum(Espec_tot,Epol_tot,Etor_tot)
     implicit None
