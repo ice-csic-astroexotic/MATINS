@@ -34,6 +34,10 @@ Module output
   use grid, only: omegatau_arr, kappa_perp_arr, etab
   use grid, only: f_spherical_to_cartesian, f_cs_to_spherical
   use grid, only: get_1d_cuts, get_1d_cuts_thermal, get_2d_cuts
+  use grid, only: enu 
+  use grid, only: qnu_mur, qnu_nn, qnu_np, &
+      &            qnu_pp, qnu_ep, qnu_cp_con,qnu_cp_cop, qnu_du, &
+      &            qnu_ea, qnu_pl, qnu_syn, qnu_cp_cr,qnu_pa
   use constants, only: UNIT_B, UNIT_T, UNIT_R, UNIT_EN, UNIT_TIME, PI
   use constants, only: PI, STEFAN_BOLTZMANN
 
@@ -151,7 +155,7 @@ Module output
       real*8, dimension(0:nr+1,0:nang+1,0:nang+1,1:6) :: bth, bphi
       real*8, dimension(0:nr+1,1:4*nang-3,2) :: br_merd, bth_merd, bphi_merd, phisc_merd, psisc_merd
       real*8, dimension(0:nr+1,1:4*nang-3) :: br_equator, bth_equator, bphi_equator, phisc_eq, psisc_eq
-      real*8, dimension(1:lmax) :: espec_l
+      real*8, dimension(1:lmax) :: espec_l, espec_axi_l, espec_nonaxi_l
       real*8, dimension(-lmax:lmax) :: espec_m, poles
       real*8 :: Espec, Epol, Etor
 
@@ -171,6 +175,8 @@ Module output
       ! Spectral energy through the volume
       do l = 1, lmax
         espec_l(l) = sum(espec_vol(l,:))
+        espec_axi_l(l) = espec_vol(l,0) 
+        espec_nonaxi_l(l) = sum(espec_vol(l,1:)) 
       end do
       do m = -lmax, lmax
         poles(m) = m
@@ -180,13 +186,21 @@ Module output
       ! Square of the spherical harmonics weights, integrated over m
       call output_1d_ygraph("out/energy/espec_volume_l.yg", "blm vol int. over m", &
      & timeMyr, poles(1:lmax), espec_l, lmax, BL_FORMAT)
-      ! Square of the spherical harmonics weights, integrated over l
+    ! Square of the spherical harmonics weights, at m=0
+      call output_1d_ygraph("out/energy/espec_vol_axi_l.yg", "blm vol for m=0", &
+     & timeMyr, poles(1:lmax), espec_axi_l, lmax, BL_FORMAT)
+    ! Square of the spherical harmonics weights, integrated over m=1:lmax
+      call output_1d_ygraph("out/energy/espec_vol_nonaxi_l.yg", "blm vol int. over m=1:lmax", &
+     & timeMyr, poles(1:lmax), espec_nonaxi_l, lmax, BL_FORMAT)
+    ! Square of the spherical harmonics weights, integrated over l
       call output_1d_ygraph("out/energy/espec_volume_m.yg", "blm vol int. over l", &
      & timeMyr, poles(-lmax:lmax), espec_m, 2*lmax+1, BL_FORMAT)
 
      ! Poloidal spectral energy
      do l = 1, lmax
       espec_l(l) = sum(espec_pol(l,:))
+      espec_axi_l(l) = espec_pol(l,0) 
+      espec_nonaxi_l(l) = sum(espec_pol(l,1:)) 
      end do
      do m = -lmax, lmax
       poles(m) = m
@@ -196,6 +210,12 @@ Module output
     ! Square of the spherical harmonics weights, integrated over m
      call output_1d_ygraph("out/energy/espec_poloidal_l.yg", "blm pol int. over m", &
     & timeMyr, poles(1:lmax), espec_l, lmax, BL_FORMAT)
+    ! Square of the spherical harmonics weights, at m=0
+     call output_1d_ygraph("out/energy/espec_pol_axi_l.yg", "blm vol for m=0", &
+     & timeMyr, poles(1:lmax), espec_axi_l, lmax, BL_FORMAT)
+    ! Square of the spherical harmonics weights, integrated over m=1:lmax
+     call output_1d_ygraph("out/energy/espec_pol_nonaxi_l.yg", "blm vol int. over m=1:lmax", &
+     & timeMyr, poles(1:lmax), espec_nonaxi_l, lmax, BL_FORMAT)
     ! Square of the spherical harmonics weights, integrated over l
      call output_1d_ygraph("out/energy/espec_poloidal_m.yg", "blm pol int. over l", &
     & timeMyr, poles(-lmax:lmax), espec_m, 2*lmax+1, BL_FORMAT)
@@ -203,6 +223,8 @@ Module output
      ! toroidal spectral energy 
     do l = 1, lmax
     espec_l(l) = sum(espec_tor(l,:))
+    espec_axi_l(l) = espec_tor(l,0) 
+    espec_nonaxi_l(l) = sum(espec_tor(l,1:)) 
     end do
     do m = -lmax, lmax
     poles(m) = m
@@ -212,6 +234,12 @@ Module output
   ! Square of the spherical harmonics weights, integrated over m
     call output_1d_ygraph("out/energy/espec_toroidal_l.yg", "blm tor int. over m", &
    & timeMyr, poles(1:lmax), espec_l, lmax, BL_FORMAT)
+  ! Square of the spherical harmonics weights, at m=0
+    call output_1d_ygraph("out/energy/espec_tor_axi_l.yg", "blm vol for m=0", &
+   & timeMyr, poles(1:lmax), espec_axi_l, lmax, BL_FORMAT)
+  ! Square of the spherical harmonics weights, integrated over m=1:lmax
+    call output_1d_ygraph("out/energy/espec_tor_nonaxi_l.yg", "blm vol int. over m=1:lmax", &
+   & timeMyr, poles(1:lmax), espec_nonaxi_l, lmax, BL_FORMAT)
   ! Square of the spherical harmonics weights, integrated over l
     call output_1d_ygraph("out/energy/espec_toroidal_m.yg", "blm tor int. over l", &
    & timeMyr, poles(-lmax:lmax), espec_m, 2*lmax+1, BL_FORMAT)
@@ -681,6 +709,7 @@ Module output
 subroutine output_checkpoint(it, time)
   
   use input_params, only: resume_checkpnt_number
+  use grid, only : last_timestep_print
 
   implicit none
 
@@ -713,10 +742,14 @@ subroutine output_checkpoint(it, time)
   u = get_free_unit()
   open(unit = u, file = file_name, status='replace')
 
-  ! first line is the time, other lines are the temperatures, including ghost cells 
+  ! first line is the timestep
+  ! second line is the time
+  ! third line is the number of last printed timestep
+  ! other lines are the temperatures, including ghost cells 
 
   write(u,*) it
   write(u,*) time 
+  write(u,*) last_timestep_print
 
   do p=1,6
     do i=imin_vis+1,nrt
@@ -743,7 +776,8 @@ end subroutine output_checkpoint
     !---------------------------------------------------------------------------
   subroutine output_vtu(time,dt)
 
-    use input_params, only: final_time
+    use input_params, only: final_time, resume_checkpnt_number
+    use grid, only: last_timestep_print
     
     implicit none
     ! Input parameters -------------------------------------------------------
@@ -757,8 +791,24 @@ end subroutine output_checkpoint
     integer ::  p, i, j, k, id, imin_vis
     integer, dimension(0:nr,1:nang,1:nang,6) :: id_nodes
     real*8, dimension(0:nr+1, 0:nang+1, 0:nang+1, 1:6) :: fx, fy, fz, fth, fphi     
+    logical, save :: FirstCall_output_vtu = .true.
     logical, save :: FirstCall_pvd = .true.
     integer, save :: timestep_print = 0
+
+    if (FirstCall_output_vtu .and. resume_checkpnt_number > 0) then
+
+      ! if we restart from checkpoint we should 1) restart the numbering of output files where 
+      ! we stopped in the previous run 2) no need to recreate another pvd file, we just append 
+      ! new lines to the one already existing 
+      !SA: .pvd file will have a problem anyway because 
+      ! the lines written after the checkpoint will stay there. We should find a way to overwrite 
+      ! .pvd file starting from the output written after the restarting checkpoint (minor problem) 
+
+      FirstCall_output_vtu = .false. 
+      Firstcall_pvd = .false. 
+
+      timestep_print = last_timestep_print + 1 
+    endif 
 
 
     ! Set this to 0 if you start from the first radial cell
@@ -934,6 +984,7 @@ end subroutine output_checkpoint
     close(unit = upvd)
 
     FirstCall_pvd = .false.
+    last_timestep_print = timestep_print
     timestep_print = timestep_print + 1 
 
   end subroutine
@@ -958,7 +1009,7 @@ end subroutine output_checkpoint
     real*8 :: cfl, cfl_serv !courant condition
     real*8, save :: erad = 0.d0, enu_rad = 0.d0
     integer :: j, k, p, i, jc, kc, ic
-    integer :: u1, u2, u3 
+    integer :: u1, u2, u3, u4, u5 
 
     character(len=15), parameter :: COOLING_FORMAT = "(i6,13es12.4)"
 
@@ -975,7 +1026,7 @@ end subroutine output_checkpoint
             jc = 2*j
             kc = 2*k
 
-              qnu_crust_tot = qnu_crust_tot + vol(ic,jc,kc)*q_neutrino(i,j,k,p)
+            qnu_crust_tot = qnu_crust_tot + vol(ic,jc,kc)*q_neutrino(i,j,k,p)*enu(ic)**2
 
           enddo
         enddo 
@@ -1019,14 +1070,61 @@ end subroutine output_checkpoint
       u3 = get_free_unit()
       open(unit=u3, file = 'out/energy/core.d', status = 'replace')
       write(u3, *), "time(yr), T_core[K], cv_core [cgs], qnu_core [cgs]"
-      Firstcall_out_cooling = .false.
+    !  Firstcall_out_cooling = .false.
     else
       u3 = get_free_unit()
       open(unit=u3, file = 'out/energy/core.d', access = 'append')
     endif
+    
 
     write(u3, "(14es12.4)") timeMyr*1d6, T_core*1d8, cv_core_tot*UNIT_EN/UNIT_T, qnu_core_tot*UNIT_EN/UNIT_TIME
     close(unit=u3)
+
+    if (Firstcall_out_cooling) then
+      u4 = get_free_unit()
+      open(unit=u4, file = 'out/energy/neutrino_core.d', status = 'replace')
+      write(u4, *), "time(yr), mur [cgs], nn, np, pp, ep, cp_con, cp_cop, du, ea, pl, syn, cp_cr, pa"
+    !  Firstcall_out_cooling = .false.
+    else
+      u4 = get_free_unit()
+      open(unit=u4, file = 'out/energy/neutrino_core.d', access = 'append')
+    endif
+
+    ! convert in cgs 
+
+    qnu_mur = qnu_mur*UNIT_EN/UNIT_TIME
+    qnu_nn = qnu_nn*UNIT_EN/UNIT_TIME
+    qnu_np = qnu_np*UNIT_EN/UNIT_TIME
+    qnu_pp = qnu_pp*UNIT_EN/UNIT_TIME
+    qnu_ep = qnu_ep*UNIT_EN/UNIT_TIME
+    qnu_cp_con = qnu_cp_con*UNIT_EN/UNIT_TIME
+    qnu_cp_cop = qnu_cp_cop*UNIT_EN/UNIT_TIME
+    qnu_du = qnu_du*UNIT_EN/UNIT_TIME
+    qnu_ea = qnu_ea*UNIT_EN/UNIT_TIME
+    qnu_pl = qnu_pl*UNIT_EN/UNIT_TIME
+    qnu_syn = qnu_syn*UNIT_EN/UNIT_TIME
+    qnu_cp_cr = qnu_cp_cr*UNIT_EN/UNIT_TIME
+    qnu_pa = qnu_pa*UNIT_EN/UNIT_TIME
+
+    write(u4, "(14es12.4)") timeMyr*1d6, qnu_mur(1), qnu_nn(1), qnu_np(1), &
+    & qnu_pp(1), qnu_ep(1), qnu_cp_con(1), qnu_cp_cop(1), qnu_du(1), qnu_ea(1), qnu_pl(1), qnu_syn(1), & 
+    & qnu_cp_cr(1), qnu_pa(1)
+    close(unit=u4)
+
+    if (Firstcall_out_cooling) then
+      u5 = get_free_unit()
+      open(unit=u5, file = 'out/energy/neutrino_crust.d', status = 'replace')
+      write(u4, *), "time(yr), mur [cgs], nn, np, pp, ep, cp_con, cp_cop, du, ea, pl, syn, cp_cr, pa"
+      Firstcall_out_cooling = .false.
+    else
+      u5 = get_free_unit()
+      open(unit=u5, file = 'out/energy/neutrino_crust.d', access = 'append')
+    endif
+
+    write(u5, "(14es12.4)") timeMyr*1d6, qnu_mur(2), qnu_nn(2), qnu_np(2), &
+    & qnu_pp(2), qnu_ep(2), qnu_cp_con(2), qnu_cp_cop(2), qnu_du(2), qnu_ea(2), qnu_pl(2), qnu_syn(2), & 
+    & qnu_cp_cr(2), qnu_pa(2)
+    close(unit=u5)
 
 
     write(6,*) "Cooling:iter,Time(yr),Lum_BB,T_core, Tb(N),Ts(N),Teff,Lum.nu core,Lum.nu crust"
