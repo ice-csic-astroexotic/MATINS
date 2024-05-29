@@ -74,6 +74,10 @@ module grid
   real*8, dimension(:,:), allocatable, save :: pos_qm        ! Projected position at each side of each edge, pseudo-perpendicular coordinate
   real*8, dimension(:), allocatable, save :: edge_w, edge_wt    ! Linear interpolation weights at the edges for magnetic and thermal grids
 
+  ! Quantities to be used in output 
+
+  integer, save :: last_timestep_print ! this variable save the number of the last 3D output when restarting from checkpoint is choosen 
+
 
   ! Star's structure quantities
   ! Radial profiles of:
@@ -101,6 +105,9 @@ module grid
   ! Cooling quantities
   real*8, save :: T_core      ! Redshifted temperature of the core
   real*8, save :: cv_core_tot, qnu_core_tot, qnu_core_tot_der, cv_core_tot_der
+  real*8, dimension(1:2) :: qnu_mur, qnu_nn, qnu_np, &
+      &            qnu_pp, qnu_ep, qnu_cp_con,qnu_cp_cop, qnu_du, &
+      &            qnu_ea, qnu_pl, qnu_syn, qnu_cp_cr,qnu_pa !different neutrino cooling channel (index 1/2 --> core/crust)
   real*8, dimension(:, :, :, :), allocatable, save :: temp, tem0 ! Temperature (redshifted and physical)
   real*8, dimension(:,:,:), allocatable, save :: temp_surf !Surface Temperature
   real*8, dimension(:,:,:), allocatable, save :: bb_flux, sfluxb, cfluxb !BB flux and flux derivative
@@ -1954,9 +1961,9 @@ module grid
       !  & - feta(i,j,k,p)/(delta(j,k)**(1/2))*(delta(j,k+1)-delta(j,k-1))/(eta(k+1)-eta(k-1)))  & 
       !  & + (fr(i+1,j,k,p)-fr(i-1,j,k,p))/(r(i+1)-r(i-1)) + 2.d0/r(i)*fr(i,j,k,p)
  
-       divB(i,j,k,p) = delta(j,k)**(3/2)/(r(i)*D(k)*C(j)**2)*(fxi(i,j+1,k,p)/dsqrt(delta(j+1,k)) & 
+       divB(i,j,k,p) = delta(j,k)**(1.5)/(r(i)*D(k)*C(j)**2)*(fxi(i,j+1,k,p)/dsqrt(delta(j+1,k)) & 
        & - fxi(i,j-1,k,p)/dsqrt(delta(j-1,k)))/(xi(j+1)-xi(j-1)) & 
-       & + delta(j,k)**(3/2)/(r(i)*C(j)*D(k)**2)*(feta(i,j,k+1,p)/dsqrt(delta(j,k+1)) & 
+       & + delta(j,k)**(1.5)/(r(i)*C(j)*D(k)**2)*(feta(i,j,k+1,p)/dsqrt(delta(j,k+1)) & 
        & - feta(i,j,k-1,p)/dsqrt(delta(j,k-1)))/(eta(k+1)-eta(k-1)) &
        & + 1.d0/(r(i)**2)*(r(i+1)**2*br(i+1,j,k,p)-r(i-1)**2*br(i-1,j,k,p))/(r(i+1)-r(i-1))
       end do 
