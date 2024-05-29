@@ -5,9 +5,14 @@ subroutine compute_neutrino_emissivity()
   use grid, only: rho, ne, nn, npr, xh, ye, yn, yp, ymu, aa, zz
   use grid, only: kFe, kFn, qnu_core_tot, qnu_core_tot_der
   use grid, only: tccru, tcn, tcp, T_core, enu_core, vol_shell
+  use grid, only: enu, vol
   use grid, only: effmn, effmp
   use grid, only: nrt, nangt, ncore
   use grid, only: tem0, bm, q_neutrino_core, q_neutrino, q_neutrino_der
+  use grid, only: temp
+  use grid, only: qnu_mur, qnu_nn, qnu_np, &
+      &            qnu_pp, qnu_ep, qnu_cp_con,qnu_cp_cop, qnu_du, &
+      &            qnu_ea, qnu_pl, qnu_syn, qnu_cp_cr,qnu_pa
   use constants, only: PI, UNIT_R, UNIT_TIME, UNIT_EN
   
   implicit none
@@ -24,40 +29,77 @@ subroutine compute_neutrino_emissivity()
   qnu_core_tot = 0d0
   qnu_core_tot_der = 0d0
 
-  do i = 1, ncore
+  ! initialize different neutrino channel to 0
+  qnu_mur = 0.0
+  qnu_nn = 0.0
+  qnu_np = 0.0
+  qnu_pp = 0.0
+  qnu_ep = 0.0
+  qnu_cp_con = 0.0
+  qnu_cp_cop = 0.0 
+  qnu_du = 0.0
+  qnu_ea = 0.0 
+  qnu_pl = 0.0 
+  qnu_syn = 0.0 
+  qnu_cp_cr = 0.0
+  qnu_pa = 0.0
 
-    T0 = T_core/enu_core(i)
-    tem_floor = 0.1*T0     ! Physical temperature in 1e8 K
-    taucru = T0/dmax1(tccru(i),tem_floor)
-    taun   = T0/dmax1(tcn(i),tem_floor)
-    taup   = T0/dmax1(tcp(i),tem_floor)
+  if (T_core > 1.d-2) then 
+  ! Cool the core only if its temperature is above the floor 
+    do i = 1, ncore
 
-    ! Calculate the emissivities at the point
-    emis  = qtot(T0,rho(i),ne(i),nn(i),npr(i), &
-    &            kFe(i),kFn(i),effmn(i),effmp(i), &
-    &            ye(i),yn(i),yp(i),ymu(i),xh(i),aa(i),zz(i), &
-    &            taucru,taun,taup,0d0,qtotal,qmur,qnn,qnp, &
-    &            qpp,qep,qcp_con,qcp_cop,qdu,qea,qpl,qsyn,qcp_cr,qpa) !In cgs
+      T0 = T_core/enu_core(i)
+      tem_floor = 0.1*T0     ! Physical temperature in 1e8 K
+      taucru = T0/dmax1(tccru(i),tem_floor)
+      taun   = T0/dmax1(tcn(i),tem_floor)
+      taup   = T0/dmax1(tcp(i),tem_floor)
 
-    ! Recalculate the emissivities at slightly larger T, to evaluate dQnu/dT
-    emis1  = qtot(INCR_TEM*T0,rho(i),ne(i),nn(i),npr(i), &
-    &            kFe(i),kFn(i),effmn(i),effmp(i), &
-    &            ye(i),yn(i),yp(i),ymu(i),xh(i),aa(i),zz(i), &
-    &            taucru,taun,taup,0d0,qtotal,qmur,qnn,qnp, &
-    &            qpp,qep,qcp_con,qcp_cop,qdu,qea,qpl,qsyn,qcp_cr,qpa)
-    
+      ! Calculate the emissivities at the point
+      emis  = qtot(T0,rho(i),ne(i),nn(i),npr(i), &
+      &            kFe(i),kFn(i),effmn(i),effmp(i), &
+      &            ye(i),yn(i),yp(i),ymu(i),xh(i),aa(i),zz(i), &
+      &            taucru,taun,taup,0d0,qtotal,qmur,qnn,qnp, &
+      &            qpp,qep,qcp_con,qcp_cop,qdu,qea,qpl,qsyn,qcp_cr,qpa) !In cgs
 
-    q_neutrino_core(i) = emis*UNIT_NU
-    qnu_core_tot = qnu_core_tot + vol_shell(i)*q_neutrino_core(i)*enu_core(i)**2
+      ! Recalculate the emissivities at slightly larger T, to evaluate dQnu/dT
+      emis1  = qtot(INCR_TEM*T0,rho(i),ne(i),nn(i),npr(i), &
+      &            kFe(i),kFn(i),effmn(i),effmp(i), &
+      &            ye(i),yn(i),yp(i),ymu(i),xh(i),aa(i),zz(i), &
+      &            taucru,taun,taup,0d0,qtotal,qmur,qnn,qnp, &
+      &            qpp,qep,qcp_con,qcp_cop,qdu,qea,qpl,qsyn,qcp_cr,qpa)
+      
 
-    !qnu_core_tot_der = qnu_core_tot_der +                              &
-    !&           vol_shell(i)*(emis1 - emis)*UNIT_NU*enu_core(i)**2/((INCR_TEM-1d0)*T0) ! 10**40 erg * km^3/Myr/10**8 K
+      q_neutrino_core(i) = emis*UNIT_NU
 
-    ! new relativistic correction
-    qnu_core_tot_der = qnu_core_tot_der +                              &
-    &           vol_shell(i)*(emis1 - emis)*UNIT_NU*enu_core(i)/((INCR_TEM-1d0)*T0) ! 10**40 erg * km^3/Myr/10**8 K
 
-  end do
+      qnu_core_tot = qnu_core_tot + vol_shell(i)*q_neutrino_core(i)*enu_core(i)**2
+
+      !qnu_core_tot_der = qnu_core_tot_der +                              &
+      !&           vol_shell(i)*(emis1 - emis)*UNIT_NU*enu_core(i)**2/((INCR_TEM-1d0)*T0) ! 10**40 erg * km^3/Myr/10**8 K
+
+      ! new relativistic correction
+      qnu_core_tot_der = qnu_core_tot_der +                              &
+      &           vol_shell(i)*(emis1 - emis)*UNIT_NU*enu_core(i)/((INCR_TEM-1d0)*T0) ! 10**40 erg * km^3/Myr/10**8 K
+
+      ! calculate all the separate neutrino contribution for the core
+      
+      qnu_mur(1) = qnu_mur(1) + qmur*vol_shell(i)*UNIT_NU*enu_core(i)**2
+      qnu_nn(1) = qnu_nn(1) + qnn*vol_shell(i)*UNIT_NU*enu_core(i)**2
+      qnu_np(1) = qnu_np(1) + qnp*vol_shell(i)*UNIT_NU*enu_core(i)**2 
+      qnu_pp(1) = qnu_pp(1) + qpp*vol_shell(i)*UNIT_NU*enu_core(i)**2
+      qnu_ep(1) = qnu_ep(1) + qep*vol_shell(i)*UNIT_NU*enu_core(i)**2 
+      qnu_cp_con(1) = qnu_cp_con(1) + qcp_con*vol_shell(i)*UNIT_NU*enu_core(i)**2
+      qnu_cp_cop(1) = qnu_cp_cop(1) + qcp_cop*vol_shell(i)*UNIT_NU*enu_core(i)**2
+      qnu_du(1) = qnu_du(1) + qdu*vol_shell(i)*UNIT_NU*enu_core(i)**2
+      qnu_ea(1) = qnu_ea(1) + qea*vol_shell(i)*UNIT_NU*enu_core(i)**2 
+      qnu_pl(1) = qnu_pl(1) + qpl*vol_shell(i)*UNIT_NU*enu_core(i)**2 
+      qnu_syn(1) = qnu_syn(1) + qsyn*vol_shell(i)*UNIT_NU*enu_core(i)**2 
+      qnu_cp_cr(1) = qnu_cp_cr(1) + qcp_cr*vol_shell(i)*UNIT_NU*enu_core(i)**2
+      qnu_pa(1) = qnu_pa(1) + qpa*vol_shell(i)*UNIT_NU*enu_core(i)**2
+
+
+    end do
+  endif
 
   do it=1,nrt
    do p=1,6
@@ -94,6 +136,31 @@ subroutine compute_neutrino_emissivity()
  	    ! q_neutrino_der = d emis/dT (without redshift correction)
       q_neutrino(it,jt,kt,p) = emis*UNIT_NU  ! 10**40 erg/km^3/Myr
       q_neutrino_der(it,jt,kt,p) = (emis1-emis)/((INCR_TEM-1d0)*tem0(it,jt,kt,p))*UNIT_NU  ! 10**40 erg/(km^3*Myr*10**8 K)
+
+      if (temp(it,jt,kt,p)<= 1.d-2) then
+        ! no cooling if we are at the floor level
+        q_neutrino(it,jt,kt,p) = 0.d0
+        q_neutrino_der(it,jt,kt,p) = 0.d0
+      endif 
+
+       ! calculate all the separate neutrino contribution for the crust
+       ! here the redshift is included 
+      qnu_mur(2) = qnu_mur(2) + qmur*vol(i,j,k)*UNIT_NU*enu(i)**2
+      qnu_nn(2) = qnu_nn(2) + qnn*vol(i,j,k)*UNIT_NU*enu(i)**2
+      qnu_np(2) = qnu_np(2) + qnp*vol(i,j,k)*UNIT_NU*enu(i)**2 
+      qnu_pp(2) = qnu_pp(2) + qpp*vol(i,j,k)*UNIT_NU*enu(i)**2
+      qnu_ep(2) = qnu_ep(2) + qep*vol(i,j,k)*UNIT_NU*enu(i)**2 
+      qnu_cp_con(2) = qnu_cp_con(2) + qcp_con*vol(i,j,k)*UNIT_NU*enu(i)**2
+      qnu_cp_cop(2) = qnu_cp_cop(2) + qcp_cop*vol(i,j,k)*UNIT_NU*enu(i)**2
+      qnu_du(2) = qnu_du(2) + qdu*vol(i,j,k)*UNIT_NU*enu(i)**2
+      qnu_ea(2) = qnu_ea(2) + qea*vol(i,j,k)*UNIT_NU*enu(i)**2 
+      qnu_pl(2) = qnu_pl(2) + qpl*vol(i,j,k)*UNIT_NU*enu(i)**2 
+      qnu_syn(2) = qnu_syn(2) + qsyn*vol(i,j,k)*UNIT_NU*enu(i)**2 
+      qnu_cp_cr(2) = qnu_cp_cr(2) + qcp_cr*vol(i,j,k)*UNIT_NU*enu(i)**2
+      qnu_pa(2) = qnu_pa(2) + qpa*vol(i,j,k)*UNIT_NU*enu(i)**2
+
+
+
      enddo
     enddo
    enddo
@@ -690,5 +757,6 @@ real*8 function ffb(v) ! CPBF for 3P_2
   zexp1 = 0.4616d0-dsqrt(0.4616d0**2+4.d0*v**2)
   if (zexp1 < -1.5d2) zexp1=-1.5d2 !cutoff
   ffb = AA*BB**2/CC*dexp(zexp1)  
+  !if (zexp1 < -1.5d2) ffb = 0.d0
 
 end function ffb

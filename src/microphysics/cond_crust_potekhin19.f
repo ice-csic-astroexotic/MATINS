@@ -129,6 +129,7 @@ c------------------------------------------------------------------------
 
       if (qj .ne. qj .or. qjh .ne. qjh .or. qjt .ne. qjt) then
         write(*,'(a)') '<ERROR>[cond_crust_potekhin19.f]: NAN'
+        write(*,*) 'qj =', qj, 'qjh=', qjh, 'qjt=', qjt
         stop
       endif
 
