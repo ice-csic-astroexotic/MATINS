@@ -4,9 +4,7 @@ The magnetic evolution and details about the cubed-sphere grid is described in D
 The code currently uses OPENMP. It works better with Intel compilers. 
 
 # Main developer of MATINS
-Clara Dehman
-Daniele Viganò
-Stefano Ascenzi
+Clara Dehman,Daniele Viganò, Stefano Ascenzi
 
 # Requirements:
 Lapack libraries
