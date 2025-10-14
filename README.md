@@ -3,8 +3,8 @@
 The magnetic evolution and details about the cubed-sphere grid is described in Dehman et al., 2023, MNRAS, Volume 518, Issue 1, pp.1222-1242. The technical thermal evolution is described in Ascenzi et al. 2024, MNRAS, Volume 533, Issue 1, pp. 201-224.
 The code currently uses OPENMP. It works better with Intel compilers. 
 
-# Main developer of MATINS
-Clara Dehman,Daniele Viganò, Stefano Ascenzi
+# Main developers of MATINS
+Clara Dehman, Daniele Viganò, Stefano Ascenzi
 
 # Requirements:
 Lapack libraries
@@ -14,11 +14,11 @@ Lapack libraries
 LAPACK releases are [available on netlib](http://www.netlib.org/lapack/).
 
 # To compile, simply:
-make
+Run make (use make -j8 for faster parallel compilation).
 # To run, prepare the in/input.dat file and type:
 ./mt3d
 
-
+# Visulaization
 # In paraview
 # For the temperature:
 Representation -> Surface
