@@ -1,8 +1,12 @@
 # MATINS
 3D code for magneto-thermal evolution, with realistic microphysics, and coupled temperature-magnetic field evolution.
-The magnetic evolution is working and is described in Dehman et al., 2023, MNRAS, Volume 518, Issue 1, pp.1222-1242.
-The thermal evolution is under debugging in a separate repository and here it is very outdated, do not use it yet.
-The code currently uses OPENMP. It works better with Intel compilers.
+The magnetic evolution and details about the cubed-sphere grid is described in Dehman et al., 2023, MNRAS, Volume 518, Issue 1, pp.1222-1242. The technical thermal evolution is described in Ascenzi et al. 2024, MNRAS, Volume 533, Issue 1, pp. 201-224.
+The code currently uses OPENMP. It works better with Intel compilers. 
+
+# Main developer of MATINS
+Clara Dehman
+Daniele Viganò
+Stefano Ascenzi
 
 # Requirements:
 Lapack libraries
