@@ -163,4 +163,17 @@ numactl -H
 lscpu
 ```
 
+# Warning: Use MATINS with Caution
+
+## 1. Grid resolution
+***MATINS*** is only optimized with shared processors memory and not parallelized with Message Passing Interface (MPI). Therefore, while using ***MATINS*** you should be careful in not using very high resolution, and limit your resolution to maximum N_\xi=N_\eta \approx 40 and your radial resolution to N_r \approx 40 in the file in/input.dat. 
+
+## 2. Maximum magnetic field strength 
+
+
+## 3. Running time
+
+
+
+
 
