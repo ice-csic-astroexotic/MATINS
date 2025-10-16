@@ -169,15 +169,15 @@ lscpu
 **MATINS** is optimized for shared-memory parallelism and is not parallelized using the Message Passing Interface (MPI). Consequently, users should avoid very high resolutions. It is recommended to set the angular resolution to a maximum of `N_xi = N_eta ≈ 40` and the radial resolution to `N_r ≈ 40` in the `in/input.dat` file.
 
 ## 2. Maximum magnetic field strength 
-We recommend not exceeding a maximum magnetic field strength (see the `in/input.dat` file, under **Poloidal normalization** and **Toroidal normalization** flags) of `10^{14}\,\mathrm{G}` or `10^{15}\,\mathrm{G}`.  
+We recommend not exceeding a maximum magnetic field strength (see the `in/input.dat` file, under **Poloidal normalization** and **Toroidal normalization** flags) of `10^{14} G` or `10^{15} G`.  
 
-Note that the field is expressed in units of `10^{12}\,\mathrm{G}`; therefore, the corresponding values in the input file are `10^2` for `10^{14}\,\mathrm{G}` and `10^3` for `10^{15}\,\mathrm{G}`.
+Note that the field is expressed in units of `10^{12}\,\mathrm{G}`; therefore, the corresponding values in the input file are `10^2` for `10^{14} G` and `10^3` for `10^{15} G`.
 
 ## 3. Running Time
 
 We strongly recommend not exceeding a total evolution time of one million years (see the `in/input.dat` file, under the **Total time [Myr]** flag). The time is expressed in Myr, so setting this flag to `1` corresponds to one million years of evolution.  
 
-In general, for high magnetic fields and when both thermal and magnetic field evolution are enabled, it may be challenging for the simulation to complete the full evolution. Therefore, a total magnetic field strength of a few `10^{14}\,\mathrm{G}` is recommended.
+In general, for high magnetic fields and when both thermal and magnetic field evolution are enabled, it may be challenging for the simulation to complete the full evolution. Therefore, a total magnetic field strength of a few `10^{14} G` is recommended.
 
 
 
