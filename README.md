@@ -1,6 +1,6 @@
 # MATINS
 
-**MATINS** is a 3D code for the MAgneto-Thermal evolution of Isolated Neutron Stars, incorporating realistic microphysics and a fully coupled temperature–magnetic field evolution. The code employs a finite-volume scheme discretized on a cubed-sphere coordinate system. The magnetic field formalism and grid implementation are described in Dehman et al. (2023, *MNRAS*, 518, 1222–1242), while the thermal evolution framework is detailed in Ascenzi et al. (2024, *MNRAS*, 533, 201–224). The code is optimized with OpenMP and performs best with Intel compilers.
+**MATINS** is a 3D code, written in Fortran 90, for the MAgneto-Thermal evolution of Isolated Neutron Stars, incorporating realistic microphysics and a fully coupled temperature–magnetic field evolution. The code employs a finite-volume scheme discretized on a cubed-sphere coordinate system. The magnetic field formalism and grid implementation are described in Dehman et al. (2023, *MNRAS*, 518, 1222–1242), while the thermal evolution framework is detailed in Ascenzi et al. (2024, *MNRAS*, 533, 201–224). The code is optimized with OpenMP and performs best with Intel compilers.
 
 # Main Developers of the MATINS code
 
