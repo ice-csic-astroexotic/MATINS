@@ -13,30 +13,31 @@
 These instructions explain how to obtain a copy of the project and set it up on your local machine.
 
 ## 1. Clone the repository
-```bash
+```commandline
 git clone https://github.com/ice-csic-astroexotic/MATINS
-
+```
 
 ## 2. LAPACK Installation and Parallel Usage
 
 ### Linux
 Install LAPACK with:
-```bash
+```commandline
 sudo apt-get install liblapacke-dev checkinstall
+```
 
 ### Mac
-
 Install LAPACK via Homebrew or download from [Netlib](http://www.netlib.org/lapack/):
 
-```bash
+```commandline
 brew install lapack
+```
 
 ### Parallel Usage 
-For parallel usage of lapack, it must be linked with OpenBlas. To check if the linked version uses OpenBlas:
+For parallel usage of lapack, it must be linked with OpenBlas. To check if the linked version uses OpenBlas:<br>
 1 - Check lapack library: ldd mt3d
 
 	The result should be something like that:
-
+    ```commandline
 	linux-vdso.so.1 (0x00007ffc543bd000)
 	liblapack.so.3 => /usr/lib/x86_64-linux-gnu/liblapack.so.3 (0x00007fe470171000)
 	libgfortran.so.5 => /usr/lib/x86_64-linux-gnu/libgfortran.so.5 (0x00007fe46fea9000)
@@ -49,7 +50,8 @@ For parallel usage of lapack, it must be linked with OpenBlas. To check if the l
 	/lib64/ld-linux-x86-64.so.2 (0x00007fe4722ce000)
 	libquadmath.so.0 => /usr/lib/x86_64-linux-gnu/libquadmath.so.0 (0x00007fe46fa70000)
 	libdl.so.2 => /lib/x86_64-linux-gnu/libdl.so.2 (0x00007fe46fa68000)
-
+    ```
+	
 2 - Follow links of lapack: ls -la /usr/lib/x86_64-linux-gnu/liblapack.so.3
 
 	This is a posible result:
