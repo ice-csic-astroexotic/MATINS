@@ -166,18 +166,18 @@ lscpu
 # Warning: Use MATINS with Caution
 
 ## 1. Grid resolution
-**MATINS** is optimized for shared-memory parallelism and is not parallelized using the Message Passing Interface (MPI). Consequently, users should avoid very high resolutions. It is recommended to set the angular resolution to a maximum of `N_xi = N_eta ≈ 40` and the radial resolution to `N_r ≈ 40` (see the `in/input.dat` file, under **nangt** and **nrt**).
+**MATINS** is optimized for shared-memory parallelism and is not parallelized using the Message Passing Interface (MPI). Consequently, users should avoid very high resolutions. It is recommended to set the angular resolution to a maximum of `nangt ≈ 40` and the radial resolution to `nrt ≈ 40` (see the `in/input.dat` file, under **nangt** and **nrt**).
 
 ## 2. Maximum magnetic field strength 
-We recommend not exceeding a maximum magnetic field strength (see the `in/input.dat` file, under **Poloidal normalization** and **Toroidal normalization** flags) of `10<sup>14</sup> G` or `10<sup>15</sup> G`.  
+We recommend not exceeding a maximum magnetic field strength (see the `in/input.dat` file, under **Poloidal normalization** and **Toroidal normalization** flags) of `10¹⁴ G` or `10¹⁵ G`.  
 
-Note that the field is expressed in units of `10<sup>12</sup> G`; therefore, the corresponding values in the input file are `10<sup>2</sup>` for `10<sup>14</sup> G` and `10<sup>3</sup>` for `10<sup>15</sup> G`.
+Note that the field is expressed in units of `10¹² G`; therefore, the corresponding values in the input file are `10²` for `10¹⁴ G` and `10³` for `10¹⁵ G`.
 
 ## 3. Running Time
 
 We strongly recommend not exceeding a total evolution time of one million years (see the `in/input.dat` file, under the **Total time [Myr]** flag). The time is expressed in Myr, so setting this flag to `1` corresponds to one million years of evolution.  
 
-In general, for high magnetic fields and when both thermal and magnetic field evolution are enabled, it may be challenging for the simulation to complete the full evolution. Therefore, a total magnetic field strength of a few `10<sup>14</sup> G` is recommended.
+In general, for high magnetic fields and when both thermal and magnetic field evolution are enabled, it may be challenging for the simulation to complete the full evolution. Therefore, a total magnetic field strength of a few `10¹⁴ G` is recommended.
 
 
 
