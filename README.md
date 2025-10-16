@@ -17,7 +17,7 @@ These instructions explain how to obtain a copy of the project and set it up on 
 git clone https://github.com/ice-csic-astroexotic/MATINS
 ```
 
-## 2. LAPACK Installation and Parallel Usage
+## 2. LAPACK Installation 
 
 ### Linux
 Install LAPACK with:
@@ -32,7 +32,7 @@ Install LAPACK via Homebrew or download from [Netlib](http://www.netlib.org/lapa
 brew install lapack
 ```
 
-### Parallel Usage 
+### Parallel LAPACK Installation 
 For parallel usage of lapack, it must be linked with OpenBlas. To check if the linked version uses OpenBlas:<br>
 1 - Check lapack library: ldd mt3d
 
