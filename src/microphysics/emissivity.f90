@@ -714,7 +714,7 @@ real*8 function qcpbf_cop(t9, npr, effmp, taup)
   real*8, intent(in) :: t9, npr, effmp, taup
   real*8 ffa, v1, xvp, nv
   real*8 rho0p, pFp_m, cvec_p, cax_p, SSp, aap, sin2theta
-  
+  nv= 3.d0
   rho0p = npr*RHO_TO_N/RHO_NUC
   pFp_m = 0.353d0*rho0p**(1d0/3d0)
   ! Relativistic corrections (aap = 1 for non-relativistic)
@@ -760,3 +760,4 @@ real*8 function ffb(v) ! CPBF for 3P_2
   !if (zexp1 < -1.5d2) ffb = 0.d0
 
 end function ffb
+
