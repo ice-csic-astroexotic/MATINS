@@ -67,20 +67,25 @@ If linked lapack is not the openblas version, one can install openblas and link 
 ## 3. Usage
 
 ### To compile, simply:
-make (use make -j8 for faster compilation).
-
+```commandline
+make (or make -j8 for faster compilation).
+```
 ### To run, prepare the in/input.dat file and type:
+```commandline
 ./mt3d
+```
 
 ### OpenBlas
 When already compiled and linked with OpenBlas' lapack, the number of openmp processors must be set typing: 
-
+```commandline
 export OMP_NUM_THREADS=X
-
+```
 Being X the desired number. Beware not to use more processes than real cores. Current machines show double of real cores due to multithreading techniques.
 
-Number of real cores can be get with: grep -m 1 'cpu cores' /proc/cpuinfo
-
+Number of real cores can be get with: 
+```commandline
+grep -m 1 'cpu cores' /proc/cpuinfo
+```
 Once OMP_NUM_THREADS is set in the terminal, the executable can be run normally. One can check the usage of processors with top or any other system monitor. When using openmp, the percentage of usage will exceed 100%.
 
 The export of OMP_NUM_THREADS can be set in bashrc to make it persistent in following executions.
