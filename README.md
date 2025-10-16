@@ -6,7 +6,7 @@
 
 - Clara Dehman  
 - Daniele Viganò  
-- Stefano Ascenzi  
+- Stefano Ascenzi
 
 # Requirements
 
@@ -163,8 +163,9 @@ numactl -H
 lscpu
 ```
 
-# Warning: Use MATINS with Caution
 
+# Warnings 
+We recommend exercising caution when running the **MATINS** code.
 ## 1. Grid resolution
 **MATINS** is optimized for shared-memory parallelism and is not parallelized using the Message Passing Interface (MPI). Consequently, users should avoid very high resolutions. It is recommended to set the angular resolution to a maximum of `nangt ≈ 40` and the radial resolution to `nrt ≈ 40` (see the `in/input.dat` file, under **nangt** and **nrt**).
 
@@ -178,6 +179,11 @@ Note that the field is expressed in units of `10¹² G`; therefore, the correspo
 We strongly recommend not exceeding a total evolution time of one million years (see the `in/input.dat` file, under the **Total time [Myr]** flag). The time is expressed in Myr, so setting this flag to `1` corresponds to one million years of evolution.  
 
 In general, for high magnetic fields and when both thermal and magnetic field evolution are enabled, it may be challenging for the simulation to complete the full evolution. Therefore, a total magnetic field strength of a few `10¹⁴ G` is recommended.
+
+## Contact
+If you encounter any issues or have questions, please feel free to email us at: *(email address to be added)*.
+
+
 
 
 
