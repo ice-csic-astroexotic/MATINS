@@ -111,7 +111,25 @@ To make floating point calculations safe and consistent, both flags "-fp-model p
 This web resource may be helpful to take the decision:
 https://www.intel.com/content/dam/develop/external/us/en/documents/fp-consistency-102511-326704.pdf
 
-## 4. VTUNE usage for profiling
+## 4. Visualization (in paraview)
+
+### For the magnetic field vector field
+Right click on the file <br>
+Add filter (in previous releases it can be found in Filters menu) <br>
+Alphabetical <br>
+Glyph <br>
+Glyph Type -> Arrow <br>
+Orientation Array -> B <br>
+Scale Array -> B , o bien, No scale array <br>
+Adjust Scale Factor at will <br>
+Coloring -> B <br>
+Apply 
+
+### For the temperature:
+Representation -> Surface <br>
+Coloring -> Temperature
+
+## 5. VTUNE usage for profiling
 
 Vtune is used to do the profiling of memory or time (Hotspots), for Intel compilers. It needs the -g -tracebak options.
 You need to launch from the terminal where the code is:
@@ -123,7 +141,7 @@ vtune-gui
 and select which analysis you want to do, in configuration. We have tried Memory performance and Hotspots. You get the results when the code is done.
 Use then Callers/Callees to see the % of usage of all subroutines.
 
-## 5. STACK SIZE (Segmentation fault)
+## 6. STACK SIZE (Segmentation fault)
 
 Using dynamic arrays throw a segmentation fault when compiled with intel.
 To solve this problem, either compile using flag -heap-arrays (https://www.intel.com/content/www/us/en/develop/documentation/fortran-compiler-oneapi-dev-guide-and-reference/top/compiler-reference/compiler-options/compiler-option-details/advanced-optimization-options/heap-arrays.html)
@@ -137,7 +155,7 @@ FLAG: 	6m47
 ULIMIT:	5m45
 ```
 
-## 6. NUMA information
+## 7. NUMA information
 
 Relevant for memory affinity
 ```commandline
