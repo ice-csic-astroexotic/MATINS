@@ -2,7 +2,7 @@
 
 **MATINS** is a 3D code for the MAgneto-Thermal evolution of Isolated Neutron Stars, incorporating realistic microphysics and a fully coupled temperature–magnetic field evolution. The code employs a finite-volume scheme discretized on a cubed-sphere coordinate system. The magnetic field formalism and grid implementation are described in Dehman et al. (2023, *MNRAS*, 518, 1222–1242), while the thermal evolution framework is detailed in Ascenzi et al. (2024, *MNRAS*, 533, 201–224). The code is optimized with OpenMP and performs best with Intel compilers.
 
-# Main Developers
+# Main Developers of the MATINS code
 
 - Clara Dehman  
 - Daniele Viganò  
@@ -104,9 +104,33 @@ To make floating point calculations safe and consistent, both flags "-fp-model p
 This web resource may be helpful to take the decision:
 https://www.intel.com/content/dam/develop/external/us/en/documents/fp-consistency-102511-326704.pdf
 
+## 4. VTUNE usage for profiling
+
+Vtune is used to do the profiling of memory or time (Hotspots), for Intel compilers. It needs the -g -tracebak options.
+You need to launch from the terminal where the code is:
+
+vtune-gui
+
+and select which analysis you want to do, in configuration. We have tried Memory performance and Hotspots. You get the results when the code is done.
+Use then Callers/Callees to see the % of usage of all subroutines.
+
+## 5. STACK SIZE (Segmentation fault)
+
+Using dynamic arrays throw a segmentation fault when compiled with intel.
+To solve this problem, either compile using flag -heap-arrays (https://www.intel.com/content/www/us/en/develop/documentation/fortran-compiler-oneapi-dev-guide-and-reference/top/compiler-reference/compiler-options/compiler-option-details/advanced-optimization-options/heap-arrays.html)
+Or set a high limit for stack size in the OS: ulimit -s unlimited BETTER PERFORMANCE
+
+The flag allows a parameter to set a maximum size for arrays to be created on stack.
+
+Performance difference:
+FLAG: 	6m47
+ULIMIT:	5m45
+
+## 6. NUMA information
+
+Relevant for memory affinity
+
+numactl -H
+lscpu
 
 
-
-
-Coloring -> B
-Apply
