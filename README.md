@@ -169,9 +169,9 @@ lscpu
 **MATINS** is optimized for shared-memory parallelism and is not parallelized using the Message Passing Interface (MPI). Consequently, users should avoid very high resolutions. It is recommended to set the angular resolution to a maximum of `N_xi = N_eta ≈ 40` and the radial resolution to `N_r ≈ 40` in the `in/input.dat` file.
 
 ## 2. Maximum magnetic field strength 
-We recommend not exceeding a maximum magnetic field strength (see the `in/input.dat` file, under **Poloidal normalization** and **Toroidal normalization** flags) of \(10^{14}\,\mathrm{G}\) or \(10^{15}\,\mathrm{G}\).  
+We recommend not exceeding a maximum magnetic field strength (see the `in/input.dat` file, under **Poloidal normalization** and **Toroidal normalization** flags) of '10^{14}\,\mathrm{G}' or '10^{15}\,\mathrm{G}'.  
 
-Note that the field is expressed in units of \(10^{12}\,\mathrm{G}\); therefore, the corresponding values in the input file are \(10^2\) for \(10^{14}\,\mathrm{G}\) and \(10^3\) for \(10^{15}\,\mathrm{G}\).
+Note that the field is expressed in units of '10^{12}\,\mathrm{G}'; therefore, the corresponding values in the input file are '10^2' for '10^{14}\,\mathrm{G}' and '10^3' for '10^{15}\,\mathrm{G}'.
 
 ## 3. Running time
 
