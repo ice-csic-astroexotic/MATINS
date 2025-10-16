@@ -67,6 +67,8 @@ If linked lapack is not the openblas version, one can install openblas and link 
 ## 3. Usage
 
 ### To compile, simply:
+In the Makefile, specify the compiler you intend to use by selecting one of the following options: INTEL_MKL, INTEL_openblas, or GNU. <br>
+We recommend using INTEL_MKL for optimal performance or GNU when compiling with gfortran.
 ```commandline
 make (or make -j8 for faster compilation).
 ```
