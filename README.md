@@ -92,13 +92,13 @@ Currently, there is a free intel software toolset:
 https://www.intel.com/content/www/us/en/developer/articles/news/free-intel-software-developer-tools.html
 
 Base and HPC kits must be installed. To apply intel variables and paths run: 
-
+```commandline
 source /opt/intel/oneapi/setvars.sh
-
+```
 To activate openmp in mkl libraries, the following environment variable must be set:
-
+```commandline
 export MKL_NUM_THREADS=X
-
+```
 Intel provides its own version for compiler, lapack and openmpi. 
 
 By default, intel's flag -O3 applies performance to floating point calculations that are considered "unsafe". The variations implied by “unsafe” are usually very tiny; however, their impact on the final result of a longer calculation may be amplified if the algorithm involves cancellations (small differences of large numbers).
@@ -111,7 +111,9 @@ https://www.intel.com/content/dam/develop/external/us/en/documents/fp-consistenc
 Vtune is used to do the profiling of memory or time (Hotspots), for Intel compilers. It needs the -g -tracebak options.
 You need to launch from the terminal where the code is:
 
+```commandline
 vtune-gui
+```
 
 and select which analysis you want to do, in configuration. We have tried Memory performance and Hotspots. You get the results when the code is done.
 Use then Callers/Callees to see the % of usage of all subroutines.
@@ -125,14 +127,17 @@ Or set a high limit for stack size in the OS: ulimit -s unlimited BETTER PERFORM
 The flag allows a parameter to set a maximum size for arrays to be created on stack.
 
 Performance difference:
+```commandline
 FLAG: 	6m47
 ULIMIT:	5m45
+```
 
 ## 6. NUMA information
 
 Relevant for memory affinity
-
+```commandline
 numactl -H
 lscpu
+```
 
 
