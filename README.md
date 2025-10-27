@@ -182,8 +182,6 @@ We strongly recommend not exceeding a total evolution time of one million years 
 
 In general, for high magnetic fields and when both thermal and magnetic field evolution are enabled, it may be challenging for the simulation to complete the full evolution. Therefore, a total magnetic field strength of a few `10¹⁴ G` is recommended.
 
-## Contact
-If you encounter any issues or have questions, please feel free to email us at: *(email address to be added)*.
 
 
 
