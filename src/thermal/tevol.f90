@@ -87,18 +87,18 @@ subroutine tevol(dt)
   !real*8 :: value_inf, value_sup
 !  real*8 :: zxixi_j0, zxir_j0, zxieta_j0 !maybe it's better to definie this element in another way, like including it in the vector with index 0
 !  real*8, dimension(0:1,0:2,0:2) :: value_boundary
-  real*8, dimension(:, :, :, :), allocatable :: kappa_rr_out, kappa_xixi_xip, kappa_etaeta_etap
-  real*8, dimension(:, :, :, :), allocatable :: kappa_rxi_out, kappa_reta_out
-  real*8, dimension(:, :, :, :), allocatable :: kappa_xir_xip, kappa_xieta_xip
-  real*8, dimension(:, :, :, :), allocatable :: kappa_etar_etap, kappa_etaxi_etap
-  real*8, dimension(:, :, :, :), allocatable :: zrr, zxixi, zetaeta
-  real*8, dimension(:, :, :, :), allocatable :: zrxi, zreta
-  real*8, dimension(:, :, :, :), allocatable :: zxir, zxieta
-  real*8, dimension(:, :, :, :), allocatable :: zetar, zetaxi
-  real*8, dimension(:, :, :, :), allocatable :: h
+  real*8, dimension(:, :, :, :), allocatable, save :: kappa_rr_out, kappa_xixi_xip, kappa_etaeta_etap
+  real*8, dimension(:, :, :, :), allocatable, save :: kappa_rxi_out, kappa_reta_out
+  real*8, dimension(:, :, :, :), allocatable, save :: kappa_xir_xip, kappa_xieta_xip
+  real*8, dimension(:, :, :, :), allocatable, save :: kappa_etar_etap, kappa_etaxi_etap
+  real*8, dimension(:, :, :, :), allocatable, save :: zrr, zxixi, zetaeta
+  real*8, dimension(:, :, :, :), allocatable, save :: zrxi, zreta
+  real*8, dimension(:, :, :, :), allocatable, save :: zxir, zxieta
+  real*8, dimension(:, :, :, :), allocatable, save :: zetar, zetaxi
+  real*8, dimension(:, :, :, :), allocatable, save :: h
   real*8, dimension(:, :), allocatable, save :: matrix
-  real*8, dimension(:,:), allocatable :: matrix_solve
-  real*8, dimension(:), allocatable :: source
+  real*8, dimension(:,:), allocatable, save :: matrix_solve
+  real*8, dimension(:), allocatable, save :: source
 
 
   ! ***** VARIABLES FOR TESTs (delete later) *******
@@ -114,7 +114,7 @@ subroutine tevol(dt)
   logical :: CoolingOff = .FALSE. !When CoolingOff is .true. the cooling is off
   logical :: CalculateFlux = .FALSE. !When is true the netflux in each cell of a given radial layer is calc. and printed
 
-  real*8, dimension(:, :, :, :), allocatable :: flux_r_anl_out, flux_xi_anl_xip, flux_eta_anl_etap
+  real*8, dimension(:, :, :, :), allocatable, save :: flux_r_anl_out, flux_xi_anl_xip, flux_eta_anl_etap
   !real*8, dimension(:, :, :), allocatable :: netflux_r, netflux_xi, netflux_eta !we calculate the fluxes at only one radial layer 
 
   ! temp_analt is calculated at t+dt at the end of the routine, we save the value because it can be used at the next
@@ -134,33 +134,36 @@ subroutine tevol(dt)
    real*8 :: condition
   ! *********************************************
 
-! allocate the variable h. The index p is not used now, but we keep it.
-  allocate(h(1:nrt, 1:6, 1:nangt, 1:nangt))
+  if(FirstCall) then
 
-! allocate the component of the conductivity tensor
-    
-  ! BE CAREFUL: basically we are excluding one interface here
-  ! that I assume will enter in the boundary condition. THINK ABOUT IT
-  allocate(kappa_rr_out(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(kappa_xixi_xip(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(kappa_etaeta_etap(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(kappa_rxi_out(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(kappa_reta_out(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(kappa_xir_xip(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(kappa_xieta_xip(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(kappa_etar_etap(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(kappa_etaxi_etap(1:nrt, 1:6, 0:nangt, 0:nangt))
+  ! allocate the variable h. The index p is not used now, but we keep it.
+    allocate(h(1:nrt, 1:6, 1:nangt, 1:nangt))
 
-  ! Allocate the auxiliary variables
-  allocate(zrr(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(zxixi(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(zetaeta(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(zrxi(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(zreta(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(zxir(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(zxieta(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(zetar(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(zetaxi(1:nrt, 1:6, 0:nangt, 0:nangt))
+  ! allocate the component of the conductivity tensor
+      
+    ! BE CAREFUL: basically we are excluding one interface here
+    ! that I assume will enter in the boundary condition. THINK ABOUT IT
+    allocate(kappa_rr_out(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(kappa_xixi_xip(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(kappa_etaeta_etap(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(kappa_rxi_out(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(kappa_reta_out(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(kappa_xir_xip(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(kappa_xieta_xip(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(kappa_etar_etap(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(kappa_etaxi_etap(1:nrt, 1:6, 0:nangt, 0:nangt))
+
+    ! Allocate the auxiliary variables
+    allocate(zrr(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(zxixi(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(zetaeta(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(zrxi(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(zreta(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(zxir(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(zxieta(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(zetar(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(zetaxi(1:nrt, 1:6, 0:nangt, 0:nangt))
+  endif 
 
   ! set the half-width of the matrix central band (diagonal excluded)
 
@@ -174,14 +177,17 @@ subroutine tevol(dt)
   !allocate(matrix(0: 6*(nrt+1)*(nangt+2)*(nangt+2)-1, 0:6*(nrt+1)*(nangt+2)*(nangt+2)-1)) ! full matrix
   if (FirstCall) then
     allocate(matrix(0: 3*bandwd, 0:6*nrt*(nangt+2)*(nangt+2)-1))  ! reduced matrix
+    allocate(matrix_solve(0: 3*bandwd, 0:6*nrt*(nangt+2)*(nangt+2)-1))  ! reduced matrix_solve
+    allocate(source(0: 6*nrt*(nangt+2)*(nangt+2)-1))
   endif
-  allocate(matrix_solve(0: 3*bandwd, 0:6*nrt*(nangt+2)*(nangt+2)-1))  ! reduced matrix_solve
-  allocate(source(0: 6*nrt*(nangt+2)*(nangt+2)-1))
+ 
 
   ! Allocation Variables for TESTs ********************************************
-  allocate(flux_r_anl_out(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(flux_xi_anl_xip(1:nrt, 1:6, 0:nangt, 0:nangt))
-  allocate(flux_eta_anl_etap(1:nrt, 1:6, 0:nangt, 0:nangt))
+  if(FirstCall) then
+    allocate(flux_r_anl_out(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(flux_xi_anl_xip(1:nrt, 1:6, 0:nangt, 0:nangt))
+    allocate(flux_eta_anl_etap(1:nrt, 1:6, 0:nangt, 0:nangt))
+  endif
 
 !  allocate(netflux_r(1:6, 1:nangt, 1:nangt))
 !  allocate(netflux_xi(1:6, 1:nangt, 1:nangt))
@@ -277,7 +283,7 @@ subroutine tevol(dt)
           & (Log10(kappa_perp_arr(i,j,k+1,p)) - Log10(kappa_perp_arr(i,j,k,p)))*(eta(kc+1)-eta(kc))/(eta(kc+2)-eta(kc))! DEBUGGING !!! THIS IS JUST A TRY (ERASE IT IF IT DOES NOT WORK)
           kappa_perp_etap = 10.0**kappa_perp_etap ! DEBUGGING !!! THIS IS JUST A TRY (ERASE IT IF IT DOES NOT WORK)
 
-          if (maxval(bm) == 0d0) then
+          if (maxbm == 0d0) then
             kappa_rr_out(i, p, j, k) = A_kappa(ic+1, kappa_perp_out)
             kappa_xixi_xip(i, p, j, k) = B_kappa(ic, kc, kappa_perp_xip) 
             kappa_etaeta_etap(i, p, j, k) = G_kappa(ic, jc, kappa_perp_etap)

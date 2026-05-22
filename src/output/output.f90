@@ -618,6 +618,10 @@ Module output
         enddo
       endif
 
+      deallocate(f)
+      deallocate(f_mer)
+      deallocate(f_azi)
+
     end subroutine all_profiles
 
     
